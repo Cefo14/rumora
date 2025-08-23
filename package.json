@@ -1,7 +1,7 @@
 {
   "name": "rumora",
   "version": "1.0.0",
-  "description": "A open  RUM (Real User Monitoring) library",
+  "description": "A open source web performance monitoring library",
   "author": "Cefo14 <cefo14@protonmail.com>",
   "license": "GPL-3.0-or-later",
   "keywords": [

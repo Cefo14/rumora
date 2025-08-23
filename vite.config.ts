@@ -13,7 +13,8 @@ export default defineConfig({
       fileName: (format) => `rumora.${format}.js`
     },
     sourcemap: true,
-    outDir: 'dist'
+    outDir: 'dist',
+    emptyOutDir: true,
   },
   plugins: [
     dts({
