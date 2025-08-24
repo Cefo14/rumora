@@ -1,37 +1,30 @@
-import { FCPReport } from "@/reports/FCPReport";
+import { TTFBReport } from "@/reports/TTFBReport";
 import { RumoraException } from "@/errors/RumoraException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
-export class FCP extends WebVitalObserver {
-  protected readonly performanceObserverType = "paint";
+export class TTFB extends WebVitalObserver {
+  private readonly performanceObserverType = "navigation";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('FCP is not supported in this browser.');
-      this.setError(error);
-      this.notifyError(error);
+      const error = new RumoraException('TTFB is not supported in this browser.');
+      this.addError(error);
     }
   }
 
-  protected handlePerformanceObserver(): void {
+  private handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
-      const entries = entryList
-        .getEntries()
-        .filter((entry) => (
-          entry.name === 'first-contentful-paint'
-        ));
-
-      if (entries.length === 0) return;
-
+      const entries = entryList.getEntries();
+      if (entries.length <= 0) return;
       entries.forEach((entry) => {
-        const value = entry.startTime;
-        const report = new FCPReport(value);
+        const lastEntry = entry as PerformanceNavigationTiming;
+        const value = lastEntry.responseStart - lastEntry.requestStart;
+        const report = new TTFBReport(value);
         this.addReport(report);
       });
-  
       observer.disconnect(); // Safely disconnect the observer
     });
 

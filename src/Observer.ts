@@ -25,5 +25,11 @@ export abstract class Observer<T> {
     }
   }
 
-  protected abstract onSubscribe(): void;
+  protected clearSubscribers(): void {
+    this.subscribers.clear();
+  }
+
+  protected onSubscribe(): void {
+    // No-op
+  }
 }

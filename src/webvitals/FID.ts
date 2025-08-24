@@ -1,27 +1,34 @@
 import { FIDReport } from "@/reports/FIDReport";
-import { WebVital } from "./WebVital";
+import { RumoraException } from "@/errors/RumoraException";
+import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+export class FID extends WebVitalObserver {
+  protected readonly performanceObserverType = "first-input";
 
-export class FID extends WebVital<FIDReport> {
-  protected isPerformanceObservationSupported(): boolean {
-    return (
-      'PerformanceObserver' in window
-      && PerformanceObserver.supportedEntryTypes.includes("first-input")
-    );
+  protected initialize(): void {
+    if (isPerformanceObservationSupported(this.performanceObserverType)) {
+      this.handlePerformanceObserver();
+    }
+    else {
+      const error = new RumoraException('FID is not supported in this browser.');
+      this.addError(error);
+    }
   }
 
-  protected handlePerformanceObservation(): void {
+  protected handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      for (const entry of entries) {
-        if (entry.entryType !== 'first-input') continue;
+
+      if (entries.length === 0) return;
+
+      entries.forEach((entry) => {
         const fidValue = entry.startTime;
-        const fidReport = new FIDReport(fidValue);
-        this.report = fidReport;
-        this.notifyChange(fidReport);
-      }
+        const report = new FIDReport(fidValue);
+        this.addReport(report);
+      });
+      observer.disconnect(); // Safely disconnect the observer
     });
 
-    observer.observe({ type: 'first-input', buffered: true });
+    observer.observe({ type: this.performanceObserverType, buffered: true });
+    this.setObserver(observer);
   }
 }
-

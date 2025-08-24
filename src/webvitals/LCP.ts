@@ -1,25 +1,33 @@
 import { LCPReport } from "@/reports/LCPReport";
-import { WebVital } from "./WebVital";
+import { RumoraException } from "@/errors/RumoraException";
+import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
-export class LCP extends WebVital<LCPReport> {
-  protected isPerformanceObservationSupported(): boolean {
-    return (
-      'PerformanceObserver' in window
-      && PerformanceObserver.supportedEntryTypes.includes("largest-contentful-paint")
-    );
+export class LCP extends WebVitalObserver {
+  private readonly performanceObserverType = "largest-contentful-paint";
+
+  protected initialize(): void {
+    if (isPerformanceObservationSupported(this.performanceObserverType)) {
+      this.handlePerformanceObserver();
+    }
+    else {
+      const error = new RumoraException('LCP is not supported in this browser.');
+      this.addError(error);
+    }
   }
 
-  protected handlePerformanceObservation(): void {
+  private handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
+
       if (entries.length <= 0) return;
-      const lastEntry = entries.at(-1) as PerformanceEntry; // Safely get the last entry
-      const value = lastEntry.startTime;
-      const lcp = new LCPReport(value);
-      this.report = lcp;
-      this.notifyChange(lcp);
+
+      entries.forEach((entry) => {
+        const report = new LCPReport(entry.startTime);
+        this.addReport(report);
+      });
     });
 
-    observer.observe({ type: 'largest-contentful-paint', buffered: true });
+    observer.observe({ type: this.performanceObserverType, buffered: true });
+    this.setObserver(observer);
   }
 }

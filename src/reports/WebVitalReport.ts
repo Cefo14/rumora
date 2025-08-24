@@ -5,7 +5,7 @@ export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 export abstract class WebVitalReport implements Report {
   abstract readonly name: string;
   abstract readonly goodThreshold: number;
-  abstract readonly needsImprovementThreshold: number;
+  abstract readonly badThreshold: number;
 
   readonly id: string;
   readonly value: number;
@@ -44,12 +44,12 @@ export abstract class WebVitalReport implements Report {
   public isNeedsImprovement(): boolean {
     return (
       this.value >= this.goodThreshold
-      && this.value < this.needsImprovementThreshold
+      && this.value < this.badThreshold
     );
   }
 
   public isPoor(): boolean {
-    return this.value >= this.needsImprovementThreshold;
+    return this.value >= this.badThreshold;
   }
 
   private generateUUID(): string {

@@ -4,5 +4,5 @@ export class CLSReport extends WebVitalReport {
   readonly name = "CUMULATIVE_LAYOUT_SHIFT";
 
   readonly goodThreshold = 0.1;
-  readonly needsImprovementThreshold = 0.25;
+  readonly badThreshold = 0.25;
 }

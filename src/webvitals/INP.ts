@@ -1,34 +1,32 @@
-import { CLSReport } from "@/reports/CLSReport";
+import { INPReport } from "@/reports/INPReport";
 import { RumoraException } from "@/errors/RumoraException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
-export class CLS extends WebVitalObserver {
-  protected readonly performanceObserverType = "layout-shift";
+export class INP extends WebVitalObserver {
+  protected readonly performanceObserverType = "event";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('CLS is not supported in this browser.');
+      const error = new RumoraException('INP is not supported in this browser.');
       this.addError(error);
     }
   }
 
   protected handlePerformanceObserver(): void {
-    let cls = 0;
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       entries.forEach((entry) => {
-        const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean, value: number };
-        if (layoutShift.hadRecentInput) return;
-        cls += layoutShift.value;
+        const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
+        if (!eventEntry.interactionId) return;
+        const inp = eventEntry.processingEnd - eventEntry.startTime;
+        const report = new INPReport(inp);
+        this.addReport(report);
       });
-      const report = new CLSReport(cls);
-      this.addReport(report);
     });
-    observer.observe({ type: 'layout-shift', buffered: true });
+    observer.observe({ type: this.performanceObserverType, buffered: true });
     this.setObserver(observer);
   }
 }
-

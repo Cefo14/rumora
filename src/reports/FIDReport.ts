@@ -4,5 +4,5 @@ export class FIDReport extends WebVitalReport {
   readonly name = "FIRST_INPUT_DELAY";
 
   readonly goodThreshold = 100;
-  readonly needsImprovementThreshold = 300;
+  readonly badThreshold = 300;
 }
