@@ -11,8 +11,7 @@ export class FCP extends WebVitalObserver {
     }
     else {
       const error = new RumoraException('FCP is not supported in this browser.');
-      this.setError(error);
-      this.notifyError(error);
+      this.addError(error);
     }
   }
 

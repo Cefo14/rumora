@@ -19,6 +19,14 @@ export abstract class WebVitalObserver extends Observer<WebVitalReport> {
   private observer?: PerformanceObserver;
   private isInitialized = false;
 
+  public getReports(): WebVitalReport[] {
+    return Array.from(this.reports);
+  }
+
+  public getErrors(): Error[] {
+    return Array.from(this.errors);
+  }
+
   protected addReport(report: WebVitalReport): void {
     this.reports.push(report);
     this.notifyChange(report);
