@@ -1,8 +1,8 @@
 import { CLSReport } from "@/reports/CLSReport";
 import { CLSUnsupportedException } from "@/errors/CLSUnsupportedException";
-import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class CLS extends WebVitalObserver {
+export class CLS extends PerformanceMetricObserver<CLSReport> {
   private readonly performanceObserverType = "layout-shift";
   private cls: number = 0;
 

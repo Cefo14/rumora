@@ -2,7 +2,6 @@ import { CLS } from "./webvitals/CLS";
 import { FCP } from "./webvitals/FCP";
 import { FID } from "./webvitals/FID";
 import { LCP } from "./webvitals/LCP";
-import { TTFB } from "./webvitals/TTFB";
 import { INP } from "./webvitals/INP";
 
 new LCP()
@@ -38,15 +37,6 @@ new CLS()
     console.error('Error:', error);
   } else {
     console.log('CLS Report:', report);
-  }
-});
-
-new TTFB()
-.subscribe((error, report) => {
-  if (error) {
-    console.error('Error:', error);
-  } else {
-    console.log('TTFB Report:', report);
   }
 });
 

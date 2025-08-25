@@ -1,8 +1,8 @@
 import { LCPReport } from "@/reports/LCPReport";
 import { LCPUnsupportedException } from "@/errors/LCPUnsupportedException";
-import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class LCP extends WebVitalObserver {
+export class LCP extends PerformanceMetricObserver {
   private readonly performanceObserverType = "largest-contentful-paint";
 
   protected initialize(): void {

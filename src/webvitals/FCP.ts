@@ -1,8 +1,8 @@
 import { FCPReport } from "@/reports/FCPReport";
 import { FCPUnsupportedException } from "@/errors/FCPUnsupportedException";
-import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class FCP extends WebVitalObserver {
+export class FCP extends PerformanceMetricObserver<FCPReport> {
   private readonly performanceObserverType = "paint";
 
   protected initialize(): void {

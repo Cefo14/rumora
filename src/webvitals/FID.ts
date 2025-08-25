@@ -1,8 +1,8 @@
 import { FIDReport } from "@/reports/FIDReport";
 import { FIDUnsupportedException } from "@/errors/FIDUnsupportedException";
-import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class FID extends WebVitalObserver {
+export class FID extends PerformanceMetricObserver<FIDReport> {
   private readonly performanceObserverType = "first-input";
 
   protected initialize(): void {

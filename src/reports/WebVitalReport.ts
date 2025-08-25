@@ -1,8 +1,8 @@
-import type { Report } from "@/reports/Report";
+import type { PerformanceReport } from "@/reports/PerformanceReport";
 
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
-export abstract class WebVitalReport implements Report {
+export abstract class WebVitalReport implements PerformanceReport {
   public abstract readonly name: string;
   public abstract readonly goodThreshold: number;
   public abstract readonly badThreshold: number;

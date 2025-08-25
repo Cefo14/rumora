@@ -1,8 +1,8 @@
 import { INPReport } from "@/reports/INPReport";
 import { INPUnsupportedException } from "@/errors/INPUnsupportedException";
-import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class INP extends WebVitalObserver {
+export class INP extends PerformanceMetricObserver<INPReport> {
   private readonly performanceObserverType = "event";
 
   protected initialize(): void {

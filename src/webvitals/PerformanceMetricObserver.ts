@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { WebVitalReport } from "@/reports/WebVitalReport";
+import type { PerformanceReport } from "@/reports/PerformanceReport";
 import { Observer } from "@/Observer";
 
 export type ObserverCallback<T> = (error: Error | null, value: T | null) => void;
@@ -13,13 +13,13 @@ const scheduleCallback = (callback: () => void) => {
   }
 };
 
-export abstract class WebVitalObserver extends Observer<WebVitalReport> {
-  private report?: WebVitalReport;
+export abstract class PerformanceMetricObserver<T extends PerformanceReport> extends Observer<T> {
+  private report?: T;
   private error?: Error;
   private observer?: PerformanceObserver;
   private isInitialized = false;
 
-  protected addReport(report: WebVitalReport): void {
+  protected addReport(report: T): void {
     this.report = report;
     this.notifyChange(report);
   }
