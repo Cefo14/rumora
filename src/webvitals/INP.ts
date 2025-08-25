@@ -3,7 +3,7 @@ import { INPUnsupportedException } from "@/errors/INPUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class INP extends WebVitalObserver {
-  protected readonly performanceObserverType = "event";
+  private readonly performanceObserverType = "event";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {

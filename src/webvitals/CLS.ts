@@ -3,7 +3,7 @@ import { CLSUnsupportedException } from "@/errors/CLSUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class CLS extends WebVitalObserver {
-  protected readonly performanceObserverType = "layout-shift";
+  private readonly performanceObserverType = "layout-shift";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {

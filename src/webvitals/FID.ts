@@ -3,7 +3,7 @@ import { FIDUnsupportedException } from "@/errors/FIDUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class FID extends WebVitalObserver {
-  protected readonly performanceObserverType = "first-input";
+  private readonly performanceObserverType = "first-input";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {

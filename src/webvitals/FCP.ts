@@ -3,7 +3,7 @@ import { FCPUnsupportedException } from "@/errors/FCPUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class FCP extends WebVitalObserver {
-  protected readonly performanceObserverType = "paint";
+  private readonly performanceObserverType = "paint";
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {
