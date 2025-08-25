@@ -2,7 +2,7 @@ import { LCPReport } from "@/reports/LCPReport";
 import { LCPUnsupportedException } from "@/errors/LCPUnsupportedException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
-export class LCP extends PerformanceMetricObserver {
+export class LCP extends PerformanceMetricObserver<LCPReport> {
   private readonly performanceObserverType = "largest-contentful-paint";
 
   protected initialize(): void {
