@@ -1,5 +1,5 @@
 import { INPReport } from "@/reports/INPReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { INPUnsupportedException } from "@/errors/INPUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class INP extends WebVitalObserver {
@@ -10,7 +10,7 @@ export class INP extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('INP is not supported in this browser.');
+      const error = new INPUnsupportedException();
       this.addError(error);
     }
   }

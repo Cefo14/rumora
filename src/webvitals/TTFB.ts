@@ -1,5 +1,5 @@
 import { TTFBReport } from "@/reports/TTFBReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { TTFBUnsupportedException } from "@/errors/TTFBUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class TTFB extends WebVitalObserver {
@@ -10,7 +10,7 @@ export class TTFB extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('TTFB is not supported in this browser.');
+      const error = new TTFBUnsupportedException();
       this.addError(error);
     }
   }

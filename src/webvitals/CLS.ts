@@ -1,5 +1,5 @@
 import { CLSReport } from "@/reports/CLSReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { CLSUnsupportedException } from "@/errors/CLSUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class CLS extends WebVitalObserver {
@@ -10,7 +10,7 @@ export class CLS extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('CLS is not supported in this browser.');
+      const error = new CLSUnsupportedException();
       this.addError(error);
     }
   }

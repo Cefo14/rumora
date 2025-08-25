@@ -1,5 +1,5 @@
 import { LCPReport } from "@/reports/LCPReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { LCPUnsupportedException } from "@/errors/LCPUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class LCP extends WebVitalObserver {
@@ -10,7 +10,7 @@ export class LCP extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('LCP is not supported in this browser.');
+      const error = new LCPUnsupportedException();
       this.addError(error);
     }
   }

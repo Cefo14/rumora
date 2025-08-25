@@ -1,6 +1,7 @@
 import { FIDReport } from "@/reports/FIDReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { FIDUnsupportedException } from "@/errors/FIDUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
+
 export class FID extends WebVitalObserver {
   protected readonly performanceObserverType = "first-input";
 
@@ -9,7 +10,7 @@ export class FID extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('FID is not supported in this browser.');
+      const error = new FIDUnsupportedException();
       this.addError(error);
     }
   }

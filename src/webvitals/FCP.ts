@@ -1,5 +1,5 @@
 import { FCPReport } from "@/reports/FCPReport";
-import { RumoraException } from "@/errors/RumoraException";
+import { FCPUnsupportedException } from "@/errors/FCPUnsupportedException";
 import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalObserver";
 
 export class FCP extends WebVitalObserver {
@@ -10,7 +10,7 @@ export class FCP extends WebVitalObserver {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new RumoraException('FCP is not supported in this browser.');
+      const error = new FCPUnsupportedException();
       this.addError(error);
     }
   }
