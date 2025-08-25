@@ -14,26 +14,18 @@ const scheduleCallback = (callback: () => void) => {
 };
 
 export abstract class WebVitalObserver extends Observer<WebVitalReport> {
-  private reports: WebVitalReport[] = [];
-  private errors: Error[] = [];
+  private report?: WebVitalReport;
+  private error?: Error;
   private observer?: PerformanceObserver;
   private isInitialized = false;
 
-  public getReports(): WebVitalReport[] {
-    return Array.from(this.reports);
-  }
-
-  public getErrors(): Error[] {
-    return Array.from(this.errors);
-  }
-
   protected addReport(report: WebVitalReport): void {
-    this.reports.push(report);
+    this.report = report;
     this.notifyChange(report);
   }
 
   protected addError(error: Error): void {
-    this.errors.push(error);
+    this.error = error;
     this.notifyError(error);
   }
 
@@ -41,37 +33,13 @@ export abstract class WebVitalObserver extends Observer<WebVitalReport> {
     this.observer = observer;
   }
 
-  private hasReports(): boolean {
-    return this.reports.length > 0;
-  }
-
-  private hasErrors(): boolean {
-    return this.errors.length > 0;
-  }
-
-  private clearReports(): void {
-    this.reports = [];
-  }
-
-  private clearErrors(): void {
-    this.errors = [];
-  }
-
-  private getLastReport(): WebVitalReport | undefined {
-    return this.reports.at(-1);
-  }
-
-  private getLastError(): Error | undefined {
-    return this.errors.at(-1);
-  }
-
   protected override onSubscribe(): void {
     if (!this.isInitialized) {
       this.initialize();
       this.isInitialized = true;
     }
-    if (this.hasReports()) scheduleCallback(() => this.notifyChange(this.getLastReport()!));
-    else if (this.hasErrors()) scheduleCallback(() => this.notifyError(this.getLastError()!));
+    if (this.report) scheduleCallback(() => this.notifyChange(this.report!));
+    else if (this.error) scheduleCallback(() => this.notifyError(this.error!));
   }
 
   public dispose(): void {
@@ -80,8 +48,8 @@ export abstract class WebVitalObserver extends Observer<WebVitalReport> {
       this.observer = undefined;
     }
     this.clearSubscribers();
-    this.clearReports();
-    this.clearErrors();
+    this.report = undefined;
+    this.error = undefined;
     this.isInitialized = false;
   }
 
