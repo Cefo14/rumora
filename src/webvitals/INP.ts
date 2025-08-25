@@ -16,7 +16,7 @@ export class INP extends WebVitalObserver {
   }
 
   protected handlePerformanceObserver(): void {
-    const observer = new PerformanceObserver((entryList) => {
+    const handle = (entryList: PerformanceObserverEntryList) => {
       const entries = entryList.getEntries();
       entries.forEach((entry) => {
         const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
@@ -25,7 +25,9 @@ export class INP extends WebVitalObserver {
         const report = new INPReport(inp);
         this.addReport(report);
       });
-    });
+    }
+
+    const observer = new PerformanceObserver(handle);
     observer.observe({ type: this.performanceObserverType, buffered: true });
     this.setObserver(observer);
   }

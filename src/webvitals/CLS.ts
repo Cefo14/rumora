@@ -4,6 +4,7 @@ import { isPerformanceObservationSupported, WebVitalObserver } from "./WebVitalO
 
 export class CLS extends WebVitalObserver {
   private readonly performanceObserverType = "layout-shift";
+  private cls: number = 0;
 
   protected initialize(): void {
     if (isPerformanceObservationSupported(this.performanceObserverType)) {
@@ -16,19 +17,19 @@ export class CLS extends WebVitalObserver {
   }
 
   protected handlePerformanceObserver(): void {
-    let cls = 0;
-    const observer = new PerformanceObserver((entryList) => {
+    const handler = (entryList: PerformanceObserverEntryList) => {
       const entries = entryList.getEntries();
       entries.forEach((entry) => {
         const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean, value: number };
         if (layoutShift.hadRecentInput) return;
-        cls += layoutShift.value;
+        this.cls += layoutShift.value;
       });
-      const report = new CLSReport(cls);
+      const report = new CLSReport(this.cls);
       this.addReport(report);
-    });
-    observer.observe({ type: 'layout-shift', buffered: true });
+    }
+
+    const observer = new PerformanceObserver(handler);
+    observer.observe({ type: this.performanceObserverType, buffered: true });
     this.setObserver(observer);
   }
 }
-

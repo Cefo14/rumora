@@ -16,17 +16,16 @@ export class LCP extends WebVitalObserver {
   }
 
   private handlePerformanceObserver(): void {
-    const observer = new PerformanceObserver((entryList) => {
+    const handle = (entryList: PerformanceObserverEntryList) => {
       const entries = entryList.getEntries();
-
       if (entries.length <= 0) return;
-
       entries.forEach((entry) => {
         const report = new LCPReport(entry.startTime);
         this.addReport(report);
       });
-    });
+    }
 
+    const observer = new PerformanceObserver(handle);
     observer.observe({ type: this.performanceObserverType, buffered: true });
     this.setObserver(observer);
   }

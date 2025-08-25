@@ -3,16 +3,16 @@ import type { Report } from "@/reports/Report";
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
 export abstract class WebVitalReport implements Report {
-  abstract readonly name: string;
-  abstract readonly goodThreshold: number;
-  abstract readonly badThreshold: number;
+  public abstract readonly name: string;
+  public abstract readonly goodThreshold: number;
+  public abstract readonly badThreshold: number;
 
-  readonly id: string;
-  readonly value: number;
-  readonly timestamp: number;
+  public readonly id: string;
+  public readonly timestamp: number;
+  public readonly value: number;
 
   constructor(value: number) {
-    this.id = this.generateUUID();
+    this.id = crypto.randomUUID();
     this.value = value;
     this.timestamp = Date.now();
   }
@@ -50,26 +50,5 @@ export abstract class WebVitalReport implements Report {
 
   public isPoor(): boolean {
     return this.value >= this.badThreshold;
-  }
-
-  private generateUUID(): string {
-    const uuidTemplate = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-    if (!('crypto' in window)) {
-      return uuidTemplate.replace(/[xy]/g, (character) => {
-        const random = Math.random() * 16 | 0;
-        const value = character === 'x' ? random : (random & 0x3 | 0x8);
-        return value.toString(16);
-      });
-    }
-
-    if (!('randomUUID' in crypto)) {
-      return uuidTemplate.replace(/[xy]/g, (character) => {
-        const random = crypto.getRandomValues(new Uint8Array(1))[0] & 15;
-        const value = character === 'x' ? random : (random & 0x3 | 0x8);
-        return value.toString(16);
-      });
-    }
-
-    return crypto.randomUUID();
   }
 }
