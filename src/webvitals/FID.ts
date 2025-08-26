@@ -1,5 +1,5 @@
 import { FIDReport } from "@/reports/FIDReport";
-import { FIDUnsupportedException } from "@/errors/FIDUnsupportedException";
+import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FID extends PerformanceMetricObserver<FIDReport> {
@@ -10,7 +10,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new FIDUnsupportedException();
+      const error = new UnsupportedMetricException("FID");
       this.addError(error);
     }
   }

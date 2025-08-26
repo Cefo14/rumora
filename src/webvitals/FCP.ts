@@ -1,5 +1,5 @@
 import { FCPReport } from "@/reports/FCPReport";
-import { FCPUnsupportedException } from "@/errors/FCPUnsupportedException";
+import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FCP extends PerformanceMetricObserver<FCPReport> {
@@ -10,7 +10,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new FCPUnsupportedException();
+      const error = new UnsupportedMetricException("FCP");
       this.addError(error);
     }
   }

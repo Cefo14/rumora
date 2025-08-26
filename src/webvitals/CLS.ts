@@ -1,5 +1,5 @@
 import { CLSReport } from "@/reports/CLSReport";
-import { CLSUnsupportedException } from "@/errors/CLSUnsupportedException";
+import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class CLS extends PerformanceMetricObserver<CLSReport> {
@@ -11,7 +11,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new CLSUnsupportedException();
+      const error = new UnsupportedMetricException("CLS");
       this.addError(error);
     }
   }

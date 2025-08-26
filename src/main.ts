@@ -3,6 +3,8 @@ import { FCP } from "./webvitals/FCP";
 import { FID } from "./webvitals/FID";
 import { LCP } from "./webvitals/LCP";
 import { INP } from "./webvitals/INP";
+import { NetworkTiming } from "./webvitals/NetworkTiming";
+import { DOMTiming } from "./webvitals/DOMTiming";
 
 new LCP()
 .subscribe((error, report) => {
@@ -46,5 +48,23 @@ new INP()
     console.error('Error:', error);
   } else {
     console.log('INP Report:', report);
+  }
+});
+
+new NetworkTiming()
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Navigation Timing Report:', report);
+  }
+});
+
+new DOMTiming()
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('DOM Timing Report:', report);
   }
 });

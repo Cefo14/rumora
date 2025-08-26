@@ -1,5 +1,5 @@
 import { LCPReport } from "@/reports/LCPReport";
-import { LCPUnsupportedException } from "@/errors/LCPUnsupportedException";
+import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class LCP extends PerformanceMetricObserver<LCPReport> {
@@ -10,7 +10,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new LCPUnsupportedException();
+      const error = new UnsupportedMetricException("LCP");
       this.addError(error);
     }
   }

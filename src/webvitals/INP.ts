@@ -1,5 +1,5 @@
 import { INPReport } from "@/reports/INPReport";
-import { INPUnsupportedException } from "@/errors/INPUnsupportedException";
+import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class INP extends PerformanceMetricObserver<INPReport> {
@@ -10,7 +10,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
       this.handlePerformanceObserver();
     }
     else {
-      const error = new INPUnsupportedException();
+      const error = new UnsupportedMetricException("INP");
       this.addError(error);
     }
   }
