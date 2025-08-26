@@ -1,7 +1,8 @@
-import type { PerformanceReport } from "@/reports/PerformanceReport";
+import { PerformanceReport } from "@/reports/PerformanceReport";
 
 // NetworkTimingReport.ts
 interface NetworkTimingData {
+  id: string;
   dnsLookup: number;
   tcpConnect: number;
   tlsHandshake: number;
@@ -11,10 +12,7 @@ interface NetworkTimingData {
   totalNetworkTime: number;
 }
 
-export class NetworkTimingReport implements PerformanceReport {
-  public readonly id: string;
-  public readonly timestamp: number;
-
+export class NetworkTimingReport extends PerformanceReport {
   /**
    * Time spent resolving domain name to IP address.
    * 
@@ -88,9 +86,10 @@ export class NetworkTimingReport implements PerformanceReport {
    */
   public readonly totalNetworkTime: number;
 
+  public readonly timestamp: number;
+
   constructor(data: NetworkTimingData) {
-    this.id = crypto.randomUUID();
-    this.timestamp = Date.now();
+    super(data.id);
     this.dnsLookup = data.dnsLookup;
     this.tcpConnect = data.tcpConnect;
     this.tlsHandshake = data.tlsHandshake;
@@ -98,6 +97,7 @@ export class NetworkTimingReport implements PerformanceReport {
     this.responseTime = data.responseTime;
     this.redirectTime = data.redirectTime;
     this.totalNetworkTime = data.totalNetworkTime;
+    this.timestamp = Date.now();
   }
 
   /**
@@ -131,7 +131,6 @@ export class NetworkTimingReport implements PerformanceReport {
   toJSON() {
     return {
       id: this.id,
-      timestamp: this.timestamp,
       dnsLookup: this.dnsLookup,
       tcpConnect: this.tcpConnect,
       tlsHandshake: this.tlsHandshake,
@@ -139,6 +138,7 @@ export class NetworkTimingReport implements PerformanceReport {
       responseTime: this.responseTime,
       redirectTime: this.redirectTime,
       totalNetworkTime: this.totalNetworkTime,
+      timestamp: this.timestamp,
     };
   }
 }

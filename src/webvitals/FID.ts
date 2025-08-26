@@ -1,5 +1,6 @@
 import { FIDReport } from "@/reports/FIDReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FID extends PerformanceMetricObserver<FIDReport> {
@@ -15,21 +16,23 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
     }
   }
 
-  protected handlePerformanceObserver(): void {
+  private handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-
-      if (entries.length === 0) return;
-
-      entries.forEach((entry) => {
-        const fidValue = entry.startTime;
-        const report = new FIDReport(fidValue);
+      const entries = entryList.getEntries() as PerformanceEventTiming[];
+      
+      for (const entry of entries) {
+        const report = new FIDReport({
+          id: generateId(),
+          startTime: entry.startTime,
+          value: entry.startTime
+        });
         this.addReport(report);
-      });
-      observer.disconnect(); // Safely disconnect the observer
+        observer.disconnect();
+        break;
+      }
     });
-
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+    
     this.setObserver(observer);
+    observer.observe({ type: 'first-input', buffered: true });
   }
 }

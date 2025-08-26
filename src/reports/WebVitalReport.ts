@@ -1,20 +1,25 @@
-import type { PerformanceReport } from "@/reports/PerformanceReport";
+import { PerformanceReport } from "@/reports/PerformanceReport";
 
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
-export abstract class WebVitalReport implements PerformanceReport {
+interface WebVitalReportData {
+  id: string;
+  startTime: number;
+  value: number;
+}
+
+export abstract class WebVitalReport extends PerformanceReport {
   public abstract readonly name: string;
   public abstract readonly goodThreshold: number;
   public abstract readonly badThreshold: number;
 
-  public readonly id: string;
-  public readonly timestamp: number;
   public readonly value: number;
+  public readonly timestamp: number;
 
-  constructor(value: number) {
-    this.id = crypto.randomUUID();
-    this.value = value;
-    this.timestamp = Date.now();
+  constructor(data: WebVitalReportData) {
+    super(data.id);
+    this.value = data.value;
+    this.timestamp = performance.timeOrigin + data.startTime;
   }
 
   toString(): string {
@@ -32,7 +37,7 @@ export abstract class WebVitalReport implements PerformanceReport {
       name: this.name,
       id: this.id,
       value: this.value,
-      timestamp: this.timestamp,
+      createdAt: this.createdAt,
       rating: this.rating,
     };
   }

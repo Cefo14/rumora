@@ -1,5 +1,6 @@
 import { CLSReport } from "@/reports/CLSReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class CLS extends PerformanceMetricObserver<CLSReport> {
@@ -16,20 +17,26 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     }
   }
 
-  protected handlePerformanceObserver(): void {
-    const handler = (entryList: PerformanceObserverEntryList) => {
+  private handlePerformanceObserver(): void {    
+    const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      entries.forEach((entry) => {
-        const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean, value: number };
-        if (layoutShift.hadRecentInput) return;
-        this.cls += layoutShift.value;
-      });
-      const report = new CLSReport(this.cls);
-      this.addReport(report);
-    }
-
-    const observer = new PerformanceObserver(handler);
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+      
+      for (const entry of entries) {
+        const layoutShift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+        
+        if (!layoutShift.hadRecentInput) {
+          this.cls += layoutShift.value;
+          const report = new CLSReport({
+            id: generateId(),
+            startTime: entry.startTime,
+            value: this.cls
+          });
+          this.addReport(report);
+        }
+      }
+    });
+    
     this.setObserver(observer);
+    observer.observe({ type: 'layout-shift', buffered: true });
   }
 }

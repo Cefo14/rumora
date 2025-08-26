@@ -1,5 +1,6 @@
 import { DOMTimingReport } from "@/reports/DOMTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 
@@ -41,6 +42,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
     const loadEventDuration = entry.loadEventEnd - entry.loadEventStart;
 
     const report = new DOMTimingReport({
+      id: generateId(),
       domInteractiveTime,
       domProcessingTime,
       domContentLoadedDuration,

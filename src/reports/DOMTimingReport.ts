@@ -1,6 +1,7 @@
 import { PerformanceReport } from "./PerformanceReport";
 
 interface DOMTimingData {
+  id: string;
   domInteractiveTime: number;
   domProcessingTime: number;
   domContentLoadedDuration: number;
@@ -8,17 +9,7 @@ interface DOMTimingData {
   totalDOMTime: number;
 }
 
-export class DOMTimingReport implements PerformanceReport {
-  /**
-   * Unique identifier for the report.
-   */
-  public readonly id: string;
-
-  /**
-   * Timestamp when the report was created.
-   */
-  public readonly timestamp: number;
-
+export class DOMTimingReport extends PerformanceReport {
   /**
    * Time until DOM became interactive (DOMContentLoaded ready).
    * 
@@ -68,14 +59,16 @@ export class DOMTimingReport implements PerformanceReport {
    */
   public readonly totalDOMTime: number;
 
+  public readonly timestamp: number;
+
   constructor(data: DOMTimingData) {
-    this.id = crypto.randomUUID();
-    this.timestamp = Date.now();
+    super(data.id);
     this.domInteractiveTime = data.domInteractiveTime;
     this.domProcessingTime = data.domProcessingTime;
     this.domContentLoadedDuration = data.domContentLoadedDuration;
     this.loadEventDuration = data.loadEventDuration;
     this.totalDOMTime = data.totalDOMTime;
+    this.timestamp = Date.now();
   }
 
   /**
@@ -128,14 +121,14 @@ export class DOMTimingReport implements PerformanceReport {
   toJSON() {
     return {
       id: this.id,
-      timestamp: this.timestamp,
       domInteractiveTime: this.domInteractiveTime,
       domProcessingTime: this.domProcessingTime,
       domContentLoadedDuration: this.domContentLoadedDuration,
       loadEventDuration: this.loadEventDuration,
       totalDOMTime: this.totalDOMTime,
       eventListenerTime: this.eventListenerTime,
-      clientTime: this.clientTime
+      clientTime: this.clientTime,
+      timestamp: this.timestamp
     };
   }
 }

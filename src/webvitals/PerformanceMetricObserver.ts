@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import type { PerformanceReport } from "@/reports/PerformanceReport";
-import { Observer } from "@/Observer";
+import { Observer } from "@/shared/Observer";
 
 export type ObserverCallback<T> = (error: Error | null, value: T | null) => void;
 

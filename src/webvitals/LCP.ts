@@ -1,5 +1,6 @@
 import { LCPReport } from "@/reports/LCPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class LCP extends PerformanceMetricObserver<LCPReport> {
@@ -16,17 +17,21 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
   }
 
   private handlePerformanceObserver(): void {
-    const handle = (entryList: PerformanceObserverEntryList) => {
+    const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      if (entries.length <= 0) return;
-      entries.forEach((entry) => {
-        const report = new LCPReport(entry.startTime);
+      
+      if (entries.length > 0) {
+        const lastEntry = entries[entries.length - 1];
+        const report = new LCPReport({
+          id: generateId(),
+          startTime: lastEntry.startTime,
+          value: lastEntry.startTime
+        });
         this.addReport(report);
-      });
-    }
-
-    const observer = new PerformanceObserver(handle);
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+      }
+    });
+    
     this.setObserver(observer);
+    observer.observe({ type: this.performanceObserverType, buffered: true });
   }
 }

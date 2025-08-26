@@ -1,5 +1,6 @@
 import { INPReport } from "@/reports/INPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class INP extends PerformanceMetricObserver<INPReport> {
@@ -15,20 +16,32 @@ export class INP extends PerformanceMetricObserver<INPReport> {
     }
   }
 
-  protected handlePerformanceObserver(): void {
-    const handle = (entryList: PerformanceObserverEntryList) => {
-      const entries = entryList.getEntries();
-      entries.forEach((entry) => {
+  private handlePerformanceObserver(): void {
+    const observer = new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntries() as PerformanceEventTiming[];
+      for (const entry of entries) {
         const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
-        if (!eventEntry.interactionId) return;
-        const inp = eventEntry.processingEnd - eventEntry.startTime;
-        const report = new INPReport(inp);
-        this.addReport(report);
-      });
-    }
-
-    const observer = new PerformanceObserver(handle);
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+        
+        if (eventEntry.interactionId) {
+          const inpValue = entry.processingEnd - entry.startTime;
+          
+          const report = new INPReport({
+            id: generateId(),
+            startTime: entry.startTime,
+            value: inpValue
+          });
+          
+          this.addReport(report);
+        }
+      }
+    });
+    
     this.setObserver(observer);
+    observer.observe({
+        type: this.performanceObserverType,
+        durationThreshold: 16,
+        buffered: true
+      } as unknown as PerformanceObserverInit & { eventType: 'event' } // TODO: Implement eventType when PerformanceObserver supports it
+    );
   }
 }

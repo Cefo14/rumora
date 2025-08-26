@@ -1,5 +1,6 @@
 import { FCPReport } from "@/reports/FCPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FCP extends PerformanceMetricObserver<FCPReport> {
@@ -15,26 +16,25 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
     }
   }
 
-  protected handlePerformanceObserver(): void {
+  private handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
-      const entries = entryList
-        .getEntries()
-        .filter((entry) => (
-          entry.name === 'first-contentful-paint'
-        ));
-
-      if (entries.length === 0) return;
-
-      entries.forEach((entry) => {
-        const value = entry.startTime;
-        const report = new FCPReport(value);
-        this.addReport(report);
-      });
-  
-      observer.disconnect(); // Safely disconnect the observer
+      const entries = entryList.getEntries();
+      
+      for (const entry of entries) {
+        if (entry.name === 'first-contentful-paint') {
+          const report = new FCPReport({
+            id: generateId(),
+            startTime: entry.startTime,
+            value: entry.startTime
+          });
+          this.addReport(report);
+          observer.disconnect();
+          break;
+        }
+      }
     });
-
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+    
     this.setObserver(observer);
+    observer.observe({ type: 'paint', buffered: true });
   }
 }

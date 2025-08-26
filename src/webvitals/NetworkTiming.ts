@@ -1,5 +1,6 @@
 import { NetworkTimingReport } from "@/reports/NetworkTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
+import { generateId } from "@/shared/generateId";
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
@@ -17,15 +18,18 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
   protected handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
+      
       for (const entry of entries) {
         const navEntry = entry as PerformanceNavigationTiming;
-        if (navEntry.responseEnd <= 0) continue;
-        this.notifyReport(navEntry);
-        observer.disconnect();
-        break;
+        
+        if (navEntry.responseEnd > 0) {
+          this.notifyReport(navEntry);
+          observer.disconnect();
+          break;
+        }
       }
     });
-
+    
     this.setObserver(observer);
     observer.observe({ type: this.performanceObserverType, buffered: true });
   }
@@ -39,6 +43,7 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
     const redirectTime = this.calculateRedirectTime(entry);
 
     const report = new NetworkTimingReport({
+      id: generateId(),
       dnsLookup,
       tcpConnect,
       tlsHandshake,
