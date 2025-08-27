@@ -1,6 +1,8 @@
 import { INPReport } from "@/reports/INPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class INP extends PerformanceMetricObserver<INPReport> {
@@ -19,23 +21,21 @@ export class INP extends PerformanceMetricObserver<INPReport> {
   private handlePerformanceObserver(): void {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries() as PerformanceEventTiming[];
-      for (const entry of entries) {
-        const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
-        
-        if (eventEntry.interactionId) {
+        for (const entry of entries) {
+          const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
+          if (!eventEntry.interactionId) continue;
           const inpValue = entry.processingEnd - entry.startTime;
-          
           const report = new INPReport({
             id: generateId(),
-            startTime: entry.startTime,
-            value: inpValue
+            createdAt: PerformanceTime.now(),
+            timestamp: PerformanceTime.addTimeOrigin(entry.startTime),
+            value: inpValue,
+            eventName: entry.name
           });
-          
           this.addReport(report);
         }
-      }
-    });
-    
+      });
+
     this.setObserver(observer);
     observer.observe({
         type: this.performanceObserverType,

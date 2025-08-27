@@ -1,6 +1,8 @@
 import { NetworkTimingReport } from "@/reports/NetworkTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
@@ -35,22 +37,22 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
   }
 
   private notifyReport(entry: PerformanceNavigationTiming): void {
-    const dnsLookup = this.calculateDNSLookup(entry);
-    const tcpConnect = this.calculateTCPConnect(entry);
-    const tlsHandshake = this.calculateTLSHandshake(entry);
-    const ttfb = this.calculateTTFB(entry);
+    const dnsLookupTime = this.calculateDNSLookup(entry);
+    const tcpConnectTime = this.calculateTCPConnectTime(entry);
+    const tlsHandshakeTime = this.calculateTLSHandshakeTime(entry);
+    const timeToFirstByte = this.calculateTTFB(entry);
     const responseTime = this.calculateResponseTime(entry);
     const redirectTime = this.calculateRedirectTime(entry);
 
     const report = new NetworkTimingReport({
       id: generateId(),
-      dnsLookup,
-      tcpConnect,
-      tlsHandshake,
-      ttfb,
+      createdAt: PerformanceTime.now(),
+      dnsLookupTime,
+      tcpConnectTime,
+      tlsHandshakeTime,
+      timeToFirstByte,
       responseTime,
-      redirectTime,
-      totalNetworkTime: redirectTime + dnsLookup + tcpConnect + tlsHandshake + ttfb + responseTime
+      redirectTime
     });
     
     this.addReport(report);
@@ -78,7 +80,7 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
    * @returns TCP connection duration in milliseconds
    * @remarks Returns 0 if connection was reused
    */
-  private calculateTCPConnect(entry: PerformanceNavigationTiming): number {
+  private calculateTCPConnectTime(entry: PerformanceNavigationTiming): number {
     if (entry.connectStart === 0 || entry.connectEnd === 0) {
       return 0; // Connection was reused
     }
@@ -92,7 +94,7 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
    * @returns TLS handshake duration in milliseconds
    * @remarks Returns 0 for HTTP connections or reused connections
    */
-  private calculateTLSHandshake(entry: PerformanceNavigationTiming): number {
+  private calculateTLSHandshakeTime(entry: PerformanceNavigationTiming): number {
     if (entry.secureConnectionStart === 0 || entry.connectEnd === 0) {
       return 0; // HTTP connection or no TLS handshake needed
     }

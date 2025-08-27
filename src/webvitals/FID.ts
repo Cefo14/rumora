@@ -1,6 +1,8 @@
 import { FIDReport } from "@/reports/FIDReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FID extends PerformanceMetricObserver<FIDReport> {
@@ -23,7 +25,8 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
       for (const entry of entries) {
         const report = new FIDReport({
           id: generateId(),
-          startTime: entry.startTime,
+          createdAt: PerformanceTime.now(),
+          timestamp: PerformanceTime.addTimeOrigin(entry.startTime),
           value: entry.startTime
         });
         this.addReport(report);

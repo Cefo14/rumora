@@ -2,11 +2,11 @@ import { PerformanceReport } from "./PerformanceReport";
 
 interface DOMTimingData {
   id: string;
-  domInteractiveTime: number;
-  domProcessingTime: number;
-  domContentLoadedDuration: number;
+  createdAt: number;
+  interactiveTime: number;
+  processingTime: number;
+  contentLoadedDuration: number;
   loadEventDuration: number;
-  totalDOMTime: number;
 }
 
 export class DOMTimingReport extends PerformanceReport {
@@ -18,7 +18,7 @@ export class DOMTimingReport extends PerformanceReport {
    * Time from navigation start until DOM is ready for interaction.
    * This is when DOMContentLoaded event can fire.
    */
-  public readonly domInteractiveTime: number;
+  public readonly interactiveTime: number;
 
   /**
    * Time spent processing DOM after interactive state.
@@ -28,7 +28,7 @@ export class DOMTimingReport extends PerformanceReport {
    * Time from domInteractive to domComplete.
    * Includes additional resource loading and processing.
    */
-  public readonly domProcessingTime: number;
+  public readonly processingTime: number;
 
   /**
    * Time spent executing DOMContentLoaded event listeners.
@@ -38,7 +38,7 @@ export class DOMTimingReport extends PerformanceReport {
    * Should be minimal (< 50ms) for good performance.
    * Heavy listeners block further page processing.
    */
-  public readonly domContentLoadedDuration: number;
+  public readonly contentLoadedDuration: number;
 
   /**
    * Time spent executing window.load event listeners.
@@ -50,25 +50,15 @@ export class DOMTimingReport extends PerformanceReport {
    */
   public readonly loadEventDuration: number;
 
-  /**
-   * Total time spent on DOM-related processing.
-   * 
-   * @unit milliseconds
-   * @remarks
-   * Combined time for all client-side DOM operations.
-   */
-  public readonly totalDOMTime: number;
-
-  public readonly timestamp: number;
+  public readonly createdAt: number;
 
   constructor(data: DOMTimingData) {
     super(data.id);
-    this.domInteractiveTime = data.domInteractiveTime;
-    this.domProcessingTime = data.domProcessingTime;
-    this.domContentLoadedDuration = data.domContentLoadedDuration;
+    this.interactiveTime = data.interactiveTime;
+    this.processingTime = data.processingTime;
+    this.contentLoadedDuration = data.contentLoadedDuration;
     this.loadEventDuration = data.loadEventDuration;
-    this.totalDOMTime = data.totalDOMTime;
-    this.timestamp = Date.now();
+    this.createdAt = data.createdAt;
   }
 
   /**
@@ -78,7 +68,7 @@ export class DOMTimingReport extends PerformanceReport {
    * @returns DOMContentLoaded + Load event duration
    */
   get eventListenerTime(): number {
-    return this.domContentLoadedDuration + this.loadEventDuration;
+    return this.contentLoadedDuration + this.loadEventDuration;
   }
 
     /**
@@ -92,8 +82,8 @@ export class DOMTimingReport extends PerformanceReport {
    * - Defer non-critical scripts
    * - Optimize DOM complexity
    */
-  get clientTime(): number {
-    return this.domProcessingTime + this.domContentLoadedDuration + this.loadEventDuration;
+  get totalTime(): number {
+    return this.processingTime + this.contentLoadedDuration + this.loadEventDuration;
   }
 
   /**
@@ -102,7 +92,7 @@ export class DOMTimingReport extends PerformanceReport {
    * @returns true if total DOM time > 1500ms
    */
   isDOMProcessingSlow(): boolean {
-    return this.totalDOMTime > 1500;
+    return this.totalTime > 1500;
   }
 
   /**
@@ -115,20 +105,18 @@ export class DOMTimingReport extends PerformanceReport {
   }
 
   toString(): string {
-    return `DOM: ${this.totalDOMTime}ms (Interactive: ${this.domInteractiveTime}ms, Events: ${this.eventListenerTime}ms)`;
+    return `DOM: ${this.totalTime}ms (Interactive: ${this.interactiveTime}ms, Events: ${this.eventListenerTime}ms)`;
   }
 
   toJSON() {
     return {
       id: this.id,
-      domInteractiveTime: this.domInteractiveTime,
-      domProcessingTime: this.domProcessingTime,
-      domContentLoadedDuration: this.domContentLoadedDuration,
+      interactiveTime: this.interactiveTime,
+      processingTime: this.processingTime,
+      contentLoadedDuration: this.contentLoadedDuration,
       loadEventDuration: this.loadEventDuration,
-      totalDOMTime: this.totalDOMTime,
+      totalTime: this.totalTime,
       eventListenerTime: this.eventListenerTime,
-      clientTime: this.clientTime,
-      timestamp: this.timestamp
     };
   }
 }

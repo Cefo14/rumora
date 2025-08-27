@@ -1,6 +1,8 @@
 import { DOMTimingReport } from "@/reports/DOMTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 
@@ -36,18 +38,18 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   }
 
   private notifyReport(entry: PerformanceNavigationTiming): void {
-    const domInteractiveTime = entry.domInteractive - entry.startTime;
-    const domProcessingTime = entry.domComplete - entry.domInteractive;
-    const domContentLoadedDuration = entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart;
+    const interactiveTime = entry.domInteractive - entry.startTime;
+    const processingTime = entry.domComplete - entry.domInteractive;
+    const contentLoadedDuration = entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart;
     const loadEventDuration = entry.loadEventEnd - entry.loadEventStart;
 
     const report = new DOMTimingReport({
       id: generateId(),
-      domInteractiveTime,
-      domProcessingTime,
-      domContentLoadedDuration,
+      createdAt: PerformanceTime.now(),
+      interactiveTime,
+      processingTime,
+      contentLoadedDuration,
       loadEventDuration,
-      totalDOMTime: domInteractiveTime + domProcessingTime + domContentLoadedDuration + loadEventDuration
     });
     
     this.addReport(report);

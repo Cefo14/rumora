@@ -1,6 +1,8 @@
 import { FCPReport } from "@/reports/FCPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class FCP extends PerformanceMetricObserver<FCPReport> {
@@ -24,7 +26,8 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
         if (entry.name === 'first-contentful-paint') {
           const report = new FCPReport({
             id: generateId(),
-            startTime: entry.startTime,
+            createdAt: PerformanceTime.now(),
+            timestamp: PerformanceTime.addTimeOrigin(entry.startTime),
             value: entry.startTime
           });
           this.addReport(report);

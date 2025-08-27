@@ -2,9 +2,10 @@ import { PerformanceReport } from "@/reports/PerformanceReport";
 
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
-interface WebVitalReportData {
+export interface WebVitalReportDTO {
   id: string;
-  startTime: number;
+  timestamp: number;
+  createdAt: number;
   value: number;
 }
 
@@ -15,11 +16,13 @@ export abstract class WebVitalReport extends PerformanceReport {
 
   public readonly value: number;
   public readonly timestamp: number;
+  public readonly createdAt: number;
 
-  constructor(data: WebVitalReportData) {
+  constructor(data: WebVitalReportDTO) {
     super(data.id);
     this.value = data.value;
-    this.timestamp = performance.timeOrigin + data.startTime;
+    this.timestamp = data.timestamp;
+    this.createdAt = data.createdAt;
   }
 
   toString(): string {

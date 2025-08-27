@@ -1,6 +1,8 @@
 import { CLSReport } from "@/reports/CLSReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
+import { PerformanceTime } from "@/shared/PerformanceTime";
+
 import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
 
 export class CLS extends PerformanceMetricObserver<CLSReport> {
@@ -28,8 +30,9 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
           this.cls += layoutShift.value;
           const report = new CLSReport({
             id: generateId(),
-            startTime: entry.startTime,
-            value: this.cls
+            value: this.cls,
+            createdAt: PerformanceTime.now(),
+            timestamp: PerformanceTime.addTimeOrigin(entry.startTime)
           });
           this.addReport(report);
         }

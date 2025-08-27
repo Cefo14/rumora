@@ -3,13 +3,13 @@ import { PerformanceReport } from "@/reports/PerformanceReport";
 // NetworkTimingReport.ts
 interface NetworkTimingData {
   id: string;
-  dnsLookup: number;
-  tcpConnect: number;
-  tlsHandshake: number;
-  ttfb: number;
+  createdAt: number;
+  dnsLookupTime: number;
+  tcpConnectTime: number;
+  tlsHandshakeTime: number;
+  timeToFirstByte: number;
   responseTime: number;
   redirectTime: number;
-  totalNetworkTime: number;
 }
 
 export class NetworkTimingReport extends PerformanceReport {
@@ -22,7 +22,7 @@ export class NetworkTimingReport extends PerformanceReport {
    * - Fast DNS: 5-20ms  
    * - Slow DNS: 100-500ms
    */
-  public readonly dnsLookup: number;
+  public readonly dnsLookupTime: number;
 
   /**
    * Time spent establishing TCP connection to server.
@@ -33,7 +33,7 @@ export class NetworkTimingReport extends PerformanceReport {
    * - Same continent: 20-100ms
    * - Cross-continental: 100-300ms
    */
-  public readonly tcpConnect: number;
+  public readonly tcpConnectTime: number;
 
   /**
    * Time spent on SSL/TLS handshake for HTTPS connections.
@@ -44,7 +44,7 @@ export class NetworkTimingReport extends PerformanceReport {
    * - Modern TLS 1.3: 10-50ms
    * - Legacy TLS 1.2: 50-150ms
    */
-  public readonly tlsHandshake: number;
+  public readonly tlsHandshakeTime: number;
 
   /**
    * Time until server sends the first byte of response.
@@ -56,7 +56,7 @@ export class NetworkTimingReport extends PerformanceReport {
    * - Needs improvement: 200-600ms  
    * - Poor: > 600ms
    */
-  public readonly ttfb: number;
+  public readonly timeToFirstByte: number;
 
   /**
    * Time spent downloading the complete response body.
@@ -77,27 +77,17 @@ export class NetworkTimingReport extends PerformanceReport {
    */
   public readonly redirectTime: number;
 
-  /**
-   * Total time spent on all network operations.
-   * 
-   * @unit milliseconds
-   * @remarks
-   * Sum of all network-related timing phases.
-   */
-  public readonly totalNetworkTime: number;
-
-  public readonly timestamp: number;
+  public readonly createdAt: number;
 
   constructor(data: NetworkTimingData) {
     super(data.id);
-    this.dnsLookup = data.dnsLookup;
-    this.tcpConnect = data.tcpConnect;
-    this.tlsHandshake = data.tlsHandshake;
-    this.ttfb = data.ttfb;
+    this.dnsLookupTime = data.dnsLookupTime;
+    this.tcpConnectTime = data.tcpConnectTime;
+    this.tlsHandshakeTime = data.tlsHandshakeTime;
+    this.timeToFirstByte = data.timeToFirstByte;
     this.responseTime = data.responseTime;
     this.redirectTime = data.redirectTime;
-    this.totalNetworkTime = data.totalNetworkTime;
-    this.timestamp = Date.now();
+    this.createdAt = data.createdAt;
   }
 
   /**
@@ -107,11 +97,22 @@ export class NetworkTimingReport extends PerformanceReport {
    * @returns DNS + TCP + TLS combined
    */
   get connectionTime(): number {
-    return this.dnsLookup + this.tcpConnect + this.tlsHandshake;
+    return this.dnsLookupTime + this.tcpConnectTime + this.tlsHandshakeTime;
   }
 
   get networkTime(): number {
-    return this.connectionTime + this.ttfb + this.responseTime;
+    return this.connectionTime + this.timeToFirstByte + this.responseTime;
+  }
+
+  /**
+   * Total time spent on all network operations.
+   * 
+   * @unit milliseconds
+   * @remarks
+   * Sum of all network-related timing phases.
+   */
+  public get totalNetworkTime(): number {
+    return this.redirectTime + this.dnsLookupTime + this.tcpConnectTime + this.tlsHandshakeTime + this.timeToFirstByte + this.responseTime;
   }
 
   /**
@@ -121,24 +122,23 @@ export class NetworkTimingReport extends PerformanceReport {
    * @returns Alias for TTFB with semantic clarity
    */
   get serverResponseTime(): number {
-    return this.ttfb;
+    return this.timeToFirstByte;
   }
 
   toString(): string {
-    return `Network: ${this.totalNetworkTime}ms (TTFB: ${this.ttfb}ms, Connection: ${this.connectionTime}ms)`;
+    return `Network: ${this.totalNetworkTime}ms (TTFB: ${this.timeToFirstByte}ms, Connection: ${this.connectionTime}ms)`;
   }
 
   toJSON() {
     return {
       id: this.id,
-      dnsLookup: this.dnsLookup,
-      tcpConnect: this.tcpConnect,
-      tlsHandshake: this.tlsHandshake,
-      ttfb: this.ttfb,
+      dnsLookupTime: this.dnsLookupTime,
+      tcpConnectTime: this.tcpConnectTime,
+      tlsHandshakeTime: this.tlsHandshakeTime,
+      timeToFirstByte: this.timeToFirstByte,
       responseTime: this.responseTime,
       redirectTime: this.redirectTime,
-      totalNetworkTime: this.totalNetworkTime,
-      timestamp: this.timestamp,
+      createdAt: this.createdAt
     };
   }
 }
