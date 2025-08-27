@@ -14,7 +14,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
       this.handlePerformanceObserver();
     } else {
       const error = new UnsupportedMetricException("DOM Timing");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -51,7 +51,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
       contentLoadedDuration,
       loadEventDuration,
     });
-    
-    this.addReport(report);
+
+    this.emitReport(report);
   }
 }

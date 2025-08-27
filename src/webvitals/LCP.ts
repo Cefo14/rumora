@@ -14,7 +14,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
     }
     else {
       const error = new UnsupportedMetricException("LCP");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -30,7 +30,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
           timestamp: PerformanceTime.addTimeOrigin(lastEntry.startTime),
           value: lastEntry.startTime
         });
-        this.addReport(report);
+        this.emitReport(report);
       }
     });
     

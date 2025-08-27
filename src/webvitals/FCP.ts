@@ -14,7 +14,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
     }
     else {
       const error = new UnsupportedMetricException("FCP");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -30,7 +30,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
             timestamp: PerformanceTime.addTimeOrigin(entry.startTime),
             value: entry.startTime
           });
-          this.addReport(report);
+          this.emitReport(report);
           observer.disconnect();
           break;
         }

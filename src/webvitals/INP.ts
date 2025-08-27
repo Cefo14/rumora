@@ -14,7 +14,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
     }
     else {
       const error = new UnsupportedMetricException("INP");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -32,7 +32,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
             value: inpValue,
             eventName: entry.name
           });
-          this.addReport(report);
+          this.emitReport(report);
         }
       });
 

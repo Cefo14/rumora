@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import type { PerformanceReport } from "@/reports/PerformanceReport";
-import { Observer } from "@/shared/Observer";
-
-export type ObserverCallback<T> = (error: Error | null, value: T | null) => void;
+import { FallibleObserver } from "@/shared/FallibleObserver";
 
 const scheduleCallback = (callback: () => void) => {
   if (typeof queueMicrotask === 'function') {
@@ -13,18 +11,18 @@ const scheduleCallback = (callback: () => void) => {
   }
 };
 
-export abstract class PerformanceMetricObserver<T extends PerformanceReport> extends Observer<T> {
+export abstract class PerformanceMetricObserver<T extends PerformanceReport> extends FallibleObserver<T> {
   private report?: T;
   private error?: Error;
   private observer?: PerformanceObserver;
   private isInitialized = false;
 
-  protected addReport(report: T): void {
+  protected emitReport(report: T): void {
     this.report = report;
-    this.notifyChange(report);
+    this.notifySuccess(report);
   }
 
-  protected addError(error: Error): void {
+  protected emitError(error: Error): void {
     this.error = error;
     this.notifyError(error);
   }
@@ -38,7 +36,7 @@ export abstract class PerformanceMetricObserver<T extends PerformanceReport> ext
       this.initialize();
       this.isInitialized = true;
     }
-    if (this.report) scheduleCallback(() => this.notifyChange(this.report!));
+    if (this.report) scheduleCallback(() => this.notifySuccess(this.report!));
     else if (this.error) scheduleCallback(() => this.notifyError(this.error!));
   }
 

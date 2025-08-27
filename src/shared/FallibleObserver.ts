@@ -1,15 +1,15 @@
-export type ObserverCallback<T> = (error: Error | null, value: T | null) => void;
+export type FallibleObserverCallback<T> = (error: Error | null, value: T | null) => void;
 
-export abstract class Observer<T> {
-  private subscribers: Set<ObserverCallback<T>> = new Set();
+export abstract class FallibleObserver<T> {
+  private subscribers: Set<FallibleObserverCallback<T>> = new Set();
 
-  public subscribe(callback: ObserverCallback<T>): this {
+  public subscribe(callback: FallibleObserverCallback<T>): this {
     this.subscribers.add(callback);
     this.onSubscribe();
     return this;
   }
 
-  public unsubscribe(callback: ObserverCallback<T>): void {
+  public unsubscribe(callback: FallibleObserverCallback<T>): void {
     this.subscribers.delete(callback);
   }
 
@@ -19,7 +19,7 @@ export abstract class Observer<T> {
     }
   }
 
-  protected notifyChange(value: T): void {
+  protected notifySuccess(value: T): void {
     for (const subscriber of this.subscribers) {
       subscriber(null, value);
     }

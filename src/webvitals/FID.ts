@@ -14,7 +14,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
     }
     else {
       const error = new UnsupportedMetricException("FID");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -29,7 +29,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
           timestamp: PerformanceTime.addTimeOrigin(entry.startTime),
           value: entry.startTime
         });
-        this.addReport(report);
+        this.emitReport(report);
         observer.disconnect();
         break;
       }

@@ -15,7 +15,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     }
     else {
       const error = new UnsupportedMetricException("CLS");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -34,7 +34,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
             createdAt: PerformanceTime.now(),
             timestamp: PerformanceTime.addTimeOrigin(entry.startTime)
           });
-          this.addReport(report);
+          this.emitReport(report);
         }
       }
     });

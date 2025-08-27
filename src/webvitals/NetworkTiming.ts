@@ -13,7 +13,7 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
       this.handlePerformanceObserver();
     } else {
       const error = new UnsupportedMetricException("Network Timing");
-      this.addError(error);
+      this.emitError(error);
     }
   }
 
@@ -54,8 +54,8 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
       responseTime,
       redirectTime
     });
-    
-    this.addReport(report);
+
+    this.emitReport(report);
   }
 
 

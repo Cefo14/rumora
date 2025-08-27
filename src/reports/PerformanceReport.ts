@@ -1,5 +1,6 @@
 export abstract class PerformanceReport {
   public readonly id: string;
+
   public abstract readonly createdAt: number;
 
   constructor(id: string) {
