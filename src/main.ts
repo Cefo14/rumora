@@ -1,11 +1,14 @@
-import { CLS } from "./webvitals/CLS";
-import { FCP } from "./webvitals/FCP";
-import { FID } from "./webvitals/FID";
-import { LCP } from "./webvitals/LCP";
-import { INP } from "./webvitals/INP";
-import { NetworkTiming } from "./webvitals/NetworkTiming";
-import { DOMTiming } from "./webvitals/DOMTiming";
-import { UnhandledErrors } from "./webvitals/UnhandledErrors";
+import { CLS } from "./metrics/CLS";
+import { FCP } from "./metrics/FCP";
+import { FID } from "./metrics/FID";
+import { LCP } from "./metrics/LCP";
+import { INP } from "./metrics/INP";
+import { NetworkTiming } from "./metrics/NetworkTiming";
+import { DOMTiming } from "./metrics/DOMTiming";
+import { UnhandledErrorsObserver } from "./metrics/UnhandledErrorsObserver";
+import { UnhandledPromiseErrorsObserver } from "./metrics/UnhandledPromiseErrorsObserver";
+import { ResourceErrorObserver } from "./metrics/ResourceErrorObserver";
+import { CSPViolationObserver } from "./metrics/CSPViolationObserver";
 
 new LCP()
 .subscribe((error, report) => {
@@ -70,7 +73,22 @@ new DOMTiming()
   }
 });
 
-new UnhandledErrors()
+new UnhandledErrorsObserver()
 .subscribe((report) => {
   console.log('Error Tracking Report:', report);
+});
+
+new UnhandledPromiseErrorsObserver()
+.subscribe((report) => {
+  console.log('Unhandled Promise Errors Report:', report);
+});
+
+new ResourceErrorObserver()
+.subscribe((report) => {
+  console.log('Resource Error Report:', report);
+});
+
+new CSPViolationObserver()
+.subscribe((report) => {
+  console.log('CSP Violation Report:', report);
 });

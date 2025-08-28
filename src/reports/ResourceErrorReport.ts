@@ -142,7 +142,6 @@ export class ResourceErrorReport implements ErrorReport {
     if ('src' in target && target.src) return target.src as string;
     if ('href' in target && target.href) return target.href as string;
     if ('data' in target && target.data) return target.data as string;
-    
-    return 'unknown';
+    return '';
   }
 }
