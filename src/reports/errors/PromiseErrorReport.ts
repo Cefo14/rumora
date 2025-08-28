@@ -3,48 +3,101 @@ import { ErrorReport, SeverityLevel } from "./ErrorReport";
 interface PromiseErrorData {
   id: string;
   createdAt: number;
-  promiseError: PromiseRejectionEvent;
+  errorMessage: string;
+  errorName?: string;
+  stack?: string;
+}
+
+const extractErrorMessage = (promiseError: PromiseRejectionEvent): string => {
+  const { reason } = promiseError;
+  if (!reason) return 'Promise rejected with no reason';
+  if (reason instanceof Error) return reason.message || 'Unknown error';
+  if (typeof reason === 'string') return reason;
+  if (typeof reason === 'object') {
+    const message = reason.message || reason.error || reason.statusText;
+    if (message) return message;
+    if (reason.status) {
+      return `${reason.status}: ${reason.statusText || 'Unknown'}`;
+    }
+  }
+  return reason;
 }
 
 export class PromiseErrorReport implements ErrorReport {
   public readonly id: string;
   public readonly createdAt: number;
-  public readonly severity: SeverityLevel;
 
   public readonly errorMessage: string;
   public readonly errorName?: string;
   public readonly stack?: string;
 
-  public readonly rejectionType: string;
-
-  constructor(data: PromiseErrorData) {
+  private constructor(data: PromiseErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
 
-    const { promiseError } = data;
+    this.errorMessage = data.errorMessage;
+    this.errorName = data.errorName;
+    this.stack = data.stack;
 
-    this.errorMessage = this.extractErrorMessage(promiseError.reason);
-    this.errorName = promiseError.reason?.name;
-    this.stack = promiseError.reason?.stack;
-
-    this.rejectionType = this.determineRejectionType();
-    this.severity = this.calculateSeverity();
+    Object.freeze(this);
   }
 
-  public get isNetworkError(): boolean {
-    return this.rejectionType === 'network';
+  public static create(data: PromiseErrorData): PromiseErrorReport {
+    return new PromiseErrorReport(data);
   }
 
-  public get isJavaScriptError(): boolean {
-    return this.rejectionType === 'javascript';
+  public static fromPromiseRejectionEvent(id: string, createdAt: number, promiseError: PromiseRejectionEvent): PromiseErrorReport {
+    const errorMessage = extractErrorMessage(promiseError);
+    const errorName = promiseError.reason?.name;
+    const stack = promiseError.reason?.stack;
+
+    return new PromiseErrorReport({
+      id,
+      createdAt,
+      errorMessage,
+      errorName,
+      stack,
+    });
   }
 
-  public get isParsingError(): boolean {
-    return this.rejectionType === 'parsing';
+  public get severity(): SeverityLevel {
+    const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
+
+    // CRITICAL
+    if (this.isCriticalSystemError(errorText)) return 'critical';
+
+    // HIGH
+    if (this.isHighSeverityError(errorText)) return 'high';
+
+    // MEDIUM
+    if (this.isMediumSeverityError(errorText)) return 'medium';
+
+    // LOW
+    return 'low';
   }
 
-  public get isTimeoutError(): boolean {
-    return this.rejectionType === 'timeout';
+  public get rejectionType(): string {
+    const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
+
+    // Network/connectivity errors
+    if (this.hasNetworkPatterns(errorText)) return 'network';
+
+    // JavaScript runtime errors
+    if (this.hasJavaScriptPatterns()) return 'javascript';
+
+    // Parsing errors
+    if (this.hasParsingPatterns(errorText)) return 'parsing';
+
+    // Timeout/cancellation errors
+    if (this.hasTimeoutPatterns(errorText)) return 'timeout';
+
+    // Memory/stack errors
+    if (errorText.includes('memory') || errorText.includes('stack')) return 'memory';
+
+    // Module loading errors
+    if (errorText.includes('chunk') || errorText.includes('module') || errorText.includes('import')) return 'loading';
+
+    return 'generic';
   }
 
   public toString(): string {
@@ -62,74 +115,7 @@ export class PromiseErrorReport implements ErrorReport {
       errorName: this.errorName,
       stack: this.stack,
       rejectionType: this.rejectionType,
-      isNetworkError: this.isNetworkError,
-      isJavaScriptError: this.isJavaScriptError,
-      isParsingError: this.isParsingError,
-      isTimeoutError: this.isTimeoutError,
     };
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private extractErrorMessage(reason: any): string {
-    if (!reason) return 'Promise rejected with no reason';
-    
-    if (reason instanceof Error) {
-      return reason.message || 'Unknown error';
-    }
-    
-    if (typeof reason === 'string') {
-      return reason;
-    }
-    
-    if (typeof reason === 'object') {
-      const message = reason.message || reason.error || reason.statusText;
-      if (message) return message;
-      if (reason.status) {
-        return `${reason.status}: ${reason.statusText || 'Unknown'}`;
-      }
-    }
-    
-    return reason;
-  }
-
-  private determineRejectionType(): string {
-    const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
-
-    // Network/connectivity errors
-    if (this.hasNetworkPatterns(errorText)) return 'network';
-    
-    // JavaScript runtime errors
-    if (this.hasJavaScriptPatterns()) return 'javascript';
-    
-    // Parsing errors
-    if (this.hasParsingPatterns(errorText)) return 'parsing';
-    
-    // Timeout/cancellation errors
-    if (this.hasTimeoutPatterns(errorText)) return 'timeout';
-    
-    // Memory/stack errors
-    if (errorText.includes('memory') || errorText.includes('stack')) return 'memory';
-    
-    // Module loading errors
-    if (errorText.includes('chunk') || errorText.includes('module') || errorText.includes('import')) return 'loading';
-
-    return 'generic';
-  }
-
-  private calculateSeverity(): SeverityLevel {
-    const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
-
-    // CRITICAL
-    if (this.isCriticalSystemError(errorText)) return 'critical';
-
-    // HIGH
-    if (this.isHighSeverityError(errorText)) return 'high';
-
-    // MEDIUM
-    if (this.isMediumSeverityError(errorText)) return 'medium';
-
-    // LOW
-    return 'low';
   }
 
   private isCriticalSystemError(errorText: string): boolean {
@@ -200,13 +186,13 @@ export class PromiseErrorReport implements ErrorReport {
 
   private hasParsingPatterns(errorText: string): boolean {
     return errorText.includes('unexpected token') ||
-           errorText.includes('invalid json') ||
-           this.errorName?.toLowerCase() === 'syntaxerror';
+      errorText.includes('invalid json') ||
+      this.errorName?.toLowerCase() === 'syntaxerror';
   }
 
   private hasTimeoutPatterns(errorText: string): boolean {
     return errorText.includes('timeout') ||
-           errorText.includes('abort') ||
-           this.errorName?.toLowerCase() === 'aborterror';
+      errorText.includes('abort') ||
+      this.errorName?.toLowerCase() === 'aborterror';
   }
 }

@@ -3,13 +3,17 @@ import { ErrorReport, SeverityLevel } from "./ErrorReport";
 interface SecurityPolicyViolationErrorData {
   id: string;
   createdAt: number;
-  violationEvent: SecurityPolicyViolationEvent;
+  // violationEvent: SecurityPolicyViolationEvent;
+  directive: string;
+  blockedURI: string;
+  sourceFile?: string;
+  lineNumber?: number;
+  columnNumber?: number;
 }
 
 export class SecurityPolicyViolationErrorReport implements ErrorReport {
   public readonly id: string;
   public readonly createdAt: number;
-  public readonly severity: SeverityLevel;
 
   public readonly directive: string;
   public readonly blockedURI: string;
@@ -17,22 +21,36 @@ export class SecurityPolicyViolationErrorReport implements ErrorReport {
   public readonly lineNumber?: number;
   public readonly columnNumber?: number;
 
-  constructor(data: SecurityPolicyViolationErrorData) {
+  private constructor(data: SecurityPolicyViolationErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
 
-    const { violationEvent } = data;
+    this.directive = data.directive;
+    this.blockedURI = data.blockedURI;
+    this.sourceFile = data.sourceFile;
+    this.lineNumber = data.lineNumber;
+    this.columnNumber = data.columnNumber;
 
-    this.directive = violationEvent.effectiveDirective;
-    this.blockedURI = violationEvent.blockedURI;
-    this.sourceFile = violationEvent.sourceFile;
-    this.lineNumber = violationEvent.lineNumber;
-    this.columnNumber = violationEvent.columnNumber;
-
-    this.severity = this.calculateSeverity();
+    Object.freeze(this);
   }
 
-  private calculateSeverity(): SeverityLevel {
+  public static create(data: SecurityPolicyViolationErrorData): SecurityPolicyViolationErrorReport {
+    return new SecurityPolicyViolationErrorReport(data);
+  }
+
+  public static fromSecurityPolicyViolationEvent(id: string, createdAt: number, violationEvent: SecurityPolicyViolationEvent): SecurityPolicyViolationErrorReport {
+    return new SecurityPolicyViolationErrorReport({
+      id,
+      createdAt,
+      directive: violationEvent.effectiveDirective,
+      blockedURI: violationEvent.blockedURI,
+      sourceFile: violationEvent.sourceFile,
+      lineNumber: violationEvent.lineNumber,
+      columnNumber: violationEvent.columnNumber,
+    });
+  }
+
+  public get severity(): SeverityLevel {
     const directive = this.directive;
     
     // CRITICAL - Errores que pueden romper funcionalidad core

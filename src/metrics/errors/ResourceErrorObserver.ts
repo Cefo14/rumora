@@ -32,11 +32,11 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   private handleErrorEvent = (errorEvent: ErrorEvent): void => {
     if (!errorEvent.target || errorEvent.target === window) return;
 
-    const report = new ResourceErrorReport({
-      id: generateId(),
-      createdAt: PerformanceTime.now(),
-      errorEvent,
-    });
+    const report = ResourceErrorReport.fromErrorEvent(
+      generateId(),
+      PerformanceTime.now(),
+      errorEvent
+    );
 
     this.notify(report);
   };

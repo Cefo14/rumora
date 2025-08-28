@@ -3,26 +3,98 @@ import { ErrorReport, SeverityLevel } from "./ErrorReport";
 interface ResourceErrorData {
   id: string;
   createdAt: number;
-  errorEvent: ErrorEvent;
+  resourceUrl: string;
+  resourceType: string;
+}
+
+const getResourceType = (errorEvent: ErrorEvent): string => {
+  const target = errorEvent.target as HTMLElement;
+  const tagName = target.tagName.toLowerCase();
+
+  if (tagName === 'link') {
+    const rel = (target as HTMLLinkElement).rel;
+    if (rel?.includes('stylesheet')) return 'stylesheet';
+    if (rel?.includes('preload') || rel?.includes('prefetch')) return 'preload';
+    return 'link';
+  }
+  
+  if (tagName === 'object' || tagName === 'embed') {
+    return 'object';
+  }
+
+  return tagName;
+}
+
+const getResourceURL = (errorEvent: ErrorEvent): string => {
+  const target = errorEvent.target as HTMLElement;
+  if ('src' in target && target.src) return target.src as string;
+  if ('href' in target && target.href) return target.href as string;
+  if ('data' in target && target.data) return target.data as string;
+  return 'unknown';
 }
 
 export class ResourceErrorReport implements ErrorReport {
   public readonly id: string;
   public readonly createdAt: number;
-  public readonly severity: SeverityLevel;
+
   public readonly resourceUrl: string;
   public readonly resourceType: string;
 
-  constructor(data: ResourceErrorData) {
-    const { errorEvent } = data;
+  private constructor(data: ResourceErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
 
-    const target = errorEvent.target as HTMLElement;
+    this.resourceType = data.resourceType;
+    this.resourceUrl = data.resourceUrl;
 
-    this.resourceType = this.getResourceType(target);
-    this.resourceUrl = this.getResourceURL(target);
-    this.severity = this.calculateSeverity();
+    Object.freeze(this);
+  }
+
+  static create(data: ResourceErrorData): ResourceErrorReport {
+    return new ResourceErrorReport(data);
+  }
+
+  static fromErrorEvent(id: string, createdAt: number, errorEvent: ErrorEvent): ResourceErrorReport {
+    const resourceUrl = getResourceURL(errorEvent);
+    const resourceType = getResourceType(errorEvent);
+
+    const data: ResourceErrorData = {
+      id,
+      createdAt,
+      resourceUrl,
+      resourceType,
+    };
+
+    return new ResourceErrorReport(data);
+  }
+
+  public get severity(): SeverityLevel {
+    // CRITICAL 
+    if (this.resourceType === 'script') {
+      return this.isThirdParty ? 'high' : 'critical';
+    }
+
+    // HIGH
+    if (this.resourceType === 'stylesheet' || this.resourceType === 'link') {
+      return 'high';
+    }
+
+    // MEDIUM
+    if (this.resourceType === 'image' || this.resourceType === 'img') {
+      return 'medium';
+    }
+
+    if (this.resourceType === 'iframe') {
+      return 'medium';
+    }
+
+    // LOW
+    if (['video', 'audio', 'source', 'track'].includes(this.resourceType)) {
+      return 'low';
+    }
+
+    // DEFAULT
+    return 'low';
   }
 
   public get isThirdParty(): boolean {
@@ -89,59 +161,5 @@ export class ResourceErrorReport implements ErrorReport {
       isCriticalResource: this.isCriticalResource,
       isFromCDN: this.isFromCDN,
     };
-  }
-
-  private calculateSeverity(): SeverityLevel {
-    // CRITICAL 
-    if (this.resourceType === 'script') {
-      return this.isThirdParty ? 'high' : 'critical';
-    }
-
-    // HIGH
-    if (this.resourceType === 'stylesheet' || this.resourceType === 'link') {
-      return 'high';
-    }
-
-    // MEDIUM
-    if (this.resourceType === 'image' || this.resourceType === 'img') {
-      return 'medium';
-    }
-
-    if (this.resourceType === 'iframe') {
-      return 'medium';
-    }
-
-    // LOW
-    if (['video', 'audio', 'source', 'track'].includes(this.resourceType)) {
-      return 'low';
-    }
-
-    // DEFAULT
-    return 'low';
-  }
-
-  private getResourceType(target: HTMLElement): string {
-    const tagName = target.tagName.toLowerCase();
-
-    if (tagName === 'link') {
-      const rel = (target as HTMLLinkElement).rel;
-      if (rel?.includes('stylesheet')) return 'stylesheet';
-      if (rel?.includes('preload') || rel?.includes('prefetch')) return 'preload';
-      return 'link';
-    }
-    
-    if (tagName === 'object' || tagName === 'embed') {
-      return 'object';
-    }
-
-    return tagName;
-  }
-
-  private getResourceURL(target: HTMLElement): string {
-    // Priorizar src sobre href
-    if ('src' in target && target.src) return target.src as string;
-    if ('href' in target && target.href) return target.href as string;
-    if ('data' in target && target.data) return target.data as string;
-    return '';
   }
 }

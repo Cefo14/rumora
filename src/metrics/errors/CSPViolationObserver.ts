@@ -30,11 +30,11 @@ export class CSPViolationObserver extends SimpleObserver<SecurityPolicyViolation
   }
 
   private handleCSPViolation = (event: SecurityPolicyViolationEvent): void => {
-    const report = new SecurityPolicyViolationErrorReport({
-      id: generateId(),
-      createdAt: PerformanceTime.now(),
-      violationEvent: event,
-    });
+    const report = SecurityPolicyViolationErrorReport.fromSecurityPolicyViolationEvent(
+      generateId(),
+      PerformanceTime.now(),
+      event
+    );
 
     this.notify(report);
   };

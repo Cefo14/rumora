@@ -31,11 +31,11 @@ export class UnhandledErrorsObserver extends SimpleObserver<JavaScriptErrorRepor
   private handleErrorEvent = (errorEvent: ErrorEvent): void => {
     if (errorEvent.target !== window) return;
 
-    const report = new JavaScriptErrorReport({
-      id: generateId(),
-      createdAt: PerformanceTime.now(),
-      errorEvent: errorEvent,
-    });
+    const report = JavaScriptErrorReport.fromErrorEvent(
+      generateId(),
+      PerformanceTime.now(),
+      errorEvent
+    );
 
     this.notify(report);
   };

@@ -1,15 +1,25 @@
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
-interface JavaScriptErrorDTO {
+interface JavaScriptErrorData {
   id: string;
   createdAt: number;
-  errorEvent: ErrorEvent;
+  errorMessage: string;
+  errorName?: string;
+  stack?: string;
+  filename?: string;
+  lineNumber?: number;
+  columnNumber?: number;
 }
+
+const extractErrorMessage = (errorEvent: ErrorEvent): string => {
+  if (errorEvent.message) return errorEvent.message;
+  if (errorEvent.error?.message) return errorEvent.error.message;
+  return 'Unknown JavaScript error';
+};
 
 export class JavaScriptErrorReport implements ErrorReport {
   public readonly id: string;
   public readonly createdAt: number;
-  public readonly severity: SeverityLevel;
 
   public readonly errorMessage: string;
   public readonly errorName?: string;
@@ -18,68 +28,38 @@ export class JavaScriptErrorReport implements ErrorReport {
   public readonly lineNumber?: number;
   public readonly columnNumber?: number;
 
-  constructor(data: JavaScriptErrorDTO) {
-    const { errorEvent } = data;
-
+  private constructor(data: JavaScriptErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
 
-    this.errorMessage = this.extractErrorMessage(errorEvent);
-    this.errorName = errorEvent.error?.name;
-    this.stack = errorEvent.error?.stack;
-    this.filename = errorEvent.filename;
-    this.lineNumber = errorEvent.lineno;
-    this.columnNumber = errorEvent.colno;
+    this.errorMessage = data.errorMessage;
+    this.errorName = data.errorName;
+    this.stack = data.stack;
+    this.filename = data.filename;
+    this.lineNumber = data.lineNumber;
+    this.columnNumber = data.columnNumber;
 
-    this.severity = this.calculateSeverity();
+    Object.freeze(this);
   }
 
-
-  public get isThirdPartyScript(): boolean {
-    if (!this.filename) return false;
-    
-    try {
-      const scriptHost = new URL(this.filename).hostname;
-      const currentHost = window.location.hostname;
-      return scriptHost !== currentHost;
-    } catch {
-      return false;
-    }
+  public static create(data: JavaScriptErrorData): JavaScriptErrorReport {
+    return new JavaScriptErrorReport(data);
   }
 
-  public get isCORSError(): boolean {
-    return this.errorMessage === 'Script error.' && !this.stack;
+  public static fromErrorEvent(id: string, createdAt: number, errorEvent: ErrorEvent): JavaScriptErrorReport {
+    return new JavaScriptErrorReport({
+      id: id,
+      createdAt: createdAt,
+      errorMessage: extractErrorMessage(errorEvent),
+      errorName: errorEvent.error?.name,
+      stack: errorEvent.error?.stack,
+      filename: errorEvent.filename,
+      lineNumber: errorEvent.lineno,
+      columnNumber: errorEvent.colno,
+    });
   }
 
-  public toString(): string {
-    const severity = this.severity.toUpperCase();
-    const location = this.filename ? ` at ${this.filename}:${this.lineNumber}` : '';
-    return `JAVASCRIPT [${severity}]: ${this.errorMessage}${location}`;
-  }
-
-  public toJSON(): unknown {
-    return {
-      id: this.id,
-      createdAt: this.createdAt,
-      severity: this.severity,
-      errorMessage: this.errorMessage,
-      errorName: this.errorName,
-      stack: this.stack,
-      filename: this.filename,
-      lineNumber: this.lineNumber,
-      columnNumber: this.columnNumber,
-      isThirdPartyScript: this.isThirdPartyScript,
-      isCORSError: this.isCORSError,
-    };
-  }
-
-  private extractErrorMessage(errorEvent: ErrorEvent): string {
-    if (errorEvent.message) return errorEvent.message;
-    if (errorEvent.error?.message) return errorEvent.error.message;
-    return 'Unknown JavaScript error';
-  }
-
-  private calculateSeverity(): SeverityLevel {
+  public get severity(): SeverityLevel {
     const errorName = this.errorName?.toLowerCase();
     const errorMessage = this.errorMessage.toLowerCase();
 
@@ -105,5 +85,38 @@ export class JavaScriptErrorReport implements ErrorReport {
 
     // LOW
     return 'low';
+  }
+
+  public get isThirdPartyScript(): boolean {
+    if (!this.filename) return false;
+    
+    try {
+      const scriptHost = new URL(this.filename).hostname;
+      const currentHost = window.location.hostname;
+      return scriptHost !== currentHost;
+    } catch {
+      return false;
+    }
+  }
+
+  public toString(): string {
+    const severity = this.severity.toUpperCase();
+    const location = this.filename ? ` at ${this.filename}:${this.lineNumber}` : '';
+    return `JAVASCRIPT [${severity}]: ${this.errorMessage}${location}`;
+  }
+
+  public toJSON(): unknown {
+    return {
+      id: this.id,
+      createdAt: this.createdAt,
+      severity: this.severity,
+      errorMessage: this.errorMessage,
+      errorName: this.errorName,
+      stack: this.stack,
+      filename: this.filename,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      isThirdPartyScript: this.isThirdPartyScript,
+    };
   }
 }
