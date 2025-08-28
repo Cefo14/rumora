@@ -1,4 +1,4 @@
-import { PerformanceReport } from "@/reports/PerformanceReport";
+import type { PerformanceReport } from "@/reports/PerformanceReport";
 
 // NetworkTimingReport.ts
 interface NetworkTimingData {
@@ -12,7 +12,10 @@ interface NetworkTimingData {
   redirectTime: number;
 }
 
-export class NetworkTimingReport extends PerformanceReport {
+export class NetworkTimingReport implements PerformanceReport {
+  public readonly id: string;
+  public readonly createdAt: number;
+
   /**
    * Time spent resolving domain name to IP address.
    * 
@@ -77,10 +80,9 @@ export class NetworkTimingReport extends PerformanceReport {
    */
   public readonly redirectTime: number;
 
-  public readonly createdAt: number;
-
   constructor(data: NetworkTimingData) {
-    super(data.id);
+    this.id = data.id;
+    this.createdAt = data.createdAt;
     this.dnsLookupTime = data.dnsLookupTime;
     this.tcpConnectTime = data.tcpConnectTime;
     this.tlsHandshakeTime = data.tlsHandshakeTime;

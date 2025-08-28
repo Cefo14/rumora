@@ -1,4 +1,4 @@
-import { PerformanceReport } from "@/reports/PerformanceReport";
+import type { PerformanceReport } from "@/reports/PerformanceReport";
 
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
@@ -9,17 +9,20 @@ export interface WebVitalReportDTO {
   value: number;
 }
 
-export abstract class WebVitalReport extends PerformanceReport {
+export abstract class WebVitalReport implements PerformanceReport {
+  public readonly id: string;
+  // Timestamp of when the report was created
+  public readonly createdAt: number;
+  public readonly value: number;
+  // Timestamp of when the event was occurred
+  public readonly timestamp: number;
+
   public abstract readonly name: string;
   public abstract readonly goodThreshold: number;
   public abstract readonly badThreshold: number;
 
-  public readonly value: number;
-  public readonly timestamp: number;
-  public readonly createdAt: number;
-
   constructor(data: WebVitalReportDTO) {
-    super(data.id);
+    this.id = data.id;
     this.value = data.value;
     this.timestamp = data.timestamp;
     this.createdAt = data.createdAt;

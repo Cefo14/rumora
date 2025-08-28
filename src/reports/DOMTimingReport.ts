@@ -1,4 +1,4 @@
-import { PerformanceReport } from "./PerformanceReport";
+import type { PerformanceReport } from "./PerformanceReport";
 
 interface DOMTimingData {
   id: string;
@@ -9,7 +9,10 @@ interface DOMTimingData {
   loadEventDuration: number;
 }
 
-export class DOMTimingReport extends PerformanceReport {
+export class DOMTimingReport implements PerformanceReport {
+  public readonly id: string;
+  public readonly createdAt: number;
+
   /**
    * Time until DOM became interactive (DOMContentLoaded ready).
    * 
@@ -50,10 +53,8 @@ export class DOMTimingReport extends PerformanceReport {
    */
   public readonly loadEventDuration: number;
 
-  public readonly createdAt: number;
-
   constructor(data: DOMTimingData) {
-    super(data.id);
+    this.id = data.id;
     this.interactiveTime = data.interactiveTime;
     this.processingTime = data.processingTime;
     this.contentLoadedDuration = data.contentLoadedDuration;

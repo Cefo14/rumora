@@ -5,6 +5,7 @@ import { LCP } from "./webvitals/LCP";
 import { INP } from "./webvitals/INP";
 import { NetworkTiming } from "./webvitals/NetworkTiming";
 import { DOMTiming } from "./webvitals/DOMTiming";
+import { UnhandledErrors } from "./webvitals/UnhandledErrors";
 
 new LCP()
 .subscribe((error, report) => {
@@ -67,4 +68,9 @@ new DOMTiming()
   } else {
     console.log('DOM Timing Report:', report);
   }
+});
+
+new UnhandledErrors()
+.subscribe((report) => {
+  console.log('Error Tracking Report:', report);
 });
