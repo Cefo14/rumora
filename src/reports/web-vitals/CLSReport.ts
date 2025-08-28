@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/WebVitalReport";
+import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
 
 export class CLSReport extends WebVitalReport {
   readonly name = "CUMULATIVE_LAYOUT_SHIFT";

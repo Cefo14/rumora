@@ -1,9 +1,8 @@
-import { INPReport } from "@/reports/INPReport";
+import { INPReport } from "@/reports/web-vitals/INPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class INP extends PerformanceMetricObserver<INPReport> {
   private readonly performanceObserverType = "event";

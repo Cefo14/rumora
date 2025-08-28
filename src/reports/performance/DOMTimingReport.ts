@@ -1,4 +1,4 @@
-import type { PerformanceReport } from "./PerformanceReport";
+import type { PerformanceReport } from "@/shared/PerformanceReport";
 
 interface DOMTimingData {
   id: string;

@@ -1,4 +1,4 @@
-import { PerformanceReport } from "./PerformanceReport";
+import { PerformanceReport } from "@/shared/PerformanceReport";
 
 export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';
 

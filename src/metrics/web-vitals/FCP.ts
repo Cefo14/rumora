@@ -1,9 +1,8 @@
-import { FCPReport } from "@/reports/FCPReport";
+import { FCPReport } from "@/reports/web-vitals/FCPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class FCP extends PerformanceMetricObserver<FCPReport> {
   private readonly performanceObserverType = "paint";

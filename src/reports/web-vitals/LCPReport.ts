@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/WebVitalReport";
+import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
 
 export class LCPReport extends WebVitalReport {
   readonly name = "LARGEST_CONTENTFUL_PAINT";

@@ -1,9 +1,8 @@
-import { LCPReport } from "@/reports/LCPReport";
+import { LCPReport } from "@/reports/web-vitals/LCPReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class LCP extends PerformanceMetricObserver<LCPReport> {
   private readonly performanceObserverType = "largest-contentful-paint";

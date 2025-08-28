@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-import { SecurityPolicyViolationErrorReport } from "@/reports/SecurityPolicyViolationErrorReport";
+import { SecurityPolicyViolationErrorReport } from "@/reports/errors/SecurityPolicyViolationErrorReport";
 import { ResourceErrorObserver } from "./ResourceErrorObserver";
 
 export class CSPViolationObserver extends SimpleObserver<SecurityPolicyViolationErrorReport> {

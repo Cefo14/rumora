@@ -1,9 +1,9 @@
-import { DOMTimingReport } from "@/reports/DOMTimingReport";
+import { DOMTimingReport } from "@/reports/performance/DOMTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 
 export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {

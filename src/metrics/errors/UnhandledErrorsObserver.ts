@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-import { JavaScriptErrorReport } from "@/reports/JavaScriptErrorReport";
+import { JavaScriptErrorReport } from "@/reports/errors/JavaScriptErrorReport";
 
 export class UnhandledErrorsObserver extends SimpleObserver<JavaScriptErrorReport> {
   private isListening = false;

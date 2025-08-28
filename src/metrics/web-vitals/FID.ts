@@ -1,9 +1,8 @@
-import { FIDReport } from "@/reports/FIDReport";
+import { FIDReport } from "@/reports/web-vitals/FIDReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class FID extends PerformanceMetricObserver<FIDReport> {
   private readonly performanceObserverType = "first-input";

@@ -1,14 +1,16 @@
-import { CLS } from "./metrics/CLS";
-import { FCP } from "./metrics/FCP";
-import { FID } from "./metrics/FID";
-import { LCP } from "./metrics/LCP";
-import { INP } from "./metrics/INP";
-import { NetworkTiming } from "./metrics/NetworkTiming";
-import { DOMTiming } from "./metrics/DOMTiming";
-import { UnhandledErrorsObserver } from "./metrics/UnhandledErrorsObserver";
-import { UnhandledPromiseErrorsObserver } from "./metrics/UnhandledPromiseErrorsObserver";
-import { ResourceErrorObserver } from "./metrics/ResourceErrorObserver";
-import { CSPViolationObserver } from "./metrics/CSPViolationObserver";
+import { CLS } from "./metrics/web-vitals/CLS";
+import { FCP } from "./metrics/web-vitals/FCP";
+import { FID } from "./metrics/web-vitals/FID";
+import { LCP } from "./metrics/web-vitals/LCP";
+import { INP } from "./metrics/web-vitals/INP";
+
+import { NetworkTiming } from "./metrics/performance/NetworkTiming";
+import { DOMTiming } from "./metrics/performance/DOMTiming";
+
+import { UnhandledErrorsObserver } from "./metrics/errors/UnhandledErrorsObserver";
+import { UnhandledPromiseErrorsObserver } from "./metrics/errors/UnhandledPromiseErrorsObserver";
+import { ResourceErrorObserver } from "./metrics/errors/ResourceErrorObserver";
+import { CSPViolationObserver } from "./metrics/errors/CSPViolationObserver";
 
 new LCP()
 .subscribe((error, report) => {

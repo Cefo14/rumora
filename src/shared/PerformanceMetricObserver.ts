@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { PerformanceReport } from "@/reports/PerformanceReport";
+import type { PerformanceReport } from "@/shared/PerformanceReport";
 import { FallibleObserver } from "@/shared/FallibleObserver";
 
 const scheduleCallback = (callback: () => void) => {

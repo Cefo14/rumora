@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/WebVitalReport";
+import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
 
 export class FCPReport extends WebVitalReport {
   readonly name = "FIRST_CONTENTFUL_PAINT";

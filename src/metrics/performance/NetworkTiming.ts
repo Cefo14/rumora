@@ -1,9 +1,9 @@
-import { NetworkTimingReport } from "@/reports/NetworkTimingReport";
+import { NetworkTimingReport } from "@/reports/performance/NetworkTimingReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
   protected readonly performanceObserverType = "navigation";

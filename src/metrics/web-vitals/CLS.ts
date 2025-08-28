@@ -1,9 +1,9 @@
-import { CLSReport } from "@/reports/CLSReport";
+import { CLSReport } from "@/reports/web-vitals/CLSReport";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "./PerformanceMetricObserver";
+import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class CLS extends PerformanceMetricObserver<CLSReport> {
   private readonly performanceObserverType = "layout-shift";

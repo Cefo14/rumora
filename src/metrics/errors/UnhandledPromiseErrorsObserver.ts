@@ -1,9 +1,9 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-import { ResourceErrorReport } from "@/reports/ResourceErrorReport";
+import { PromiseErrorReport } from "@/reports/errors/PromiseErrorReport";
 
-export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
+export class UnhandledPromiseErrorsObserver extends SimpleObserver<PromiseErrorReport> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -15,14 +15,14 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   public start(): void {
     if (this.isListening) return;
 
-    window.addEventListener('error', this.handleErrorEvent, true);
+    window.addEventListener('unhandledrejection', this.handlePromiseRejection, true);
     this.isListening = true;
   }
 
   public stop(): void {
     if (!this.isListening) return;
 
-    window.removeEventListener('error', this.handleErrorEvent, true);
+    window.removeEventListener('unhandledrejection', this.handlePromiseRejection, true);
     this.isListening = false;
   }
 
@@ -31,13 +31,11 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
     this.clearSubscribers();
   }
 
-  private handleErrorEvent = (errorEvent: ErrorEvent): void => {
-    if (!errorEvent.target || errorEvent.target === window) return;
-
-    const report = new ResourceErrorReport({
+  private handlePromiseRejection = (event: PromiseRejectionEvent): void => {
+    const report = new PromiseErrorReport({
       id: generateId(),
       createdAt: PerformanceTime.now(),
-      errorEvent,
+      promiseError: event,
     });
 
     this.notify(report);

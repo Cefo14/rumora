@@ -1,4 +1,4 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/WebVitalReport";
+import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
 
 interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;

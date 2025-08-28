@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/WebVitalReport";
+import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
 
 export class FIDReport extends WebVitalReport {
   readonly name = "FIRST_INPUT_DELAY";

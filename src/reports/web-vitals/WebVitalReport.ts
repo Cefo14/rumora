@@ -1,4 +1,4 @@
-import type { PerformanceReport } from "@/reports/PerformanceReport";
+import type { PerformanceReport } from "@/shared/PerformanceReport";
 
 export type WebVitalRating = 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR';
 
