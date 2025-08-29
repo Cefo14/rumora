@@ -85,23 +85,6 @@ export class SecurityPolicyViolationErrorReport implements ErrorReport {
     return 'low';
   }
 
-  private isEvalBlocked(): boolean {
-    return this.blockedURI === 'eval' || 
-           this.blockedURI.includes('unsafe-eval');
-  }
-
-  private isCoreAPI(): boolean {
-    const coreAPIPatterns = ['/api/', '/graphql', '/auth/', 'localhost'];
-    const hasPattern = coreAPIPatterns.some(pattern => 
-      this.blockedURI.includes(pattern)
-    );
-    
-    // Same origin APIs are typically core
-    if (this.isSameOriginViolation) return true;
-    
-    return hasPattern;
-  }
-
   public get isInlineViolation(): boolean {
     return this.blockedURI === 'inline';
   }
@@ -193,6 +176,23 @@ export class SecurityPolicyViolationErrorReport implements ErrorReport {
     return specialURIs.some(special => 
       this.blockedURI.startsWith(special) || this.blockedURI === special
     );
+  }
+
+  private isEvalBlocked(): boolean {
+    return this.blockedURI === 'eval' || 
+           this.blockedURI.includes('unsafe-eval');
+  }
+
+  private isCoreAPI(): boolean {
+    const coreAPIPatterns = ['/api/', '/graphql', '/auth/', 'localhost'];
+    const hasPattern = coreAPIPatterns.some(pattern => 
+      this.blockedURI.includes(pattern)
+    );
+    
+    // Same origin APIs are typically core
+    if (this.isSameOriginViolation) return true;
+    
+    return hasPattern;
   }
 
   private getCurrentHost(): string {
