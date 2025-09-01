@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
+import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
 
 /**
  * Cumulative Layout Shift (CLS) report for measuring visual stability.
@@ -12,9 +12,14 @@ import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
  * - Poor: >= 0.25
  */
 export class CLSReport extends WebVitalReport {
-  readonly name = "CUMULATIVE_LAYOUT_SHIFT";
-  readonly goodThreshold = 0.1;
-  readonly poorThreshold = 0.25;
+  public readonly name = "CUMULATIVE_LAYOUT_SHIFT";
+  public readonly goodThreshold = 0.1;
+  public readonly poorThreshold = 0.25;
+
+  constructor(data: WebVitalReportDTO) {
+    super(data);
+    Object.freeze(this);
+  }
 
   public override toString(): string {
     return `${this.name}: ${this.value.toFixed(3)} (${this.rating})`;

@@ -1,4 +1,4 @@
-import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
+import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
 
 /**
  * Largest Contentful Paint (LCP) report for measuring loading performance.
@@ -13,8 +13,12 @@ import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
  * - Poor: >= 4.0s
  */
 export class LCPReport extends WebVitalReport {
-  readonly name = "LARGEST_CONTENTFUL_PAINT";
+  public readonly name = "LARGEST_CONTENTFUL_PAINT";
+  public readonly goodThreshold = 2500;
+  public readonly poorThreshold = 4000;
 
-  readonly goodThreshold = 2500;
-  readonly poorThreshold = 4000;
+  constructor(data: WebVitalReportDTO) {
+    super(data);
+    Object.freeze(this);
+  }
 }

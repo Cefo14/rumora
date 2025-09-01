@@ -61,8 +61,6 @@ export abstract class WebVitalReport implements PerformanceReport {
 
     this.value = data.value;
     this.occurredAt = data.occurredAt;
-
-    Object.freeze(this);
   }
 
   /**

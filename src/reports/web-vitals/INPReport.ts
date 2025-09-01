@@ -18,16 +18,16 @@ interface INPReportDTO extends WebVitalReportDTO {
  * - Poor: >= 500ms
  */
 export class INPReport extends WebVitalReport {
-  readonly name = "INTERACTION_TO_NEXT_PAINT";
-
-  readonly goodThreshold = 200;
-  readonly poorThreshold = 500;
+  public readonly name = "INTERACTION_TO_NEXT_PAINT";
+  public readonly goodThreshold = 200;
+  public readonly poorThreshold = 500;
 
   public readonly eventName: string;
 
   constructor(data: INPReportDTO) {
     super(data);
     this.eventName = data.eventName;
+    Object.freeze(this);
   }
 
   public override toJSON() {
