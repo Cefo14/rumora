@@ -7,7 +7,7 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   private isListening = false;
 
   protected override onSubscribe(): void {
-    if (!this.isListening) this.start();
+    this.start();
   }
 
   public dispose(): void {
@@ -17,14 +17,12 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
 
   private start(): void {
     if (this.isListening) return;
-
     window.addEventListener('error', this.handleErrorEvent, true);
     this.isListening = true;
   }
 
   private stop(): void {
     if (!this.isListening) return;
-
     window.removeEventListener('error', this.handleErrorEvent, true);
     this.isListening = false;
   }

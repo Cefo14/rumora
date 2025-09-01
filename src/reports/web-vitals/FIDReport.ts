@@ -1,8 +1,20 @@
 import { WebVitalReport } from "@/reports/web-vitals/WebVitalReport";
 
+/**
+ * First Input Delay (FID) report for measuring interactivity.
+ * 
+ * FID measures the time from when a user first interacts with a page (clicks a link,
+ * taps on a button, or uses a custom JavaScript-powered control) to the time when the
+ * browser is actually able to begin processing event handlers in response to that interaction.
+ * 
+ * Thresholds:
+ * - Good: < 100ms
+ * - Needs Improvement: 100ms - 300ms
+ * - Poor: >= 300ms
+ */
 export class FIDReport extends WebVitalReport {
   readonly name = "FIRST_INPUT_DELAY";
 
   readonly goodThreshold = 100;
-  readonly badThreshold = 300;
+  readonly poorThreshold = 300;
 }

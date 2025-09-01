@@ -1,39 +1,25 @@
 import { LCPReport } from "@/reports/web-vitals/LCPReport";
-import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-import { isPerformanceObservationSupported, PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class LCP extends PerformanceMetricObserver<LCPReport> {
-  private readonly performanceObserverType = "largest-contentful-paint";
-
-  protected initialize(): void {
-    if (isPerformanceObservationSupported(this.performanceObserverType)) {
-      this.handlePerformanceObserver();
-    }
-    else {
-      const error = new UnsupportedMetricException("LCP");
-      this.emitError(error);
-    }
+  constructor() {
+    super("largest-contentful-paint");
   }
 
-  private handlePerformanceObserver(): void {
-    const observer = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      
-      if (entries.length > 0) {
-        const lastEntry = entries[entries.length - 1];
-        const report = new LCPReport({
-          id: generateId(),
-          createdAt: PerformanceTime.now(),
-          timestamp: PerformanceTime.addTimeOrigin(lastEntry.startTime),
-          value: lastEntry.startTime
-        });
-        this.emitReport(report);
-      }
-    });
-    
-    this.setObserver(observer);
-    observer.observe({ type: this.performanceObserverType, buffered: true });
+  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+    const entries = entryList.getEntries();
+
+    if (entries.length > 0) {
+      const lastEntry = entries[entries.length - 1];
+      const report = new LCPReport({
+        id: generateId(),
+        createdAt: PerformanceTime.now(),
+        occurredAt: PerformanceTime.addTimeOrigin(lastEntry.startTime),
+        value: lastEntry.startTime
+      });
+      this.notifySuccess(report);
+    }
   }
 }

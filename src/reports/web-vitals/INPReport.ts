@@ -4,11 +4,24 @@ interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;
 }
 
+/**
+ * Interaction to Next Paint (INP) report for measuring responsiveness.
+ * 
+ * INP measures the latency of all interactions that occur throughout the lifespan of a page.
+ * The final INP value is the longest interaction observed, ignoring outliers. This metric
+ * captures the end-to-end latency of individual events and provides a more comprehensive
+ * view of overall responsiveness.
+ * 
+ * Thresholds:
+ * - Good: < 200ms
+ * - Needs Improvement: 200ms - 500ms
+ * - Poor: >= 500ms
+ */
 export class INPReport extends WebVitalReport {
   readonly name = "INTERACTION_TO_NEXT_PAINT";
 
   readonly goodThreshold = 200;
-  readonly badThreshold = 500;
+  readonly poorThreshold = 500;
 
   public readonly eventName: string;
 
@@ -17,7 +30,7 @@ export class INPReport extends WebVitalReport {
     this.eventName = data.eventName;
   }
 
-  public override toJSON(): object {
+  public override toJSON() {
     return {
       ...super.toJSON(),
       eventName: this.eventName,
