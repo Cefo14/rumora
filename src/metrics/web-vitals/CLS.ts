@@ -3,6 +3,23 @@ import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
+interface LayoutShiftAttributionEntry {
+  currentRect: DOMRectReadOnly;
+  previousRect: DOMRectReadOnly;
+  node: HTMLElement;
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  duration: number;
+  entryType: "layout-shift";
+  hadRecentInput: boolean;
+  lastInputTime: number;
+  name: string;
+  sources: LayoutShiftAttributionEntry[];
+  startTime: number;
+  value: number;
+}
+
 export class CLS extends PerformanceMetricObserver<CLSReport> {
   private cls = 0;
 
@@ -11,11 +28,10 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
-    const entries = entryList.getEntries();
+    const entries = entryList.getEntries() as LayoutShiftEntry[];
     for (const entry of entries) {
-      const layoutShift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
-      if (layoutShift.hadRecentInput) continue;
-      this.cls += layoutShift.value;
+      if (entry.hadRecentInput) continue;
+      this.cls += entry.value;
       const report = new CLSReport({
         id: generateId(),
         value: this.cls,
@@ -26,4 +42,3 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     }
   }
 }
-

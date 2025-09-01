@@ -11,14 +11,13 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
-    const entries = entryList.getEntries();
+    const entries = entryList.getEntries() as PerformanceNavigationTiming[];
     for (const entry of entries) {
-      const navEntry = entry as PerformanceNavigationTiming;
-      if (navEntry.loadEventEnd <= 0) continue
+      if (entry.loadEventEnd <= 0) continue
       const report = DOMTimingReport.fromPerformanceNavigationTiming(
         generateId(),
         PerformanceTime.now(),
-        navEntry
+        entry
       );
       this.notifySuccess(report);
       this.stop();

@@ -10,14 +10,13 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
  }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
-    const entries = entryList.getEntries();
+    const entries = entryList.getEntries() as PerformanceNavigationTiming[];
     for (const entry of entries) {
-      const navEntry = entry as PerformanceNavigationTiming;
-      if (navEntry.responseEnd <= 0) continue;
+      if (entry.responseEnd <= 0) continue;
       const report = NetworkTimingReport.fromPerformanceNavigationTiming(
         generateId(),
         PerformanceTime.now(),
-        navEntry
+        entry
       );
       this.notifySuccess(report);
       this.stop();

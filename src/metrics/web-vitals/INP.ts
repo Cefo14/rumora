@@ -3,6 +3,10 @@ import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
+interface PerformanceEventTimingEntry extends PerformanceEventTiming {
+  interactionId?: number;
+}
+
 export class INP extends PerformanceMetricObserver<INPReport> {
   constructor() {
     super(
@@ -14,9 +18,9 @@ export class INP extends PerformanceMetricObserver<INPReport> {
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
-    const entries = entryList.getEntries() as PerformanceEventTiming[];
+    const entries = entryList.getEntries() as PerformanceEventTimingEntry[];
     for (const entry of entries) {
-      const eventEntry = entry as PerformanceEventTiming & { interactionId?: number };
+      const eventEntry = entry;
       if (!eventEntry.interactionId) continue;
       const inpValue = entry.processingEnd - entry.startTime;
       const report = new INPReport({

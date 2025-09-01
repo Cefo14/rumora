@@ -9,7 +9,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
-    const entries = entryList.getEntries();
+    const entries = entryList.getEntries() as LargestContentfulPaint[];
 
     if (entries.length > 0) {
       const lastEntry = entries[entries.length - 1];
