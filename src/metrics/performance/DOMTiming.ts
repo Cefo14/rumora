@@ -1,9 +1,7 @@
 import { DOMTimingReport } from "@/reports/performance/DOMTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
-
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-
 
 export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   constructor() {
@@ -14,7 +12,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
     const entries = entryList.getEntries() as PerformanceNavigationTiming[];
     for (const entry of entries) {
       if (entry.loadEventEnd <= 0) continue
-      const report = DOMTimingReport.fromPerformanceNavigationTiming(
+      const report = DOMTimingReport.fromPerformanceEntry(
         generateId(),
         PerformanceTime.now(),
         entry

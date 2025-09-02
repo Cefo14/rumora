@@ -14,7 +14,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
       const report = new FIDReport({
         id: generateId(),
         createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.addTimeOrigin(entry.startTime),
+        occurredAt: PerformanceTime.toAbsoluteTime(entry.startTime),
         value: entry.startTime
       });
       this.notifySuccess(report);

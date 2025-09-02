@@ -16,7 +16,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
       const report = new LCPReport({
         id: generateId(),
         createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.addTimeOrigin(lastEntry.startTime),
+        occurredAt: PerformanceTime.toAbsoluteTime(lastEntry.startTime),
         value: lastEntry.startTime
       });
       this.notifySuccess(report);

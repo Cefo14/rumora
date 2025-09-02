@@ -2,10 +2,7 @@ import { INPReport } from "@/reports/web-vitals/INPReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-
-interface PerformanceEventTimingEntry extends PerformanceEventTiming {
-  interactionId?: number;
-}
+import { PerformanceEventTimingEntry } from "@/shared/PerformanceEntryTypes";
 
 export class INP extends PerformanceMetricObserver<INPReport> {
   constructor() {
@@ -26,7 +23,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
       const report = new INPReport({
         id: generateId(),
         createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.addTimeOrigin(entry.startTime),
+        occurredAt: PerformanceTime.toAbsoluteTime(entry.startTime),
         value: inpValue,
         eventName: entry.name
       });

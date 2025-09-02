@@ -11,6 +11,7 @@ import { UnhandledErrorsObserver } from "./metrics/errors/UnhandledErrorsObserve
 import { UnhandledPromiseErrorsObserver } from "./metrics/errors/UnhandledPromiseErrorsObserver";
 import { ResourceErrorObserver } from "./metrics/errors/ResourceErrorObserver";
 import { CSPViolationObserver } from "./metrics/errors/CSPViolationObserver";
+import { LongTask } from "./metrics/performance/LongTask";
 
 new LCP()
 .subscribe((error, report) => {
@@ -94,3 +95,30 @@ new CSPViolationObserver()
 .subscribe((report) => {
   console.log('CSP Violation Report:', report);
 });
+
+new LongTask()
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Long Task Report:', report);
+  }
+});
+
+
+function forceLongTask() {
+  const loop = () => {
+    for (let i = 0; i < 10000; i++) {
+      console.log("sync");
+    }
+  };
+
+  queueMicrotask(function microtask() {
+    const start = performance.now();
+    loop();
+    const end = performance.now();
+    console.log(`queueMicrotask loop duration: ${end - start}ms`);
+  });
+}
+
+forceLongTask();

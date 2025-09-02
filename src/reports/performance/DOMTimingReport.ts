@@ -83,7 +83,7 @@ export class DOMTimingReport implements PerformanceReport {
    * @param entry - PerformanceNavigationTiming entry from the browser
    * @returns New DOMTimingReport instance with calculated timings
    */
-  public static fromPerformanceNavigationTiming(
+  public static fromPerformanceEntry(
     id: string, 
     createdAt: number, 
     entry: PerformanceNavigationTiming

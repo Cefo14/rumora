@@ -16,7 +16,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
       const report = new FCPReport({
         id: generateId(),
         createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.addTimeOrigin(fcpEntry.startTime),
+        occurredAt: PerformanceTime.toAbsoluteTime(fcpEntry.startTime),
         value: fcpEntry.startTime
       });
       this.notifySuccess(report);

@@ -22,6 +22,6 @@ export class CLSReport extends WebVitalReport {
   }
 
   public override toString(): string {
-    return `${this.name}: ${this.value.toFixed(3)} (${this.rating})`;
+    return `${this.name}: ${this.value} (${this.rating})`;
   }
 }

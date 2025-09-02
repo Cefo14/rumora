@@ -108,15 +108,11 @@ export class NetworkTimingReport implements PerformanceReport {
    * @param entry - PerformanceNavigationTiming entry from the browser
    * @returns New NetworkTimingReport instance with calculated timings
    */
-  public static fromPerformanceNavigationTiming(
+  public static fromPerformanceEntry(
     id: string, 
     createdAt: number, 
     entry: PerformanceNavigationTiming
   ): NetworkTimingReport {
-    if (!entry || typeof entry !== 'object') {
-      throw new Error('PerformanceNavigationTiming entry is required');
-    }
-
     const data: NetworkTimingData = {
       id,
       createdAt,
