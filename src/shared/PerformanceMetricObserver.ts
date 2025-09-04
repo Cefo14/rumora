@@ -1,11 +1,10 @@
-import type { PerformanceReport } from "@/shared/PerformanceReport";
 import { FallibleObserver } from "@/shared/FallibleObserver";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { RumoraException } from "@/errors/RumoraException";
 
 type PerformanceObserverConfig = PerformanceObserverInit & { durationThreshold?: number };
 
-export abstract class PerformanceMetricObserver<T extends PerformanceReport> extends FallibleObserver<T> {
+export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
   private performanceObserver: PerformanceObserver;
   private readonly performanceObserverConfig: PerformanceObserverConfig;
   private readonly entryType: string;

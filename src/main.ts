@@ -12,6 +12,7 @@ import { UnhandledPromiseErrorsObserver } from "./metrics/errors/UnhandledPromis
 import { ResourceErrorObserver } from "./metrics/errors/ResourceErrorObserver";
 import { CSPViolationObserver } from "./metrics/errors/CSPViolationObserver";
 import { LongTask } from "./metrics/performance/LongTask";
+import { ResourceTiming } from "./metrics/performance/ResourceTiming";
 
 new LCP()
 .subscribe((error, report) => {
@@ -105,10 +106,18 @@ new LongTask()
   }
 });
 
+new ResourceTiming()
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Resource Timing Report:', report);
+  }
+});
 
 function forceLongTask() {
   const loop = () => {
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 1000; i++) {
       console.log("sync");
     }
   };
