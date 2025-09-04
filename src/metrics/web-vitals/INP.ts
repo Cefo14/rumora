@@ -1,6 +1,5 @@
 import { INPReport } from "@/reports/web-vitals/INPReport";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceEventTimingEntry } from "@/shared/PerformanceEntryTypes";
 
@@ -19,14 +18,10 @@ export class INP extends PerformanceMetricObserver<INPReport> {
     for (const entry of entries) {
       const eventEntry = entry;
       if (!eventEntry.interactionId) continue;
-      const inpValue = entry.processingEnd - entry.startTime;
-      const report = new INPReport({
-        id: generateId(),
-        createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.toAbsoluteTime(entry.startTime),
-        value: inpValue,
-        eventName: entry.name
-      });
+      const report = INPReport.fromPerformanceEventTimingEntry(
+        generateId(),
+        entry
+      );
       this.notifySuccess(report);
     }
   }

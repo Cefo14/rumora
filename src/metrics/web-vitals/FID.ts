@@ -1,6 +1,5 @@
 import { FIDReport } from "@/reports/web-vitals/FIDReport";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class FID extends PerformanceMetricObserver<FIDReport> {
@@ -11,12 +10,10 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceEventTiming[];
     for (const entry of entries) {
-      const report = new FIDReport({
-        id: generateId(),
-        createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.toAbsoluteTime(entry.startTime),
-        value: entry.startTime
-      });
+      const report = FIDReport.fromPerformanceEventTiming(
+        generateId(),
+        entry
+      );
       this.notifySuccess(report);
       this.stop();
       break;

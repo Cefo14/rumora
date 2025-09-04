@@ -1,4 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * First Contentful Paint (FCP) report for measuring loading performance.
@@ -17,8 +18,22 @@ export class FCPReport extends WebVitalReport {
   public readonly goodThreshold = 1800;
   public readonly poorThreshold = 3000;
 
-  constructor(data: WebVitalReportDTO) {
+  private constructor(data: WebVitalReportDTO) {
     super(data);
     Object.freeze(this);
+  }
+
+  public static create(data: WebVitalReportDTO): FCPReport {
+    return new FCPReport(data);
+  }
+
+  public static fromPerformancePaintTiming(id: string, entry: PerformanceEntry): FCPReport {
+    const data: WebVitalReportDTO = {
+      id,
+      createdAt: PerformanceTimestamp.now(),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      value: entry.startTime,
+    };
+    return new FCPReport(data);
   }
 }

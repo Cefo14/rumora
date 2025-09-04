@@ -1,4 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;
@@ -24,10 +25,27 @@ export class INPReport extends WebVitalReport {
 
   public readonly eventName: string;
 
-  constructor(data: INPReportDTO) {
+  private constructor(data: INPReportDTO) {
     super(data);
     this.eventName = data.eventName;
     Object.freeze(this);
+  }
+
+
+  public static create(data: INPReportDTO): INPReport {
+    return new INPReport(data);
+  }
+
+  public static fromPerformanceEventTimingEntry(id: string, entry: PerformanceEventTiming): INPReport {
+    const inpValue = entry.processingEnd - entry.startTime;
+    const data: INPReportDTO = {
+      id,
+      createdAt: PerformanceTimestamp.now(),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      value: inpValue,
+      eventName: entry.name
+    };
+    return new INPReport(data);
   }
 
   public override toJSON() {

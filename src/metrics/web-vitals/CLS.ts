@@ -1,6 +1,5 @@
 import { CLSReport } from "@/reports/web-vitals/CLSReport";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { LayoutShiftEntry } from "@/shared/PerformanceEntryTypes";
 
@@ -16,12 +15,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     for (const entry of entries) {
       if (entry.hadRecentInput) continue;
       this.cls += entry.value;
-      const report = new CLSReport({
-        id: generateId(),
-        value: this.cls,
-        createdAt: PerformanceTime.now(),
-          occurredAt: PerformanceTime.toAbsoluteTime(entry.startTime)
-        });
+      const report = CLSReport.fromLayoutShiftEntry(generateId(), entry);
       this.notifySuccess(report);
     }
   }

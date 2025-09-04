@@ -1,6 +1,5 @@
 import { LCPReport } from "@/reports/web-vitals/LCPReport";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
 export class LCP extends PerformanceMetricObserver<LCPReport> {
@@ -13,12 +12,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
 
     if (entries.length > 0) {
       const lastEntry = entries[entries.length - 1];
-      const report = new LCPReport({
-        id: generateId(),
-        createdAt: PerformanceTime.now(),
-        occurredAt: PerformanceTime.toAbsoluteTime(lastEntry.startTime),
-        value: lastEntry.startTime
-      });
+      const report = LCPReport.fromLargestContentfulPaint(generateId(), lastEntry);
       this.notifySuccess(report);
     }
   }

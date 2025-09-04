@@ -1,4 +1,5 @@
 import { InvalidPerformanceTimestampError } from "@/errors/InvalidPerformanceTimestampError";
+import { ValueObject } from "./ValueObject";
 
 /**
  * Immutable value object representing a performance timestamp.
@@ -30,7 +31,7 @@ import { InvalidPerformanceTimestampError } from "@/errors/InvalidPerformanceTim
  * const occurredAt = new Date(event.timestamp.absolute);
  * ```
  */
-export class PerformanceTimestamp {
+export class PerformanceTimestamp implements ValueObject {
   /** 
    * Internal storage of the timestamp as relative time from navigation start.
    * Stored as relative time for consistency with performance timing APIs.

@@ -106,28 +106,32 @@ new LongTask()
   }
 });
 
-new ResourceTiming()
-.subscribe((error, report) => {
-  if (error) {
-    console.error('Error:', error);
-  } else {
-    console.log('Resource Timing Report:', report);
+document.addEventListener("DOMContentLoaded", () => {
+  function forceLongTask() {
+    const loop = () => {
+      for (let i = 0; i < 1000; i++) {
+        console.log("sync");
+      }
+    };
+
+    queueMicrotask(function microtask() {
+      const start = performance.now();
+      loop();
+      const end = performance.now();
+      console.log(`queueMicrotask loop duration: ${end - start}ms`);
+    });
   }
+
+  forceLongTask();
 });
 
-function forceLongTask() {
-  const loop = () => {
-    for (let i = 0; i < 1000; i++) {
-      console.log("sync");
+window.addEventListener("load", () => {
+  new ResourceTiming()
+  .subscribe((error, report) => {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log('Resource Timing Report:', report);
     }
-  };
-
-  queueMicrotask(function microtask() {
-    const start = performance.now();
-    loop();
-    const end = performance.now();
-    console.log(`queueMicrotask loop duration: ${end - start}ms`);
   });
-}
-
-forceLongTask();
+});

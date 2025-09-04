@@ -1,4 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * First Input Delay (FID) report for measuring interactivity.
@@ -17,8 +18,22 @@ export class FIDReport extends WebVitalReport {
   public readonly goodThreshold = 100;
   public readonly poorThreshold = 300;
 
-  constructor(data: WebVitalReportDTO) {
+  private constructor(data: WebVitalReportDTO) {
     super(data);
     Object.freeze(this);
+  }
+
+  public static create(data: WebVitalReportDTO): FIDReport {
+    return new FIDReport(data);
+  }
+
+  public static fromPerformanceEventTiming(id: string, entry: PerformanceEventTiming): FIDReport {
+    const data: WebVitalReportDTO = {
+      id,
+      createdAt: PerformanceTimestamp.now(),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      value: entry.startTime
+    };
+    return new FIDReport(data);
   }
 }
