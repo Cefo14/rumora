@@ -1,8 +1,10 @@
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
 interface PromiseErrorData {
   id: string;
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   errorMessage: string;
   errorName?: string;
   stack?: string;
@@ -57,7 +59,10 @@ export class PromiseErrorReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the performance event occurred */
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * Human-readable error message describing what went wrong.
@@ -86,6 +91,7 @@ export class PromiseErrorReport implements ErrorReport {
   private constructor(data: PromiseErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occurredAt = data.occurredAt;
     this.errorMessage = data.errorMessage;
     this.errorName = data.errorName;
     this.stack = data.stack;
@@ -113,12 +119,13 @@ export class PromiseErrorReport implements ErrorReport {
    */
   public static fromPromiseRejectionEvent(
     id: string, 
-    createdAt: number, 
+    createdAt: PerformanceTimestamp, 
     promiseError: PromiseRejectionEvent
   ): PromiseErrorReport {
     return new PromiseErrorReport({
       id,
       createdAt,
+      occurredAt: PerformanceTimestamp.fromRelativeTime(promiseError.timeStamp),
       errorMessage: extractErrorMessage(promiseError),
       errorName: promiseError.reason?.name,
       stack: promiseError.reason?.stack,

@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ResourceErrorReport } from "@/reports/errors/ResourceErrorReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   private isListening = false;
@@ -30,9 +30,10 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   private handleErrorEvent = (errorEvent: ErrorEvent): void => {
     if (!errorEvent.target || errorEvent.target === window) return;
 
+    console.log(errorEvent);
     const report = ResourceErrorReport.fromErrorEvent(
       generateId(),
-      PerformanceTime.now(),
+      PerformanceTimestamp.now(),
       errorEvent
     );
 

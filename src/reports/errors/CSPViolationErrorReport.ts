@@ -1,8 +1,10 @@
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
-interface SecurityPolicyViolationErrorData {
+interface CSPViolationErrorData {
   id: string;
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   directive: string;
   blockedURI: string;
   sourceFile?: string;
@@ -17,12 +19,15 @@ interface SecurityPolicyViolationErrorData {
  * directive classification, violation source analysis, and security impact
  * assessment for better security monitoring and policy tuning.
  */
-export class SecurityPolicyViolationErrorReport implements ErrorReport {
+export class CSPViolationErrorReport implements ErrorReport {
   /** Unique identifier for the error report */
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the error occurred */
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * CSP directive that was violated (e.g., script-src, style-src, connect-src).
@@ -64,9 +69,10 @@ export class SecurityPolicyViolationErrorReport implements ErrorReport {
    */
   public readonly columnNumber?: number;
 
-  private constructor(data: SecurityPolicyViolationErrorData) {
+  private constructor(data: CSPViolationErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occurredAt = data.createdAt;
     this.directive = data.directive;
     this.blockedURI = data.blockedURI;
     this.sourceFile = data.sourceFile;
@@ -77,31 +83,31 @@ export class SecurityPolicyViolationErrorReport implements ErrorReport {
   }
 
   /**
-   * Creates a SecurityPolicyViolationErrorReport from provided data.
+   * Creates a CSPViolationErrorReport from provided data.
    * 
    * @param data - Security policy violation error data
-   * @returns New SecurityPolicyViolationErrorReport instance
+   * @returns New CSPViolationErrorReport instance
    */
-  public static create(data: SecurityPolicyViolationErrorData): SecurityPolicyViolationErrorReport {
-    return new SecurityPolicyViolationErrorReport(data);
+  public static create(data: CSPViolationErrorData): CSPViolationErrorReport {
+    return new CSPViolationErrorReport(data);
   }
-
   /**
-   * Creates a SecurityPolicyViolationErrorReport from a SecurityPolicyViolationEvent.
+   * Creates a CSPViolationErrorReport from a SecurityPolicyViolationEvent.
    * 
    * @param id - Unique identifier for the error report
    * @param createdAt - Timestamp when the error report was created
    * @param violationEvent - SecurityPolicyViolationEvent from CSP violation
-   * @returns New SecurityPolicyViolationErrorReport instance with extracted violation data
+   * @returns New CSPViolationErrorReport instance with extracted violation data
    */
   public static fromSecurityPolicyViolationEvent(
     id: string, 
-    createdAt: number, 
+    createdAt: PerformanceTimestamp, 
     violationEvent: SecurityPolicyViolationEvent
-  ): SecurityPolicyViolationErrorReport {
-    return new SecurityPolicyViolationErrorReport({
+  ): CSPViolationErrorReport {
+    return new CSPViolationErrorReport({
       id,
       createdAt,
+      occurredAt: PerformanceTimestamp.fromRelativeTime(violationEvent.timeStamp),
       directive: violationEvent.effectiveDirective,
       blockedURI: violationEvent.blockedURI,
       sourceFile: violationEvent.sourceFile,

@@ -1,9 +1,9 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
-import { SecurityPolicyViolationErrorReport } from "@/reports/errors/SecurityPolicyViolationErrorReport";
+import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
-export class CSPViolationObserver extends SimpleObserver<SecurityPolicyViolationErrorReport> {
+export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -30,9 +30,9 @@ export class CSPViolationObserver extends SimpleObserver<SecurityPolicyViolation
   }
 
   private handleCSPViolation = (event: SecurityPolicyViolationEvent): void => {
-    const report = SecurityPolicyViolationErrorReport.fromSecurityPolicyViolationEvent(
+    const report = CSPViolationErrorReport.fromSecurityPolicyViolationEvent(
       generateId(),
-      PerformanceTime.now(),
+      PerformanceTimestamp.now(),
       event
     );
 

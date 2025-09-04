@@ -44,8 +44,9 @@ export class ResourceTimingCollection {
    * Creates a new ResourceTimingCollection instance.
    */
   constructor() {
-    this.createdAt = PerformanceTimestamp.now();
-    this.lastUpdated = PerformanceTimestamp.now();
+    const now = PerformanceTimestamp.now();
+    this.createdAt = now;
+    this.lastUpdated = now;
   }
 
   /**

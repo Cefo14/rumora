@@ -1,8 +1,10 @@
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
 interface ResourceErrorData {
   id: string;
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   resourceUrl: string;
   resourceType: string;
 }
@@ -66,7 +68,10 @@ export class ResourceErrorReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the performance event occurred */
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * URL of the resource that failed to load.
@@ -87,6 +92,7 @@ export class ResourceErrorReport implements ErrorReport {
   private constructor(data: ResourceErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occurredAt = data.occurredAt;
     this.resourceType = data.resourceType;
     this.resourceUrl = data.resourceUrl;
 
@@ -111,13 +117,14 @@ export class ResourceErrorReport implements ErrorReport {
    * @param errorEvent - ErrorEvent from resource loading failure
    * @returns New ResourceErrorReport instance with extracted resource data
    */
-  public static fromErrorEvent(id: string, createdAt: number, errorEvent: ErrorEvent): ResourceErrorReport {
+  public static fromErrorEvent(id: string, createdAt: PerformanceTimestamp, errorEvent: ErrorEvent): ResourceErrorReport {
     const resourceUrl = getResourceURL(errorEvent);
     const resourceType = getResourceType(errorEvent);
 
     const data: ResourceErrorData = {
       id,
       createdAt,
+      occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
       resourceUrl,
       resourceType,
     };

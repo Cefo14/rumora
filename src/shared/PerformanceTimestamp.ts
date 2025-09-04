@@ -38,6 +38,12 @@ export class PerformanceTimestamp implements ValueObject {
    */
   private readonly _relativeTime: number;
 
+  /** 
+   * Internal storage of the timestamp as absolute time (epoch timestamp).
+   * Calculated from relative time and performance.timeOrigin.
+   */
+  private readonly _absoluteTime: number;
+
   /**
    * Creates a new PerformanceTimestamp instance.
    * 
@@ -46,6 +52,7 @@ export class PerformanceTimestamp implements ValueObject {
    */
   private constructor(relativeTime: number) {
     this._relativeTime = relativeTime;
+    this._absoluteTime = relativeTime + (performance?.timeOrigin || 0);
     Object.freeze(this);
   }
 
@@ -166,7 +173,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   get absolute(): number {
-    return this._relativeTime + (performance?.timeOrigin || 0);
+    return this._absoluteTime;
   }
 
   /**

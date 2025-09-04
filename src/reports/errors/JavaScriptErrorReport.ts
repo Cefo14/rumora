@@ -1,8 +1,10 @@
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
 interface JavaScriptErrorData {
   id: string;
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   errorMessage: string;
   errorName?: string;
   stack?: string;
@@ -51,7 +53,10 @@ export class JavaScriptErrorReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the performance event occurred */
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * Human-readable error message describing what went wrong.
@@ -104,6 +109,7 @@ export class JavaScriptErrorReport implements ErrorReport {
   private constructor(data: JavaScriptErrorData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occurredAt = data.occurredAt;
     this.errorMessage = data.errorMessage;
     this.errorName = data.errorName;
     this.stack = data.stack;
@@ -132,10 +138,11 @@ export class JavaScriptErrorReport implements ErrorReport {
    * @param errorEvent - ErrorEvent from window.onerror or similar handlers
    * @returns New JavaScriptErrorReport instance with extracted error data
    */
-  public static fromErrorEvent(id: string, createdAt: number, errorEvent: ErrorEvent): JavaScriptErrorReport {
+  public static fromErrorEvent(id: string, createdAt: PerformanceTimestamp, errorEvent: ErrorEvent): JavaScriptErrorReport {
     return new JavaScriptErrorReport({
       id,
       createdAt,
+      occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
       errorMessage: extractErrorMessage(errorEvent),
       errorName: errorEvent.error?.name,
       stack: errorEvent.error?.stack,
