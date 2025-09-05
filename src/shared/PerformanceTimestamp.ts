@@ -52,9 +52,10 @@ export class PerformanceTimestamp implements ValueObject {
    */
   private constructor(relativeTime: number) {
     this._relativeTime = relativeTime;
-    this._absoluteTime = relativeTime + (performance?.timeOrigin || 0);
+    this._absoluteTime = relativeTime + performance.timeOrigin;
     Object.freeze(this);
   }
+
 
   /**
    * Creates a PerformanceTimestamp from a relative time value.
@@ -102,7 +103,7 @@ export class PerformanceTimestamp implements ValueObject {
       throw new InvalidPerformanceTimestampError();
     }
 
-    const relative = time - (performance?.timeOrigin || 0);
+    const relative = time - performance.timeOrigin;
     return new PerformanceTimestamp(Math.max(0, relative));
   }
 
@@ -146,7 +147,7 @@ export class PerformanceTimestamp implements ValueObject {
    * const isWithinBudget = timestamp.relative < performanceBudget;
    * ```
    */
-  get relative(): number {
+  get relativeTime(): number {
     return this._relativeTime;
   }
 
@@ -172,7 +173,7 @@ export class PerformanceTimestamp implements ValueObject {
    * JSON.stringify(report); // Uses absolute time by default
    * ```
    */
-  get absolute(): number {
+  get absoluteTime(): number {
     return this._absoluteTime;
   }
 
@@ -199,7 +200,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   equals(other: PerformanceTimestamp): boolean {
-    return this._relativeTime === other._relativeTime;
+    return this.relativeTime === other.relativeTime;
   }
 
   /**
@@ -217,7 +218,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   isGreaterThanOrEqual(other: PerformanceTimestamp): boolean {
-    return this._relativeTime >= other._relativeTime;
+    return this.relativeTime >= other.relativeTime;
   }
 
   /**
@@ -235,7 +236,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   isGreaterThan(other: PerformanceTimestamp): boolean {
-    return this._relativeTime > other._relativeTime;
+    return this.relativeTime > other.relativeTime;
   }
 
   /**
@@ -253,7 +254,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   isLessThanOrEqual(other: PerformanceTimestamp): boolean {
-    return this._relativeTime <= other._relativeTime;
+    return this.relativeTime <= other.relativeTime;
   }
 
   /**
@@ -271,7 +272,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   isLessThan(other: PerformanceTimestamp): boolean {
-    return this._relativeTime < other._relativeTime;
+    return this.relativeTime < other.relativeTime;
   }
 
   /**
@@ -292,8 +293,8 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   add(value: number | PerformanceTimestamp): PerformanceTimestamp {
-    const relativeValue = typeof value === "number" ? value : value.relative;
-    return PerformanceTimestamp.fromRelativeTime(this._relativeTime + relativeValue);
+    const relativeValue = typeof value === "number" ? value : value.relativeTime;
+    return PerformanceTimestamp.fromRelativeTime(this.relativeTime + relativeValue);
   }
 
   /**
@@ -314,8 +315,8 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   subtract(value: number | PerformanceTimestamp): PerformanceTimestamp {
-    const relativeValue = typeof value === "number" ? value : value.relative;
-    return PerformanceTimestamp.fromRelativeTime(this._relativeTime - relativeValue);
+    const relativeValue = typeof value === "number" ? value : value.relativeTime;
+    return PerformanceTimestamp.fromRelativeTime(this.relativeTime - relativeValue);
   }
 
   /**
@@ -333,7 +334,7 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   toString(): string {
-    return this.absolute.toString();
+    return this._absoluteTime.toString();
   }
 
   /**
@@ -357,6 +358,6 @@ export class PerformanceTimestamp implements ValueObject {
    * ```
    */
   toJSON() {
-    return this.absolute;
+    return this.absoluteTime;
   }
 }

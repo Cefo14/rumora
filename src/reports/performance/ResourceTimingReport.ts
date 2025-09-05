@@ -1,43 +1,18 @@
 import { PerformanceReport } from "@/shared/PerformanceReport";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
-export interface ResourceTimingReportJSON {
-  id: string;
-  createdAt: number;
-  name: string;
-  domain: string;
-  type: string;
-  duration: number;
-  startTime: number;
-  endTime: number;
-
-  transferSize: number;
-  encodedBodySize: number;
-  decodedBodySize: number;
-  compressionRatio: number;
-  hasCompression: boolean;
-
-  isThirdParty: boolean;
-
-  detailedTiming?: {
-    domainLookupStart?: number;
-    domainLookupEnd?: number;
-    connectStart?: number;
-    connectEnd?: number;
-    secureConnectionStart?: number;
-    requestStart?: number;
-    responseStart?: number;
-  };
-}
-
 /**
  * Data structure for creating a ResourceTimingReport.
  */
 interface ResourceTimingData {
   /** Unique identifier for the report */
   id: string;
+
   /** Timestamp when the report was created */
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the resource was loaded */
+  occurredAt: PerformanceTimestamp;
 
   // Core resource information
   /** Resource name/URL */
@@ -101,7 +76,10 @@ export class ResourceTimingReport implements PerformanceReport {
   public readonly id: string;
   
   /** Timestamp when the report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the resource was loaded */
+  public readonly occurredAt: PerformanceTimestamp;
   
   /** Resource name/URL */
   public readonly name: string;
@@ -142,6 +120,7 @@ export class ResourceTimingReport implements PerformanceReport {
   private constructor(data: ResourceTimingData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occurredAt = data.occurredAt;
     this.name = data.name;
     this.type = data.type;
     this.duration = data.duration;
@@ -178,9 +157,9 @@ export class ResourceTimingReport implements PerformanceReport {
    * @param entry - PerformanceResourceTiming entry from Resource Timing API
    * @returns New ResourceTimingReport instance with converted timing data
    */
-  public static fromPerformanceEntry(
+  public static fromPerformanceResourceTiming(
     id: string,
-    createdAt: number,
+    createdAt: PerformanceTimestamp,
     entry: PerformanceResourceTiming
   ): ResourceTimingReport {
     // Helper to create PerformanceTimestamp from relative time, handling 0 values
@@ -191,6 +170,7 @@ export class ResourceTimingReport implements PerformanceReport {
     return new ResourceTimingReport({
       id,
       createdAt: createdAt,
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       name: entry.name,
       type: entry.initiatorType,
       duration: entry.duration,
@@ -280,17 +260,18 @@ export class ResourceTimingReport implements PerformanceReport {
    * 
    * @returns JSON representation with analysis insights
    */
-  public toJSON(): ResourceTimingReportJSON {
+  public toJSON() {
     return {
       id: this.id,
-      createdAt: this.createdAt, // Uses absolute timestamp
+      createdAt: this.createdAt.absoluteTime,
+      occurredAt: this.occurredAt.absoluteTime,
       name: this.name,
       domain: this.domain,
       type: this.type,
       duration: this.duration,
-      startTime: this.startTime.toJSON(), // Uses absolute timestamp
-      endTime: this.endTime.toJSON(), // Uses absolute timestamp
-      
+      startTime: this.startTime.absoluteTime,
+      endTime: this.endTime.absoluteTime,
+
       // Size analysis
       transferSize: this.transferSize,
       encodedBodySize: this.encodedBodySize,
@@ -316,3 +297,5 @@ export class ResourceTimingReport implements PerformanceReport {
     };
   }
 }
+
+export type ResourceTimingReportJSON = ReturnType<ResourceTimingReport['toJSON']>;

@@ -1,8 +1,10 @@
 import type { PerformanceReport } from "@/shared/PerformanceReport";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 interface NetworkTimingData {
   id: string;
-  createdAt: number;
+  createdAt: PerformanceTimestamp;
+  occuredAt: PerformanceTimestamp;
   dnsLookupTime: number;
   tcpConnectTime: number;
   tlsHandshakeTime: number;
@@ -22,7 +24,10 @@ export class NetworkTimingReport implements PerformanceReport {
   public readonly id: string;
   
   /** Timestamp when the report was created */
-  public readonly createdAt: number;
+  public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the event occurred */
+  public readonly occuredAt: PerformanceTimestamp;
 
   /**
    * Time spent resolving domain name to IP address in milliseconds.
@@ -80,6 +85,7 @@ export class NetworkTimingReport implements PerformanceReport {
   private constructor(data: NetworkTimingData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
+    this.occuredAt = data.createdAt;
     this.dnsLookupTime = data.dnsLookupTime;
     this.tcpConnectTime = data.tcpConnectTime;
     this.tlsHandshakeTime = data.tlsHandshakeTime;
@@ -110,12 +116,14 @@ export class NetworkTimingReport implements PerformanceReport {
    */
   public static fromPerformanceEntry(
     id: string, 
-    createdAt: number, 
+    createdAt: PerformanceTimestamp, 
     entry: PerformanceNavigationTiming
   ): NetworkTimingReport {
+    console.log(entry);
     const data: NetworkTimingData = {
       id,
       createdAt,
+      occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       dnsLookupTime: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart),
       tcpConnectTime: Math.max(0, entry.connectEnd - entry.connectStart),
       tlsHandshakeTime: entry.secureConnectionStart > 0 && entry.secureConnectionStart <= entry.connectEnd

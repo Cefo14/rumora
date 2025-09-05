@@ -30,7 +30,6 @@ export class UnhandledPromiseErrorsObserver extends SimpleObserver<PromiseErrorR
   }
 
   private handlePromiseRejection = (event: PromiseRejectionEvent): void => {
-    console.log(event);
     const report = PromiseErrorReport.fromPromiseRejectionEvent(
       generateId(),
       PerformanceTimestamp.now(),

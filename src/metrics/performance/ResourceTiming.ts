@@ -2,6 +2,7 @@ import { ResourceTimingCollection, ResourceTimingCollectionJSON } from "@/report
 import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * Observer for Resource Timing performance entries.
@@ -86,14 +87,11 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
     const entries = entryList.getEntries() as PerformanceResourceTiming[];
 
     for (const entry of entries) {
-      if (!this.isValidResource(entry)) {
-        continue;
-      }
-      
+      if (!this.isValidResource(entry)) continue;
       const report = this.createResourceTimingReport(entry);
       this.resourceCollection.addResource(report);
-      this.notifySuccess(this.resourceCollection.toJSON());
     }
+    this.notifySuccess(this.resourceCollection.toJSON());
   }
 
   /**
@@ -144,9 +142,9 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
    * @private
    */
   private createResourceTimingReport(entry: PerformanceResourceTiming): ResourceTimingReport {
-    return ResourceTimingReport.fromPerformanceEntry(
+    return ResourceTimingReport.fromPerformanceResourceTiming(
       generateId(),
-      performance.now(),
+      PerformanceTimestamp.now(),
       entry
     );
   }

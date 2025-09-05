@@ -1,8 +1,8 @@
 import { LongTaskReport } from "@/reports/performance/LongTaskReport";
 import { generateId } from "@/shared/generateId";
-import { PerformanceTime } from "@/shared/PerformanceTime";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
+import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * Observer for Long Tasks API performance entries.|
@@ -40,19 +40,14 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
    */
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceLongTaskTimingEntry[];
-
+    console.log('LongTask entries:', entries);
     for (const entry of entries) {
       if (entry.entryType !== 'longtask') continue;
-      console.log('Long task detected:', entry);
-      const report = LongTaskReport.create({
-        id: generateId(),
-        createdAt: PerformanceTime.now(),
-        duration: entry.duration,
-        startTime: PerformanceTime.toAbsoluteTime(entry.startTime),
-        name: entry.name,
-        attribution: entry.attribution
-      });
-
+      const report = LongTaskReport.fromPerformanceLongTaskTimingEntry(
+        generateId(),
+        PerformanceTimestamp.now(),
+        entry
+      )
       this.notifySuccess(report);
     }
   }
