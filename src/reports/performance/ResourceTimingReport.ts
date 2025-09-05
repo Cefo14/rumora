@@ -1,4 +1,4 @@
-import { PerformanceReport } from "@/shared/PerformanceReport";
+import { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
@@ -71,7 +71,7 @@ interface ResourceTimingData {
  * }
  * ```
  */
-export class ResourceTimingReport implements PerformanceReport {
+export class ResourceTimingReport implements Report {
   /** Unique identifier for the report */
   public readonly id: string;
   

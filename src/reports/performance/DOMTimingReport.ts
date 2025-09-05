@@ -1,10 +1,10 @@
-import type { PerformanceReport } from "@/shared/PerformanceReport";
+import type { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 interface DOMTimingData {
   id: string;
   createdAt: PerformanceTimestamp;
-  occuredAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   interactiveTime: number;
   processingTime: number;
   contentLoadedDuration: number;
@@ -17,7 +17,7 @@ interface DOMTimingData {
  * Tracks the time spent in different phases of DOM processing, from initial
  * parsing to complete load, including event listener execution times.
  */
-export class DOMTimingReport implements PerformanceReport {
+export class DOMTimingReport implements Report {
   /** Unique identifier for the report */
   public readonly id: string;
   
@@ -25,7 +25,7 @@ export class DOMTimingReport implements PerformanceReport {
   public readonly createdAt: PerformanceTimestamp;
 
   /** Timestamp when the event occurred */
-  public readonly occuredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * Time until DOM became interactive (DOMContentLoaded ready) in milliseconds.
@@ -62,7 +62,7 @@ export class DOMTimingReport implements PerformanceReport {
   private constructor(data: DOMTimingData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
-    this.occuredAt = data.createdAt;
+    this.occurredAt = data.createdAt;
     this.interactiveTime = data.interactiveTime;
     this.processingTime = data.processingTime;
     this.contentLoadedDuration = data.contentLoadedDuration;
@@ -95,7 +95,7 @@ export class DOMTimingReport implements PerformanceReport {
     const data: DOMTimingData = {
       id,
       createdAt: PerformanceTimestamp.now(),
-      occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       interactiveTime: Math.max(0, entry.domInteractive - entry.startTime),
       processingTime: Math.max(0, entry.domComplete - entry.domInteractive),
       contentLoadedDuration: Math.max(0, entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart),

@@ -1,4 +1,4 @@
-import { Entity } from "@/shared/Entity";
+import { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
@@ -29,7 +29,7 @@ export interface WebVitalReportDTO {
  * 
  * @abstract
  */
-export abstract class WebVitalReport implements Entity {
+export abstract class WebVitalReport implements Report {
   /** Unique identifier for this performance report */
   public readonly id: string;
   

@@ -39,7 +39,6 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
    */
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceLongTaskTimingEntry[];
-    console.log('LongTask entries:', entries);
     for (const entry of entries) {
       if (entry.entryType !== 'longtask') continue;
       const report = LongTaskReport.fromPerformanceLongTaskTimingEntry(

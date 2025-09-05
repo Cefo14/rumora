@@ -1,5 +1,5 @@
 import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
-import { PerformanceReport } from "@/shared/PerformanceReport";
+import { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 interface TaskAttributionTiming {
@@ -12,7 +12,7 @@ interface TaskAttributionTiming {
 interface LongTaskData {
   id: string;
   createdAt: PerformanceTimestamp;
-  occuredAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   duration: number;
   name: string;
   attribution?: TaskAttributionTiming[];
@@ -29,7 +29,7 @@ interface LongTaskData {
  * blocking tasks to help identify performance bottlenecks.
  *
  */
-export class LongTaskReport implements PerformanceReport {
+export class LongTaskReport implements Report {
   /** Unique identifier for the report */
   public readonly id: string;
   
@@ -37,7 +37,7 @@ export class LongTaskReport implements PerformanceReport {
   public readonly createdAt: PerformanceTimestamp;
 
   /** Timestamp when the long task occurred (in milliseconds) */
-  public readonly occuredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTimestamp;
 
   /** Duration of the long task in milliseconds */
   public readonly duration: number;
@@ -57,7 +57,7 @@ export class LongTaskReport implements PerformanceReport {
   private constructor(data: LongTaskData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
-    this.occuredAt = data.occuredAt;
+    this.occurredAt = data.occurredAt;
     this.duration = data.duration;
     this.name = data.name;
     this.attribution = data.attribution;
@@ -85,7 +85,7 @@ export class LongTaskReport implements PerformanceReport {
     return new LongTaskReport({
       id,
       createdAt: PerformanceTimestamp.now(),
-      occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       duration,
       name,
       attribution
@@ -123,7 +123,7 @@ export class LongTaskReport implements PerformanceReport {
    * @returns End time relative to navigation start (in milliseconds)
    */
   public get endTime(): number {
-    return this.occuredAt.relativeTime + this.duration;
+    return this.occurredAt.relativeTime + this.duration;
   }
 
   /**
@@ -133,7 +133,7 @@ export class LongTaskReport implements PerformanceReport {
    */
   public toString(): string {
     const severity = this.severity.toUpperCase();
-    return `LONG-TASK [${severity}]: ${this.duration}ms at ${this.occuredAt.relativeTime}ms`;
+    return `LONG-TASK [${severity}]: ${this.duration}ms at ${this.occurredAt.relativeTime}ms`;
   }
 
   /**
@@ -145,7 +145,7 @@ export class LongTaskReport implements PerformanceReport {
     return {
       id: this.id,
       createdAt: this.createdAt,
-      occuredAt: this.occuredAt,
+      occurredAt: this.occurredAt,
       duration: this.duration,
       endTime: this.endTime,
       name: this.name,

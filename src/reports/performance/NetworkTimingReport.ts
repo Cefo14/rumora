@@ -1,10 +1,10 @@
-import type { PerformanceReport } from "@/shared/PerformanceReport";
+import type { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 interface NetworkTimingData {
   id: string;
   createdAt: PerformanceTimestamp;
-  occuredAt: PerformanceTimestamp;
+  occurredAt: PerformanceTimestamp;
   dnsLookupTime: number;
   tcpConnectTime: number;
   tlsHandshakeTime: number;
@@ -19,7 +19,7 @@ interface NetworkTimingData {
  * Tracks the time spent in different phases of network communication,
  * from DNS resolution to complete response download.
  */
-export class NetworkTimingReport implements PerformanceReport {
+export class NetworkTimingReport implements Report {
   /** Unique identifier for the report */
   public readonly id: string;
   
@@ -27,7 +27,7 @@ export class NetworkTimingReport implements PerformanceReport {
   public readonly createdAt: PerformanceTimestamp;
 
   /** Timestamp when the event occurred */
-  public readonly occuredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTimestamp;
 
   /**
    * Time spent resolving domain name to IP address in milliseconds.
@@ -85,7 +85,7 @@ export class NetworkTimingReport implements PerformanceReport {
   private constructor(data: NetworkTimingData) {
     this.id = data.id;
     this.createdAt = data.createdAt;
-    this.occuredAt = data.createdAt;
+    this.occurredAt = data.createdAt;
     this.dnsLookupTime = data.dnsLookupTime;
     this.tcpConnectTime = data.tcpConnectTime;
     this.tlsHandshakeTime = data.tlsHandshakeTime;
@@ -117,11 +117,10 @@ export class NetworkTimingReport implements PerformanceReport {
     id: string, 
     entry: PerformanceNavigationTiming
   ): NetworkTimingReport {
-    console.log(entry);
     const data: NetworkTimingData = {
       id,
       createdAt: PerformanceTimestamp.now(),
-      occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       dnsLookupTime: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart),
       tcpConnectTime: Math.max(0, entry.connectEnd - entry.connectStart),
       tlsHandshakeTime: entry.secureConnectionStart > 0 && entry.secureConnectionStart <= entry.connectEnd
