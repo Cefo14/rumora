@@ -153,13 +153,11 @@ export class ResourceTimingReport implements PerformanceReport {
    * Creates a ResourceTimingReport from a PerformanceResourceTiming entry.
    * 
    * @param id - Unique identifier for the report
-   * @param createdAt - Timestamp when the report was created
    * @param entry - PerformanceResourceTiming entry from Resource Timing API
    * @returns New ResourceTimingReport instance with converted timing data
    */
   public static fromPerformanceResourceTiming(
     id: string,
-    createdAt: PerformanceTimestamp,
     entry: PerformanceResourceTiming
   ): ResourceTimingReport {
     // Helper to create PerformanceTimestamp from relative time, handling 0 values
@@ -169,7 +167,7 @@ export class ResourceTimingReport implements PerformanceReport {
 
     return new ResourceTimingReport({
       id,
-      createdAt: createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       name: entry.name,
       type: entry.initiatorType,

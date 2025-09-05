@@ -1,8 +1,6 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-
 export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport> {
   private isListening = false;
 
@@ -32,7 +30,6 @@ export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport
   private handleCSPViolation = (event: SecurityPolicyViolationEvent): void => {
     const report = CSPViolationErrorReport.fromSecurityPolicyViolationEvent(
       generateId(),
-      PerformanceTimestamp.now(),
       event
     );
 

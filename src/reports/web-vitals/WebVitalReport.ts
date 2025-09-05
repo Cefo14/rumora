@@ -35,12 +35,12 @@ export abstract class WebVitalReport implements Entity {
   
   /** Timestamp when this report was created */
   public readonly createdAt: PerformanceTimestamp;
+
+  /** Timestamp when the performance event occurred */
+  public readonly occurredAt: PerformanceTimestamp;
   
   /** The measured value of the web vital metric */
   public readonly value: number;
-  
-  /** Timestamp when the performance event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
 
   /** Name of the web vital metric (must be implemented by subclasses) */
   public abstract readonly name: string;

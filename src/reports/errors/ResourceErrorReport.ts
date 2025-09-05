@@ -113,17 +113,16 @@ export class ResourceErrorReport implements ErrorReport {
    * Creates a ResourceErrorReport from an ErrorEvent.
    * 
    * @param id - Unique identifier for the error report
-   * @param createdAt - Timestamp when the error report was created
    * @param errorEvent - ErrorEvent from resource loading failure
    * @returns New ResourceErrorReport instance with extracted resource data
    */
-  public static fromErrorEvent(id: string, createdAt: PerformanceTimestamp, errorEvent: ErrorEvent): ResourceErrorReport {
+  public static fromErrorEvent(id: string, errorEvent: ErrorEvent): ResourceErrorReport {
     const resourceUrl = getResourceURL(errorEvent);
     const resourceType = getResourceType(errorEvent);
 
     const data: ResourceErrorData = {
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
       resourceUrl,
       resourceType,

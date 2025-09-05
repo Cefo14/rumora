@@ -2,7 +2,6 @@ import { ResourceTimingCollection, ResourceTimingCollectionJSON } from "@/report
 import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * Observer for Resource Timing performance entries.
@@ -144,24 +143,7 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
   private createResourceTimingReport(entry: PerformanceResourceTiming): ResourceTimingReport {
     return ResourceTimingReport.fromPerformanceResourceTiming(
       generateId(),
-      PerformanceTimestamp.now(),
       entry
     );
-  }
-
-  /**
-   * Determines if the observer should continue monitoring resources.
-   * 
-   * Resource timing is typically monitored continuously throughout the
-   * page lifecycle, so this observer doesn't stop automatically like
-   * some other performance observers (e.g., LCP which stops after
-   * the first meaningful measurement).
-   * 
-   * @returns True if monitoring should continue
-   * @protected
-   */
-  protected shouldContinueObserving(): boolean {
-    // Continue monitoring resources throughout page lifecycle
-    return true;
   }
 }

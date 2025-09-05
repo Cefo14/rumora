@@ -1,7 +1,6 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { PromiseErrorReport } from "@/reports/errors/PromiseErrorReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 export class UnhandledPromiseErrorsObserver extends SimpleObserver<PromiseErrorReport> {
   private isListening = false;
@@ -32,7 +31,6 @@ export class UnhandledPromiseErrorsObserver extends SimpleObserver<PromiseErrorR
   private handlePromiseRejection = (event: PromiseRejectionEvent): void => {
     const report = PromiseErrorReport.fromPromiseRejectionEvent(
       generateId(),
-      PerformanceTimestamp.now(),
       event
     );
 

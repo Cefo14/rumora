@@ -134,14 +134,13 @@ export class JavaScriptErrorReport implements ErrorReport {
    * Creates a JavaScriptErrorReport from an ErrorEvent.
    * 
    * @param id - Unique identifier for the error report
-   * @param createdAt - Timestamp when the error report was created
    * @param errorEvent - ErrorEvent from window.onerror or similar handlers
    * @returns New JavaScriptErrorReport instance with extracted error data
    */
-  public static fromErrorEvent(id: string, createdAt: PerformanceTimestamp, errorEvent: ErrorEvent): JavaScriptErrorReport {
+  public static fromErrorEvent(id: string, errorEvent: ErrorEvent): JavaScriptErrorReport {
     return new JavaScriptErrorReport({
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
       errorMessage: extractErrorMessage(errorEvent),
       errorName: errorEvent.error?.name,

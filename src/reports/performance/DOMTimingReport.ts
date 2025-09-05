@@ -85,29 +85,20 @@ export class DOMTimingReport implements PerformanceReport {
    * Creates a DOMTimingReport from PerformanceNavigationTiming data.
    * 
    * @param id - Unique identifier for the report
-   * @param createdAt - Timestamp when the report was created
    * @param entry - PerformanceNavigationTiming entry from the browser
    * @returns New DOMTimingReport instance with calculated timings
    */
   public static fromPerformanceEntry(
     id: string, 
-    createdAt: PerformanceTimestamp, 
     entry: PerformanceNavigationTiming
   ): DOMTimingReport {
     const data: DOMTimingData = {
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
-      // Time until DOM became interactive (from navigation start)
       interactiveTime: Math.max(0, entry.domInteractive - entry.startTime),
-      
-      // Time processing DOM after interactive state
       processingTime: Math.max(0, entry.domComplete - entry.domInteractive),
-      
-      // Time executing DOMContentLoaded event listeners
       contentLoadedDuration: Math.max(0, entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart),
-      
-      // Time executing window.load event listeners  
       loadEventDuration: Math.max(0, entry.loadEventEnd - entry.loadEventStart)
     };
 

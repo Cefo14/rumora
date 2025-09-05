@@ -110,19 +110,17 @@ export class NetworkTimingReport implements PerformanceReport {
    * Creates a NetworkTimingReport from PerformanceNavigationTiming data.
    * 
    * @param id - Unique identifier for the report
-   * @param createdAt - Timestamp when the report was created
    * @param entry - PerformanceNavigationTiming entry from the browser
    * @returns New NetworkTimingReport instance with calculated timings
    */
   public static fromPerformanceEntry(
     id: string, 
-    createdAt: PerformanceTimestamp, 
     entry: PerformanceNavigationTiming
   ): NetworkTimingReport {
     console.log(entry);
     const data: NetworkTimingData = {
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       dnsLookupTime: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart),
       tcpConnectTime: Math.max(0, entry.connectEnd - entry.connectStart),

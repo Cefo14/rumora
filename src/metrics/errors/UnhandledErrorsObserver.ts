@@ -1,7 +1,6 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { JavaScriptErrorReport } from "@/reports/errors/JavaScriptErrorReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 export class UnhandledErrorsObserver extends SimpleObserver<JavaScriptErrorReport> {
   private isListening = false;
@@ -32,7 +31,6 @@ export class UnhandledErrorsObserver extends SimpleObserver<JavaScriptErrorRepor
     if (errorEvent.target !== window) return;
     const report = JavaScriptErrorReport.fromErrorEvent(
       generateId(),
-      PerformanceTimestamp.now(),
       errorEvent
     );
     this.notify(report);

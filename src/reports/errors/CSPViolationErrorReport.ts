@@ -95,18 +95,16 @@ export class CSPViolationErrorReport implements ErrorReport {
    * Creates a CSPViolationErrorReport from a SecurityPolicyViolationEvent.
    * 
    * @param id - Unique identifier for the error report
-   * @param createdAt - Timestamp when the error report was created
    * @param violationEvent - SecurityPolicyViolationEvent from CSP violation
    * @returns New CSPViolationErrorReport instance with extracted violation data
    */
   public static fromSecurityPolicyViolationEvent(
     id: string, 
-    createdAt: PerformanceTimestamp, 
     violationEvent: SecurityPolicyViolationEvent
   ): CSPViolationErrorReport {
     return new CSPViolationErrorReport({
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(violationEvent.timeStamp),
       directive: violationEvent.effectiveDirective,
       blockedURI: violationEvent.blockedURI,

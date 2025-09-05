@@ -2,7 +2,6 @@ import { LongTaskReport } from "@/reports/performance/LongTaskReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
  * Observer for Long Tasks API performance entries.|
@@ -45,7 +44,6 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
       if (entry.entryType !== 'longtask') continue;
       const report = LongTaskReport.fromPerformanceLongTaskTimingEntry(
         generateId(),
-        PerformanceTimestamp.now(),
         entry
       )
       this.notifySuccess(report);

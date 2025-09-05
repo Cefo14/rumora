@@ -113,18 +113,16 @@ export class PromiseErrorReport implements ErrorReport {
    * Creates a PromiseErrorReport from a PromiseRejectionEvent.
    * 
    * @param id - Unique identifier for the error report
-   * @param createdAt - Timestamp when the error report was created
    * @param promiseError - PromiseRejectionEvent from unhandledrejection listener
    * @returns New PromiseErrorReport instance with extracted error data
    */
   public static fromPromiseRejectionEvent(
     id: string, 
-    createdAt: PerformanceTimestamp, 
     promiseError: PromiseRejectionEvent
   ): PromiseErrorReport {
     return new PromiseErrorReport({
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(promiseError.timeStamp),
       errorMessage: extractErrorMessage(promiseError),
       errorName: promiseError.reason?.name,

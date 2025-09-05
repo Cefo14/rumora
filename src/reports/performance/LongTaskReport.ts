@@ -73,11 +73,18 @@ export class LongTaskReport implements PerformanceReport {
     return new LongTaskReport(data);
   }
 
-  public static fromPerformanceLongTaskTimingEntry(id: string, createdAt: PerformanceTimestamp, entry: PerformanceLongTaskTimingEntry): LongTaskReport {
+  /**
+   * Creates a LongTaskReport from a PerformanceLongTaskTimingEntry.
+   * 
+   * @param id - Unique identifier for the report
+   * @param entry - PerformanceLongTaskTimingEntry from Long Tasks API
+   * @returns New LongTaskReport instance with extracted data
+   */
+  public static fromPerformanceLongTaskTimingEntry(id: string, entry: PerformanceLongTaskTimingEntry): LongTaskReport {
     const { duration, name, attribution } = entry;
     return new LongTaskReport({
       id,
-      createdAt,
+      createdAt: PerformanceTimestamp.now(),
       occuredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
       duration,
       name,
