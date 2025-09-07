@@ -122,12 +122,42 @@ export abstract class WebVitalReport implements Report {
    */
   public toJSON() {
     return {
+      /**
+       * Unique identifier for the report
+       * This is typically a UUID or similar unique string
+       */
       id: this.id,
+      /**
+       * Name of the web vital metric
+       */
       name: this.name,
+      /**
+       * Measured value of the web vital metric
+       */
       value: this.value,
-      createdAt: this.createdAt.toJSON(),
-      occurredAt: this.occurredAt.toJSON(),
+      /**
+       * Unix timestamp in milliseconds when the report was created
+       */
+      createdAt: this.createdAt.absoluteTime,
+      /**
+       * Unix timestamp in milliseconds when the performance event occurred
+       * This may differ from createdAt if the report is generated after the event
+       */
+      occurredAt: this.occurredAt.absoluteTime,
+      /** Performance rating classification
+       * @enum 'GOOD' - The metric value is within the good threshold
+       * @enum 'NEEDS_IMPROVEMENT' - The metric value is between good and poor thresholds
+       * @enum 'POOR' - The metric value is at or above the poor threshold
+       */
       rating: this.rating,
+      /**
+       * Good threshold value for the web vital metric
+       */
+      goodThreshold: this.goodThreshold,
+      /**
+       * Poor threshold value for the web vital metric
+       */
+      poorThreshold: this.poorThreshold,
     };
   }
 }

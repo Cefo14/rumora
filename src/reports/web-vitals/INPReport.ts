@@ -51,6 +51,9 @@ export class INPReport extends WebVitalReport {
   public override toJSON() {
     return {
       ...super.toJSON(),
+      /**
+       * Name of the event associated with this INP report
+       */
       eventName: this.eventName,
     };
   }

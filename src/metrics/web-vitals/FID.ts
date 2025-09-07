@@ -1,8 +1,9 @@
 import { FIDReport } from "@/reports/web-vitals/FIDReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { Serialized } from "@/shared/Serialized";
 
-export class FID extends PerformanceMetricObserver<FIDReport> {
+export class FID extends PerformanceMetricObserver<Serialized<FIDReport>> {
   constructor() {
     super("first-input");
   }
@@ -14,7 +15,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
         generateId(),
         entry
       );
-      this.notifySuccess(report);
+      this.notifySuccess(report.toJSON());
       this.stop();
       break;
     }

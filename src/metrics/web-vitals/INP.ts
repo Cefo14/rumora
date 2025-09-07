@@ -2,8 +2,9 @@ import { INPReport } from "@/reports/web-vitals/INPReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceEventTimingEntry } from "@/shared/PerformanceEntryTypes";
+import { Serialized } from "@/shared/Serialized";
 
-export class INP extends PerformanceMetricObserver<INPReport> {
+export class INP extends PerformanceMetricObserver<Serialized<INPReport>> {
   constructor() {
     super(
       "event",
@@ -22,7 +23,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
         generateId(),
         entry
       );
-      this.notifySuccess(report);
+      this.notifySuccess(report.toJSON());
     }
   }
 }

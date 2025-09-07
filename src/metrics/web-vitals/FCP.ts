@@ -1,8 +1,9 @@
 import { FCPReport } from "@/reports/web-vitals/FCPReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { Serialized } from "@/shared/Serialized";
 
-export class FCP extends PerformanceMetricObserver<FCPReport> {
+export class FCP extends PerformanceMetricObserver<Serialized<FCPReport>> {
   constructor() {
     super("paint");
   }
@@ -16,7 +17,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
         generateId(),
         fcpEntry
       );
-      this.notifySuccess(report);
+      this.notifySuccess(report.toJSON());
       this.stop();
       break;
     }
