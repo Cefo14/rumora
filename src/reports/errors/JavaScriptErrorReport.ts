@@ -1,6 +1,8 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
+type ErrorCategory = 'syntax' | 'runtime' | 'network' | 'resource' | 'unknown';
+
 interface JavaScriptErrorData {
   id: string;
   createdAt: PerformanceTimestamp;
@@ -49,13 +51,19 @@ const extractErrorMessage = (errorEvent: ErrorEvent): string => {
  * error monitoring and debugging capabilities.
  */
 export class JavaScriptErrorReport implements ErrorReport {
-  /** Unique identifier for the error report */
+  /**
+   * Unique identifier for the error report
+   */
   public readonly id: string;
   
-  /** Timestamp when the error report was created */
+  /**
+   * Timestamp when the error report was created
+   */
   public readonly createdAt: PerformanceTimestamp;
 
-  /** Timestamp when the performance event occurred */
+  /**
+   * Timestamp when the performance event occurred
+   */
   public readonly occurredAt: PerformanceTimestamp;
 
   /**
@@ -224,7 +232,7 @@ export class JavaScriptErrorReport implements ErrorReport {
   /**
    * Gets a simplified error category for grouping and analysis.
    */
-  public get errorCategory(): 'syntax' | 'runtime' | 'network' | 'resource' | 'unknown' {
+  public get errorCategory(): ErrorCategory {
     const errorName = this.errorName?.toLowerCase() ?? '';
     
     if (errorName === 'syntaxerror') return 'syntax';
@@ -252,20 +260,106 @@ export class JavaScriptErrorReport implements ErrorReport {
    * 
    * @returns Object with all error data and computed analysis
    */
-  public toJSON(): unknown {
+  public toJSON() {
     return {
+      /**
+       * Unique identifier for the error report
+       */
       id: this.id,
-      createdAt: this.createdAt,
+      /**
+       * Timestamp when the error report was created
+       */
+      createdAt: this.createdAt.absoluteTime,
+      /** 
+       * Timestamp when the performance event occurred
+       * This may differ from createdAt if the report is generated after the event
+       */
+      occurredAt: this.occurredAt.absoluteTime,
+      /**
+       * Severity level of the JavaScript error.
+       * 
+       * Classification based on error impact and recoverability:
+       * - CRITICAL: Application-breaking errors that stop execution
+       * - HIGH: Major functionality errors affecting user experience
+       * - MEDIUM: Moderate errors that may degrade functionality
+       * - LOW: Minor errors with minimal user impact
+       * 
+       * @enum {string} 'critical' | 'high' | 'medium' | 'low'
+       */
       severity: this.severity,
+      /**
+       * Human-readable error message describing what went wrong.
+       * 
+       * This is the primary description of the error that occurred,
+       * extracted from the ErrorEvent or Error object.
+       */
       errorMessage: this.errorMessage,
+      /**
+       * Type of JavaScript error (e.g., TypeError, ReferenceError) if available.
+       * 
+       * Helps classify the category of error for automated handling
+       * and severity assessment.
+       */
       errorName: this.errorName,
+      /**
+       * Complete stack trace showing the call hierarchy when error occurred.
+       * 
+       * Essential for debugging as it shows the exact execution path
+       * that led to the error.
+       */
       stack: this.stack,
+      /**
+       * URL of the script file where the error occurred.
+       * 
+       * Helps identify the source of the error and determine if it's
+       * from first-party or third-party code.
+       */
       filename: this.filename,
+      /**
+       * Line number within the script where the error occurred.
+       * 
+       * Provides precise location information for debugging,
+       * though may be approximate due to minification.
+       */
       lineNumber: this.lineNumber,
+      /**
+       * Column number within the line where the error occurred.
+       * 
+       * Offers fine-grained location information, particularly useful
+       * for identifying specific expressions that failed.
+       */
       columnNumber: this.columnNumber,
+      /**
+       * Indicates if the error originated from a third-party script.
+       * 
+       * Third-party scripts are those loaded from different domains,
+       * which typically cannot be fixed directly by the application team.
+       * This helps prioritize errors that can actually be addressed.
+       */
       isThirdPartyScript: this.isThirdPartyScript,
+      /**
+       * Indicates if this error suggests a programming bug vs runtime issue.
+       * 
+       * Programming errors suggest code defects that should be fixed.
+       */
       isProgrammingError: this.isProgrammingError,
+      /**
+       * Indicates if this error is likely caused by network/infrastructure issues.
+       * 
+       * Network-related errors are typically transient and infrastructure-related.
+       */
       isNetworkRelated: this.isNetworkRelated,
+      /**
+       * Simplified error category for grouping and analysis.
+       * 
+       * Categories help identify patterns and appropriate response strategies.
+       * - 'syntax' for syntax errors
+       * - 'runtime' for runtime exceptions
+       * - 'network' for connectivity issues
+       * - 'resource' for loading failures
+       * - 'unknown' when category cannot be determined
+       * @enum {string} 'syntax' | 'runtime' | 'network' | 'resource' | 'unknown'
+       */
       errorCategory: this.errorCategory
     };
   }

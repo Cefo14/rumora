@@ -1,6 +1,8 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
+type RejectionType = 'network' | 'javascript' | 'parsing' | 'timeout' | 'memory' | 'loading' | 'generic';
+
 interface PromiseErrorData {
   id: string;
   createdAt: PerformanceTimestamp;
@@ -160,7 +162,7 @@ export class PromiseErrorReport implements ErrorReport {
    * 
    * Categories help identify patterns and appropriate response strategies.
    */
-  public get rejectionType(): 'network' | 'javascript' | 'parsing' | 'timeout' | 'memory' | 'loading' | 'generic' {
+  public get rejectionType(): RejectionType {
     const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
 
     // Network/connectivity errors
@@ -241,17 +243,69 @@ export class PromiseErrorReport implements ErrorReport {
    */
   public toJSON() {
     return {
+      /**
+       * Unique identifier for the error report
+       * This is typically a UUID or similar unique string
+       */
       id: this.id,
-      createdAt: this.createdAt,
+      /**
+       * Timestamp when the error report was created
+       */
+      createdAt: this.createdAt.absoluteTime,
+      /**
+       * Timestamp when the performance event occurred
+       * This may differ from createdAt if the report is generated after the event
+       */
+      occurredAt: this.occurredAt.absoluteTime,
+      /**
+       * Severity level of the error
+       * - 'CRITICAL': Application-breaking errors that stop execution
+       * - 'HIGH': Major functionality errors affecting user experience
+       * - 'MEDIUM': Moderate errors that may degrade functionality
+       * - 'LOW': Minor errors with minimal user impact
+       * @enum {string} 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
+       */
       severity: this.severity,
-      errorMessage: this.errorMessage,
-      errorName: this.errorName,
-      stack: this.stack,
+      /**
+       * Specific type of promise rejection
+       * - 'network': Errors related to connectivity issues
+       * - 'javascript': JavaScript runtime errors
+       * - 'parsing': Errors parsing data (e.g., JSON)
+       * - 'timeout': Operation timed out or was aborted
+       * - 'memory': Memory or stack overflow errors
+       * - 'loading': Resource/module loading failures
+       * - 'generic': Other uncategorized errors
+       * @enum {string} 'network' | 'javascript' | 'parsing' | 'timeout' | 'memory' | 'loading' | 'generic'
+       */
       rejectionType: this.rejectionType,
+      /**
+       * Indicates if the error is related to network/connectivity issues
+       */
       isNetworkRelated: this.isNetworkRelated,
+      /**
+       * Indicates if the error is a JavaScript runtime error
+       */
       isJavaScriptError: this.isJavaScriptError,
+      /**
+       * Indicates if the error is due to resource loading failure
+       */
       isLoadingFailure: this.isLoadingFailure,
-      isRecoverable: this.isRecoverable
+      /**
+       * Indicates if the error is likely recoverable (e.g., network timeouts)
+       */
+      isRecoverable: this.isRecoverable,
+      /**
+       * Human-readable error message
+       */
+      errorMessage: this.errorMessage,
+      /**
+       * Name of the error (if available)
+       */
+      errorName: this.errorName,
+      /**
+       * Stack trace of the error (if available)
+       */
+      stack: this.stack,
     };
   }
 

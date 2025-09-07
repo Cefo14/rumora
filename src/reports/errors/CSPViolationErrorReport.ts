@@ -1,6 +1,10 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
+type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'other';
+
+type RecommendedAction = 'whitelist' | 'refactor' | 'investigate' | 'monitor'
+
 interface CSPViolationErrorData {
   id: string;
   createdAt: PerformanceTimestamp;
@@ -222,7 +226,7 @@ export class CSPViolationErrorReport implements ErrorReport {
   /**
    * Gets the category of CSP violation for analysis and grouping.
    */
-  public get violationType(): 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'other' {
+  public get violationType(): ViolationType {
     const directive = this.directive;
     
     if (directive.startsWith('script-src')) return 'script';
@@ -280,7 +284,7 @@ export class CSPViolationErrorReport implements ErrorReport {
   /**
    * Gets recommended action based on violation type and severity.
    */
-  public get recommendedAction(): 'whitelist' | 'refactor' | 'investigate' | 'monitor' {
+  public get recommendedAction(): RecommendedAction {
     if (this.isEvalBlocked) return 'refactor';
     if (this.isInlineViolation && this.severity === 'critical') return 'refactor';
     if (this.isSameOriginViolation) return 'whitelist';
@@ -307,24 +311,99 @@ export class CSPViolationErrorReport implements ErrorReport {
    * 
    * @returns Object with all violation data and computed security analysis
    */
-  public toJSON(): unknown {
+  public toJSON() {
     return {
+      /**
+       * Unique identifier for the error report
+       * This is typically a UUID or similar unique string
+       */
       id: this.id,
-      createdAt: this.createdAt,
+      /**
+       * Timestamp when the error report was created
+       */
+      createdAt: this.createdAt.absoluteTime,
+      /**
+       * Timestamp when the performance event occurred
+       * This may differ from createdAt if the report is generated after the event
+       */
+      occurredAt: this.occurredAt.absoluteTime,
+      /**
+       * Severity level of the CSP violation
+       * - critical: Severe violations breaking functionality or allowing XSS
+       * - high: Major violations affecting user experience
+       * - medium: Moderate violations with some impact
+       * - low: Minor violations with minimal impact
+       * @enum {string} 'critical' | 'high' | 'medium' | 'low'
+       */
       severity: this.severity,
+      /**
+       * Directive that was violated (e.g., script-src, style-src)
+       */
       directive: this.directive,
+      /**
+       * URI that was blocked by the CSP
+       */
       blockedURI: this.blockedURI,
+      /**
+       * Domain of the blocked URI
+       */
       blockedDomain: this.blockedDomain,
+      /**
+       * Source file where the violation occurred
+       */
       sourceFile: this.sourceFile,
+      /**
+       * Line number within the source file where the violation occurred
+       */
       lineNumber: this.lineNumber,
+      /**
+       * Column number within the source file where the violation occurred
+       */
       columnNumber: this.columnNumber,
-      violationType: this.violationType,
+      /**
+       * Indicates if the violation was due to inline content
+       */
       isInlineViolation: this.isInlineViolation,
+      /**
+       * Indicates if the blocked resource is from a third-party domain
+       */
       isThirdPartyViolation: this.isThirdPartyViolation,
+      /**
+       * Indicates if the blocked resource is from the same origin
+       */
       isSameOriginViolation: this.isSameOriginViolation,
+      /**
+       * Indicates if eval() or unsafe-eval was blocked
+       */
       isEvalBlocked: this.isEvalBlocked,
+      /**
+       * Indicates if the blocked URI is a special CSP keyword (inline, eval, data:, etc.)
+       */
       isSpecialURI: this.isSpecialURI,
+      /**
+       * Category of CSP violation for analysis and grouping
+       * - script: Violations related to script resources
+       * - style: Violations related to style resources
+       * - network: Violations related to network connections (APIs, websockets)
+       * - media: Violations related to media resources (images, videos)
+       * - frame: Violations related to frames and embedded content
+       * - font: Violations related to font resources
+       * - other: Violations not fitting other categories
+       * @enum {string} 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'other'
+       */
+      violationType: this.violationType,
+      /**
+       * Indicates if this violation requires immediate security attention
+       */
       requiresImmediateAction: this.requiresImmediateAction,
+      /**
+       * Recommended action based on violation type and severity
+       * - whitelist: Legitimate resource, consider adding to CSP whitelist
+       * - refactor: Unsafe practice, refactor code to comply with CSP
+       * - investigate: Potential security risk, investigate further
+       * - monitor: Low risk, monitor for patterns over time
+       * @enum {string} 'whitelist' | 'refactor' | 'investigate' | 'monitor'
+       */
       recommendedAction: this.recommendedAction
     };
   }

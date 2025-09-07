@@ -1,7 +1,9 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
-export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport> {
+import { Serialized } from "@/shared/Serialized";
+
+export class CSPViolationObserver extends SimpleObserver<Serialized<CSPViolationErrorReport>> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -33,6 +35,6 @@ export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport
       event
     );
 
-    this.notify(report);
+    this.notify(report.toJSON());
   };
 }

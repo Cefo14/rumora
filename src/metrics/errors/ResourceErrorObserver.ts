@@ -1,8 +1,9 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { ResourceErrorReport } from "@/reports/errors/ResourceErrorReport";
+import { Serialized } from "@/shared/Serialized";
 
-export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
+export class ResourceErrorObserver extends SimpleObserver<Serialized<ResourceErrorReport>> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -34,6 +35,6 @@ export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
       errorEvent
     );
 
-    this.notify(report);
+    this.notify(report.toJSON());
   };
 }

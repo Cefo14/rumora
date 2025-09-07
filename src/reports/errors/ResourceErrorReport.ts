@@ -275,16 +275,54 @@ export class ResourceErrorReport implements ErrorReport {
    * 
    * @returns Object with all resource error data and computed analysis
    */
-  public toJSON(): unknown {
+  public toJSON() {
     return {
+      /**
+       * Unique identifier for the error report
+       * This is typically a UUID or similar unique string
+       */
       id: this.id,
-      createdAt: this.createdAt,
+      /**
+       * Timestamp when the error report was created
+       */
+      createdAt: this.createdAt.absoluteTime,
+      /**
+       * Timestamp when the performance event occurred
+       * This may differ from createdAt if the report is generated after the event
+       */
+      occurredAt: this.occurredAt.absoluteTime,
+      /**
+       * Severity level of the resource loading failure
+       * - 'critical' for first-party scripts
+       * - 'high' for stylesheets and critical resources
+       * - 'medium' for images and interactive content
+       * - 'low' for media and non-essential resources
+       * @enum {string} 'critical' | 'high' | 'medium' | 'low'
+       */
       severity: this.severity,
+      /**
+       * URL of the resource that failed to load
+       */
       resourceUrl: this.resourceUrl,
+      /**
+       * Type of resource that failed to load (e.g., script, stylesheet, image)
+       */
       resourceType: this.resourceType,
+      /**
+       * Domain name extracted from the resource URL
+       */
       resourceDomain: this.resourceDomain,
+      /**
+       * Indicates if the resource is from a third-party domain
+       */
       isThirdParty: this.isThirdParty,
+      /**
+       * Indicates if the resource is considered critical for functionality
+       */
       isCriticalResource: this.isCriticalResource,
+      /**
+       * Indicates if the resource is loaded from a known CDN
+       */
       isFromCDN: this.isFromCDN,
     };
   }

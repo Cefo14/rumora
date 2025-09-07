@@ -141,7 +141,7 @@ export class LongTaskReport implements Report {
    * 
    * @returns JSON representation of the long task report
    */
-  public toJSON(): unknown {
+  public toJSON() {
     return {
       id: this.id,
       createdAt: this.createdAt,

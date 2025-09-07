@@ -145,9 +145,11 @@ export abstract class WebVitalReport implements Report {
        */
       occurredAt: this.occurredAt.absoluteTime,
       /** Performance rating classification
-       * @enum 'GOOD' - The metric value is within the good threshold
-       * @enum 'NEEDS_IMPROVEMENT' - The metric value is between good and poor thresholds
-       * @enum 'POOR' - The metric value is at or above the poor threshold
+       * 
+       * - 'GOOD' if the value is below the good threshold
+       * - 'NEEDS_IMPROVEMENT' if the value is between good and poor thresholds
+       * - 'POOR' if the value is at or above the poor threshold
+       * @enum {string} 'GOOD' | 'NEEDS_IMPROVEMENT' | 'POOR'
        */
       rating: this.rating,
       /**
