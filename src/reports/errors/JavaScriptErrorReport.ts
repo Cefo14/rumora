@@ -193,7 +193,7 @@ export class JavaScriptErrorReport implements ErrorReport {
    * This helps prioritize errors that can actually be addressed.
    */
   public get isThirdPartyScript(): boolean {
-    if (!this.filename) return true; // Unknown source = treat as third-party
+    if (!this.filename) return false; // No filename means we can't determine origin
     
     try {
       const scriptUrl = new URL(this.filename);

@@ -11,6 +11,8 @@
     /* Emit */
     "outDir": "dist",
     "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     /* Type Checking */
     "strict": true,
