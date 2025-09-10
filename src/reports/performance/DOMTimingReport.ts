@@ -158,7 +158,8 @@ export class DOMTimingReport implements Report {
   toJSON() {
     return {
       id: this.id,
-      createdAt: this.createdAt,
+      createdAt: this.createdAt.absoluteTime,
+      occurredAt: this.occurredAt.absoluteTime,
       interactiveTime: this.interactiveTime,
       processingTime: this.processingTime,
       contentLoadedDuration: this.contentLoadedDuration,

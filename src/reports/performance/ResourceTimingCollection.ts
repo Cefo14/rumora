@@ -1,11 +1,5 @@
-import { ResourceTimingReport, ResourceTimingReportJSON } from "@/reports/performance/ResourceTimingReport";
+import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-
-export interface ResourceTimingCollectionJSON {
-  createdAt: number;
-  lastUpdated: number;
-  resources: ResourceTimingReportJSON[];
-}
 
 /**
  * Collection and aggregator for ResourceTimingReport instances.
@@ -84,10 +78,19 @@ export class ResourceTimingCollection {
     return `ResourceTimingCollection: ${this.size} resources`;
   }
 
-  toJSON(): ResourceTimingCollectionJSON {
+  toJSON() {
     return {
+      /**
+       * Unix timestamp in milliseconds when the collection was created
+       */
       createdAt: this.createdAt.toJSON(),
+      /**
+       * Unix timestamp in milliseconds when the collection was last updated
+       */
       lastUpdated: this.lastUpdated.toJSON(),
+      /**
+       * Array of resource timing reports
+       */
       resources: Array.from(this.resources.values()).map(resource => resource.toJSON())
     };
   }

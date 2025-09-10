@@ -144,8 +144,8 @@ export class LongTaskReport implements Report {
   public toJSON() {
     return {
       id: this.id,
-      createdAt: this.createdAt,
-      occurredAt: this.occurredAt,
+      createdAt: this.createdAt.absoluteTime,
+      occurredAt: this.occurredAt.absoluteTime,
       duration: this.duration,
       endTime: this.endTime,
       name: this.name,

@@ -1,7 +1,8 @@
-import { ResourceTimingCollection, ResourceTimingCollectionJSON } from "@/reports/performance/ResourceTimingCollection";
+import { ResourceTimingCollection } from "@/reports/performance/ResourceTimingCollection";
 import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { Serialized } from "@/shared/Serialized";
 
 /**
  * Observer for Resource Timing performance entries.
@@ -32,7 +33,7 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  * });
  * ```
  */
-export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingCollectionJSON> {
+export class ResourceTiming extends PerformanceMetricObserver<Serialized<ResourceTimingCollection>> {
   private readonly resourceCollection: ResourceTimingCollection = new ResourceTimingCollection();
 
   /**

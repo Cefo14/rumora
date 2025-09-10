@@ -229,7 +229,8 @@ export class NetworkTimingReport implements Report {
   toJSON() {
     return {
       id: this.id,
-      createdAt: this.createdAt,
+      createdAt: this.createdAt.absoluteTime,
+      occurredAt: this.occurredAt.absoluteTime,
       dnsLookupTime: this.dnsLookupTime,
       tcpConnectTime: this.tcpConnectTime,
       tlsHandshakeTime: this.tlsHandshakeTime,
