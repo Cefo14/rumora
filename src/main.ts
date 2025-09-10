@@ -7,8 +7,8 @@ import { INP } from "./metrics/web-vitals/INP";
 import { NetworkTiming } from "./metrics/performance/NetworkTiming";
 import { DOMTiming } from "./metrics/performance/DOMTiming";
 
-import { UnhandledErrorsObserver } from "./metrics/errors/UnhandledErrorsObserver";
-import { UnhandledPromiseErrorsObserver } from "./metrics/errors/UnhandledPromiseErrorsObserver";
+import { UnhandledJavaScriptErrorObserver } from "./metrics/errors/UnhandledJavaScriptErrorObserver";
+import { UnhandledPromiseRejectionObserver } from "./metrics/errors/UnhandledPromiseRejectionObserver";
 import { ResourceErrorObserver } from "./metrics/errors/ResourceErrorObserver";
 import { CSPViolationObserver } from "./metrics/errors/CSPViolationObserver";
 import { LongTask } from "./metrics/performance/LongTask";
@@ -77,14 +77,14 @@ new DOMTiming()
   }
 });
 
-new UnhandledErrorsObserver()
+new UnhandledJavaScriptErrorObserver()
 .subscribe((report) => {
   console.log('Error Tracking Report:', report);
 });
 
-new UnhandledPromiseErrorsObserver()
+new UnhandledPromiseRejectionObserver()
 .subscribe((report) => {
-  console.log('Unhandled Promise Errors Report:', report);
+  console.log('Unhandled Promise Rejections Report:', report);
 });
 
 new ResourceErrorObserver()

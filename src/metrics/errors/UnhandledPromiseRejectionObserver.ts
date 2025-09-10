@@ -1,9 +1,9 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
-import { PromiseErrorReport } from "@/reports/errors/PromiseErrorReport";
+import { UnhandledPromiseRejectionReport } from "@/reports/errors/UnhandledPromiseRejectionReport";
 import { Serialized } from "@/shared/Serialized";
 
-export class UnhandledPromiseErrorsObserver extends SimpleObserver<Serialized<PromiseErrorReport>> {
+export class UnhandledPromiseRejectionObserver extends SimpleObserver<Serialized<UnhandledPromiseRejectionReport>> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -30,7 +30,7 @@ export class UnhandledPromiseErrorsObserver extends SimpleObserver<Serialized<Pr
   }
 
   private handlePromiseRejection = (event: PromiseRejectionEvent): void => {
-    const report = PromiseErrorReport.fromPromiseRejectionEvent(
+    const report = UnhandledPromiseRejectionReport.fromPromiseRejectionEvent(
       generateId(),
       event
     );

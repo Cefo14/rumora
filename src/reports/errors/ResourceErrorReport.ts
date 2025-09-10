@@ -1,5 +1,5 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-import { ErrorReport, SeverityLevel } from "./ErrorReport";
+import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 interface ResourceErrorData {
   id: string;
@@ -13,7 +13,7 @@ interface ResourceErrorData {
  * Extracts resource type from ErrorEvent target element.
  * 
  * @param errorEvent - The ErrorEvent from resource loading failure
- * @returns Categorized resource type for analysis
+ * @returns Resource type or 'unknown' if unable to determine
  */
 const getResourceType = (errorEvent: ErrorEvent): string => {
   const target = errorEvent.target as HTMLElement;
@@ -22,22 +22,12 @@ const getResourceType = (errorEvent: ErrorEvent): string => {
   if (tagName === 'link') {
     const rel = (target as HTMLLinkElement).rel;
     if (rel?.includes('stylesheet')) return 'stylesheet';
-    if (rel?.includes('preload') || rel?.includes('prefetch')) return 'preload';
+    if (rel?.includes('preload')) return 'preload';
+    if (rel?.includes('prefetch')) return 'prefetch';
     if (rel?.includes('icon') || rel?.includes('shortcut')) return 'favicon';
     if (rel?.includes('manifest')) return 'manifest';
     return 'link';
   }
-  
-  if (tagName === 'object' || tagName === 'embed') {
-    return 'object';
-  }
-
-  // Casos adicionales
-  if (tagName === 'img') return 'image';
-  if (tagName === 'video') return 'video';
-  if (tagName === 'audio') return 'audio';
-  if (tagName === 'source') return 'source';
-  if (tagName === 'track') return 'track';
 
   return tagName;
 };
@@ -53,7 +43,7 @@ const getResourceURL = (errorEvent: ErrorEvent): string => {
   if ('src' in target && target.src) return target.src as string;
   if ('href' in target && target.href) return target.href as string;
   if ('data' in target && target.data) return target.data as string;
-  return 'unknown';
+  return UNKNOWN;
 };
 
 /**
@@ -176,8 +166,8 @@ export class ResourceErrorReport implements ErrorReport {
    * may fail due to network issues outside of application control.
    */
   public get isThirdParty(): boolean {
-    if (this.resourceUrl === 'unknown') return false;
-    
+    if (this.resourceUrl === UNKNOWN) return false;
+
     try {
       const resourceHost = new URL(this.resourceUrl).hostname;
       const currentHost = window.location.hostname;
@@ -204,14 +194,14 @@ export class ResourceErrorReport implements ErrorReport {
    * 
    * Useful for categorizing failures by domain and identifying
    * patterns in third-party service reliability.
+   * 
+   * @returns Domain name or 'unknown' if URL is invalid
    */
   public get resourceDomain(): string {
-    if (this.resourceUrl === 'unknown') return 'unknown';
-    
     try {
       return new URL(this.resourceUrl).hostname;
     } catch {
-      return 'invalid-url';
+      return UNKNOWN;
     }
   }
 

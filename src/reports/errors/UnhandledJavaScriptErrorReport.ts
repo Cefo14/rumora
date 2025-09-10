@@ -1,5 +1,5 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-import { ErrorReport, SeverityLevel } from "./ErrorReport";
+import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type ErrorCategory = 'syntax' | 'runtime' | 'network' | 'resource' | 'unknown';
 
@@ -19,7 +19,7 @@ interface JavaScriptErrorData {
  * Extracts error message from ErrorEvent with fallback hierarchy.
  * 
  * @param errorEvent - The ErrorEvent from window.onerror or similar
- * @returns Extracted error message or fallback text
+ * @returns Extracted error message or 'unknown' if none found
  */
 const extractErrorMessage = (errorEvent: ErrorEvent): string => {
   // Try direct message first
@@ -40,7 +40,7 @@ const extractErrorMessage = (errorEvent: ErrorEvent): string => {
     }
   }
   
-  return 'Unknown JavaScript error occurred';
+  return UNKNOWN;
 };
 
 /**
@@ -50,7 +50,7 @@ const extractErrorMessage = (errorEvent: ErrorEvent): string => {
  * source location tracking, and third-party script detection for better
  * error monitoring and debugging capabilities.
  */
-export class JavaScriptErrorReport implements ErrorReport {
+export class UnhandledJavaScriptErrorReport implements ErrorReport {
   /**
    * Unique identifier for the error report
    */
@@ -134,8 +134,8 @@ export class JavaScriptErrorReport implements ErrorReport {
    * @param data - JavaScript error data
    * @returns New JavaScriptErrorReport instance
    */
-  public static create(data: JavaScriptErrorData): JavaScriptErrorReport {
-    return new JavaScriptErrorReport(data);
+  public static create(data: JavaScriptErrorData): UnhandledJavaScriptErrorReport {
+    return new UnhandledJavaScriptErrorReport(data);
   }
 
   /**
@@ -145,8 +145,8 @@ export class JavaScriptErrorReport implements ErrorReport {
    * @param errorEvent - ErrorEvent from window.onerror or similar handlers
    * @returns New JavaScriptErrorReport instance with extracted error data
    */
-  public static fromErrorEvent(id: string, errorEvent: ErrorEvent): JavaScriptErrorReport {
-    return new JavaScriptErrorReport({
+  public static fromErrorEvent(id: string, errorEvent: ErrorEvent): UnhandledJavaScriptErrorReport {
+    return new UnhandledJavaScriptErrorReport({
       id,
       createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
@@ -231,6 +231,7 @@ export class JavaScriptErrorReport implements ErrorReport {
 
   /**
    * Gets a simplified error category for grouping and analysis.
+   * @returns Error category or 'unknown' if undetermined
    */
   public get errorCategory(): ErrorCategory {
     const errorName = this.errorName?.toLowerCase() ?? '';
@@ -240,7 +241,7 @@ export class JavaScriptErrorReport implements ErrorReport {
     if (['typeerror', 'referenceerror', 'rangeerror'].includes(errorName)) return 'runtime';
     if (this.errorMessage.toLowerCase().includes('load')) return 'resource';
     
-    return 'unknown';
+    return UNKNOWN;
   }
 
   /**

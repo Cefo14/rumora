@@ -1,5 +1,5 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-import { ErrorReport, SeverityLevel } from "./ErrorReport";
+import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type RejectionType = 'network' | 'javascript' | 'parsing' | 'timeout' | 'memory' | 'loading' | 'generic';
 
@@ -16,16 +16,16 @@ interface PromiseErrorData {
  * Extracts error message from PromiseRejectionEvent with comprehensive fallback hierarchy.
  * 
  * @param promiseError - The PromiseRejectionEvent from unhandledrejection listener
- * @returns Extracted error message or descriptive fallback text
+ * @returns Extracted error message or 'unknown' if unable to determine
  */
 const extractErrorMessage = (promiseError: PromiseRejectionEvent): string => {
   const { reason } = promiseError;
-  
-  if (!reason) return 'Promise rejected with no reason';
-  
+
+  if (!reason) return UNKNOWN;
+
   // Handle Error objects
   if (reason instanceof Error) {
-    return reason.message || 'Unknown error';
+    return reason.message || UNKNOWN;
   }
   
   // Handle string reasons
@@ -37,7 +37,7 @@ const extractErrorMessage = (promiseError: PromiseRejectionEvent): string => {
     if (message) return message;
     
     if (reason.status) {
-      return `${reason.status}: ${reason.statusText || 'Unknown'}`;
+      return `${reason.status}: ${reason.statusText || UNKNOWN}`;
     }
   }
   
@@ -45,7 +45,7 @@ const extractErrorMessage = (promiseError: PromiseRejectionEvent): string => {
   try {
     return String(reason);
   } catch {
-    return 'Promise rejected with unserializable reason';
+    return UNKNOWN;
   }
 };
 
@@ -56,7 +56,7 @@ const extractErrorMessage = (promiseError: PromiseRejectionEvent): string => {
  * rejection type categorization, and comprehensive analysis for better
  * error monitoring and debugging of asynchronous operations.
  */
-export class PromiseErrorReport implements ErrorReport {
+export class UnhandledPromiseRejectionReport implements ErrorReport {
   /** Unique identifier for the error report */
   public readonly id: string;
   
@@ -107,8 +107,8 @@ export class PromiseErrorReport implements ErrorReport {
    * @param data - Promise error data
    * @returns New PromiseErrorReport instance
    */
-  public static create(data: PromiseErrorData): PromiseErrorReport {
-    return new PromiseErrorReport(data);
+  public static create(data: PromiseErrorData): UnhandledPromiseRejectionReport {
+    return new UnhandledPromiseRejectionReport(data);
   }
 
   /**
@@ -121,8 +121,8 @@ export class PromiseErrorReport implements ErrorReport {
   public static fromPromiseRejectionEvent(
     id: string, 
     promiseError: PromiseRejectionEvent
-  ): PromiseErrorReport {
-    return new PromiseErrorReport({
+  ): UnhandledPromiseRejectionReport {
+    return new UnhandledPromiseRejectionReport({
       id,
       createdAt: PerformanceTimestamp.now(),
       occurredAt: PerformanceTimestamp.fromRelativeTime(promiseError.timeStamp),

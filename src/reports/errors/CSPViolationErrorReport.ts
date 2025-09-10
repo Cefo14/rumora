@@ -1,7 +1,7 @@
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-import { ErrorReport, SeverityLevel } from "./ErrorReport";
+import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
-type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'other';
+type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'unknown';
 
 type RecommendedAction = 'whitelist' | 'refactor' | 'investigate' | 'monitor'
 
@@ -225,6 +225,7 @@ export class CSPViolationErrorReport implements ErrorReport {
 
   /**
    * Gets the category of CSP violation for analysis and grouping.
+   * @returns Violation type or 'unknown' if unable to categorize
    */
   public get violationType(): ViolationType {
     const directive = this.directive;
@@ -235,8 +236,8 @@ export class CSPViolationErrorReport implements ErrorReport {
     if (directive.startsWith('img-src') || directive.startsWith('media-src')) return 'media';
     if (directive.startsWith('frame-src') || directive.startsWith('child-src')) return 'frame';
     if (directive.startsWith('font-src')) return 'font';
-    
-    return 'other';
+
+    return UNKNOWN;
   }
 
   /**
@@ -412,7 +413,7 @@ export class CSPViolationErrorReport implements ErrorReport {
     try {
       return window.location.hostname;
     } catch {
-      return 'unknown';
+      return UNKNOWN;
     }
   }
 
@@ -420,7 +421,7 @@ export class CSPViolationErrorReport implements ErrorReport {
     try {
       return window.location.origin;
     } catch {
-      return 'unknown';
+      return UNKNOWN;
     }
   }
 }

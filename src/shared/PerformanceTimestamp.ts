@@ -10,26 +10,8 @@ import { ValueObject } from "./ValueObject";
  * automatically and provides a consistent API for performance monitoring.
  * 
  * The timestamp is internally stored as relative time for accuracy and consistency,
- * but can be accessed in either format as needed.
- * 
- * @example
- * ```typescript
- * // Creating from performance entry (relative time)
- * const startTime = PerformanceTimestamp.fromRelativeTime(entry.startTime);
- * 
- * // Creating from absolute timestamp (for testing)
- * const mockTime = PerformanceTimestamp.fromAbsoluteTime(Date.now());
- * 
- * // Using the timestamp
- * console.log('Relative:', startTime.relative);  // e.g., 1234.56ms since navigation
- * console.log('Absolute:', startTime.absolute);  // e.g., 1703123456789.12 epoch time
- * 
- * // Calculating durations (use relative times)
- * const duration = endTime.relative - startTime.relative;
- * 
- * // Correlating events (use absolute times)
- * const occurredAt = new Date(event.timestamp.absolute);
- * ```
+ * but can be accessed in either format as needed.ccurredAt = new Date(event.timestamp.absolute);
+ *
  */
 export class PerformanceTimestamp implements ValueObject {
   /** 
@@ -344,20 +326,19 @@ export class PerformanceTimestamp implements ValueObject {
    * as it's more useful for analysis and storage. The absolute time allows
    * correlation with other systems and is more meaningful in reports.
    * 
-   * @returns Absolute timestamp as a number for JSON serialization
+   * @returns Object with absolute and relative time properties
    * 
    * @example
    * ```typescript
-   * const report = {
-   *   id: 'example',
-   *   timestamp: PerformanceTimestamp.fromRelativeTime(100)
-   * };
-   * 
-   * JSON.stringify(report);
-   * // Result: {"id":"example","timestamp":1703123456789.12}
+   * const timestamp = PerformanceTimestamp.fromRelativeTime(1234.56);
+   * const json = JSON.stringify(timestamp);
+   * console.log(json); // '{"absolute":1703123456789.12,"relative":1234.56}'
    * ```
    */
   toJSON() {
-    return this.absoluteTime;
+    return {
+      absolute: this._absoluteTime,
+      relative: this._relativeTime,
+    }
   }
 }
