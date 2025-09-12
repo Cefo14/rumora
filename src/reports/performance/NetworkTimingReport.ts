@@ -1,25 +1,17 @@
 import type { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
-
-/**
- * Network timing segment with start, end, and calculated duration
- */
-interface TimingSegment {
-  start?: PerformanceTimestamp;
-  end?: PerformanceTimestamp;
-  duration: number;
-}
+import { TimeSegment } from "@/shared/TimeSegment";
 
 /**
  * Grouped network timing segments for navigation timing analysis
  */
 interface NavigationSegments {
-  redirects: TimingSegment;
-  dnsLookup: TimingSegment;
-  tcpConnect: TimingSegment;
-  tlsHandshake?: TimingSegment;
-  serverProcessing: TimingSegment;
-  contentDownload: TimingSegment;
+  redirects: TimeSegment
+  dnsLookup: TimeSegment;
+  tcpConnect: TimeSegment;
+  tlsHandshake?: TimeSegment;
+  serverProcessing: TimeSegment;
+  contentDownload: TimeSegment;
 }
 
 /**
@@ -36,12 +28,12 @@ interface NetworkTimingData {
   decodedSize: number;
   
   // Network segments
-  redirects: TimingSegment;
-  dnsLookup: TimingSegment;
-  tcpConnect: TimingSegment;
-  tlsHandshake?: TimingSegment;
-  serverProcessing: TimingSegment;
-  contentDownload: TimingSegment;
+  redirects: TimeSegment;
+  dnsLookup: TimeSegment;
+  tcpConnect: TimeSegment;
+  tlsHandshake?: TimeSegment;
+  serverProcessing: TimeSegment;
+  contentDownload: TimeSegment;
 }
 
 /**
@@ -49,7 +41,7 @@ interface NetworkTimingData {
  * 
  * Tracks the time spent in different phases of network communication,
  * from DNS resolution to complete response download. Uses the same
- * TimingSegment pattern as ResourceTimingReport for consistency.
+ * TimeSegment pattern as ResourceTimingReport for consistency.
  */
 export class NetworkTimingReport implements Report {
   /** Unique identifier for the report */
@@ -71,22 +63,22 @@ export class NetworkTimingReport implements Report {
   public readonly decodedSize: number;
 
   /** Time spent on redirects if any occurred */
-  private readonly redirects: TimingSegment;
+  private readonly redirects: TimeSegment;
 
   /** DNS resolution timing */
-  private readonly dnsLookup: TimingSegment;
+  private readonly dnsLookup: TimeSegment;
 
   /** TCP connection establishment */
-  private readonly tcpConnect: TimingSegment;
+  private readonly tcpConnect: TimeSegment;
 
   /** TLS/SSL handshake (only for HTTPS) */
-  private readonly tlsHandshake?: TimingSegment;
+  private readonly tlsHandshake?: TimeSegment;
 
   /** Server processing time (request sent to first byte received) */
-  private readonly serverProcessing: TimingSegment;
+  private readonly serverProcessing: TimeSegment;
 
   /** Content download time */
-  private readonly contentDownload: TimingSegment;
+  private readonly contentDownload: TimeSegment;
 
   /**
    * Creates a new NetworkTimingReport instance.
@@ -132,13 +124,8 @@ export class NetworkTimingReport implements Report {
     id: string, 
     entry: PerformanceNavigationTiming
   ): NetworkTimingReport {
-    // Helper to create PerformanceTimestamp from relative time, handling 0 values
-    const fromRelativeTime = (relativeTime: number): PerformanceTimestamp | undefined => {
-      return relativeTime > 0 ? PerformanceTimestamp.fromRelativeTime(relativeTime) : undefined;
-    };
-
     // Calculate network timing segments
-    const segments = this.calculateNavigationSegments(entry, fromRelativeTime);
+    const segments = this.calculateNavigationSegments(entry);
     
     return new NetworkTimingReport({
       id,
@@ -166,52 +153,45 @@ export class NetworkTimingReport implements Report {
    */
   private static calculateNavigationSegments(
     entry: PerformanceNavigationTiming,
-    fromRelativeTime: (time: number) => PerformanceTimestamp | undefined
   ): NavigationSegments {
     // Redirects: time spent on any redirects
-    const redirects: TimingSegment = {
-      start: fromRelativeTime(entry.redirectStart),
-      end: fromRelativeTime(entry.redirectEnd),
-      duration: Math.max(0, entry.redirectEnd - entry.redirectStart)
-    };
+    const redirects: TimeSegment = TimeSegment.fromTiming(
+      entry.redirectStart,
+      entry.redirectEnd
+    )
 
     // DNS Lookup: domain resolution time
-    const dnsLookup: TimingSegment = {
-      start: fromRelativeTime(entry.domainLookupStart),
-      end: fromRelativeTime(entry.domainLookupEnd),
-      duration: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart)
-    };
+    const dnsLookup: TimeSegment = TimeSegment.fromTiming(
+      entry.domainLookupStart,
+      entry.domainLookupEnd
+    );
 
     // TCP Connect: connection establishment time
-    const tcpConnect: TimingSegment = {
-      start: fromRelativeTime(entry.connectStart),
-      end: fromRelativeTime(entry.connectEnd),
-      duration: Math.max(0, entry.connectEnd - entry.connectStart)
-    };
+    const tcpConnect: TimeSegment = TimeSegment.fromTiming(
+      entry.connectStart,
+      entry.connectEnd
+    );
 
     // TLS Handshake: SSL/TLS negotiation (only for HTTPS)
-    let tlsHandshake: TimingSegment | undefined;
+    let tlsHandshake: TimeSegment | undefined;
     if (entry.secureConnectionStart > 0 && entry.secureConnectionStart <= entry.connectEnd) {
-      tlsHandshake = {
-        start: fromRelativeTime(entry.secureConnectionStart),
-        end: fromRelativeTime(entry.connectEnd),
-        duration: Math.max(0, entry.connectEnd - entry.secureConnectionStart)
-      };
+      tlsHandshake = TimeSegment.fromTiming(
+        entry.secureConnectionStart,
+        entry.connectEnd
+      );
     }
 
     // Server Processing: time from request sent to first response byte (TTFB)
-    const serverProcessing: TimingSegment = {
-      start: fromRelativeTime(entry.requestStart),
-      end: fromRelativeTime(entry.responseStart),
-      duration: Math.max(0, entry.responseStart - entry.requestStart)
-    };
+    const serverProcessing: TimeSegment = TimeSegment.fromTiming(
+      entry.requestStart,
+      entry.responseStart
+    );
 
     // Content Download: time to download the complete response
-    const contentDownload: TimingSegment = {
-      start: fromRelativeTime(entry.responseStart),
-      end: fromRelativeTime(entry.responseEnd),
-      duration: Math.max(0, entry.responseEnd - entry.responseStart)
-    };
+    const contentDownload: TimeSegment = TimeSegment.fromTiming(
+      entry.responseStart,
+      entry.responseEnd
+    );
 
     return {
       redirects,

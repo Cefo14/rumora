@@ -1,24 +1,17 @@
 import { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { TimeSegment } from "@/shared/TimeSegment";
 
-/**
- * Network timing segment with start, end, and calculated duration
- */
-interface TimingSegment {
-  start?: PerformanceTimestamp;
-  end?: PerformanceTimestamp;
-  duration: number;
-}
 
 /**
  * Grouped network timing segments for easier analysis
  */
 interface NetworkSegments {
-  dnsLookup: TimingSegment;
-  tcpConnect: TimingSegment;
-  tlsHandshake?: TimingSegment;
-  serverProcessing: TimingSegment;
-  contentDownload: TimingSegment;
+  dnsLookup: TimeSegment;
+  tcpConnect: TimeSegment;
+  tlsHandshake?: TimeSegment;
+  serverProcessing: TimeSegment;
+  contentDownload: TimeSegment;
 }
 
 /**
@@ -53,15 +46,15 @@ interface ResourceTimingData {
   decodedSize: number;
 
   /** DNS resolution timing */
-  dnsLookup: TimingSegment;
+  dnsLookup: TimeSegment;
   /** TCP connection establishment */
-  tcpConnect: TimingSegment;
+  tcpConnect: TimeSegment;
   /** TLS/SSL handshake (only for HTTPS) */
-  tlsHandshake?: TimingSegment;
+  tlsHandshake?: TimeSegment;
   /** Server processing time (request sent to first byte received) */
-  serverProcessing: TimingSegment;
+  serverProcessing: TimeSegment;
   /** Content download time */
-  contentDownload: TimingSegment;
+  contentDownload: TimeSegment;
 }
 
 /**
@@ -104,19 +97,19 @@ export class ResourceTimingReport implements Report {
   public readonly decodedSize: number;
 
   /** DNS resolution timing */
-  private readonly dnsLookup: TimingSegment;
+  private readonly dnsLookup: TimeSegment;
 
   /** TCP connection establishment */
-  private readonly tcpConnect: TimingSegment;
+  private readonly tcpConnect: TimeSegment;
 
   /** TLS/SSL handshake (only for HTTPS) */
-  private readonly tlsHandshake?: TimingSegment;
+  private readonly tlsHandshake?: TimeSegment;
 
   /** Server processing time (request sent to first byte received) */
-  private readonly serverProcessing: TimingSegment;
+  private readonly serverProcessing: TimeSegment;
 
   /** Content download time */
-  private readonly contentDownload: TimingSegment;
+  private readonly contentDownload: TimeSegment;
 
 
   /**
@@ -164,13 +157,8 @@ export class ResourceTimingReport implements Report {
     id: string,
     entry: PerformanceResourceTiming
   ): ResourceTimingReport {
-    // Helper to create PerformanceTimestamp from relative time, handling 0 values
-    const fromRelativeTime = (relativeTime: number): PerformanceTimestamp | undefined => {
-      return relativeTime > 0 ? PerformanceTimestamp.fromRelativeTime(relativeTime) : undefined;
-    };
-
     // Calculate network timing segments
-    const networkSegments = this.calculateNetworkSegments(entry, fromRelativeTime);
+    const networkSegments = this.calculateNetworkSegments(entry);
 
     return new ResourceTimingReport({
       id,
@@ -201,45 +189,39 @@ export class ResourceTimingReport implements Report {
    */
   private static calculateNetworkSegments(
     entry: PerformanceResourceTiming,
-    fromRelativeTime: (time: number) => PerformanceTimestamp | undefined
   ): NetworkSegments {
     // DNS Lookup: domain resolution time
-    const dnsLookup: TimingSegment = {
-      start: fromRelativeTime(entry.domainLookupStart),
-      end: fromRelativeTime(entry.domainLookupEnd),
-      duration: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart)
-    };
+    const dnsLookup: TimeSegment = TimeSegment.fromTiming(
+      entry.domainLookupStart,
+      entry.domainLookupEnd
+    );
 
     // TCP Connect: connection establishment time
-    const tcpConnect: TimingSegment = {
-      start: fromRelativeTime(entry.connectStart),
-      end: fromRelativeTime(entry.connectEnd),
-      duration: Math.max(0, entry.connectEnd - entry.connectStart)
-    };
+    const tcpConnect: TimeSegment = TimeSegment.fromTiming(
+      entry.connectStart,
+      entry.connectEnd
+    );
 
     // TLS Handshake: SSL/TLS negotiation (only for HTTPS)
-    let tlsHandshake: TimingSegment | undefined;
+    let tlsHandshake: TimeSegment | undefined;
       if (entry.secureConnectionStart > 0) {
-        tlsHandshake = {
-        start: fromRelativeTime(entry.secureConnectionStart),
-        end: fromRelativeTime(entry.connectEnd),
-        duration: Math.max(0, entry.connectEnd - entry.secureConnectionStart)
-      };
+        tlsHandshake = TimeSegment.fromTiming(
+          entry.secureConnectionStart,
+          entry.connectEnd
+        );
     }
 
     // Server Processing: time from request sent to first response byte
-    const serverProcessing: TimingSegment = {
-      start: fromRelativeTime(entry.requestStart),
-      end: fromRelativeTime(entry.responseStart),
-      duration: Math.max(0, entry.responseStart - entry.requestStart)
-    };
+    const serverProcessing: TimeSegment = TimeSegment.fromTiming(
+      entry.requestStart,
+      entry.responseStart
+    );
 
     // Content Download: time to download the response body
-    const contentDownload: TimingSegment = {
-      start: fromRelativeTime(entry.responseStart),
-      end: fromRelativeTime(entry.responseEnd),
-      duration: Math.max(0, entry.responseEnd - entry.responseStart)
-    };
+    const contentDownload: TimeSegment = TimeSegment.fromTiming(
+      entry.responseStart,
+      entry.responseEnd
+    );
 
     return {
       dnsLookup,
@@ -396,31 +378,11 @@ export class ResourceTimingReport implements Report {
       primaryBottleneck: this.primaryBottleneck,
 
       // Detailed network timing segments
-      dnsLookup: {
-        duration: this.dnsLookup.duration,
-        start: this.dnsLookup.start?.absoluteTime,
-        end: this.dnsLookup.end?.absoluteTime
-      },
-      tcpConnect: {
-        duration: this.tcpConnect.duration,
-        start: this.tcpConnect.start?.absoluteTime,
-        end: this.tcpConnect.end?.absoluteTime
-      },
-      serverProcessing: {
-        duration: this.serverProcessing.duration,
-        start: this.serverProcessing.start?.absoluteTime,
-        end: this.serverProcessing.end?.absoluteTime
-      },
-      contentDownload: {
-        duration: this.contentDownload.duration,
-        start: this.contentDownload.start?.absoluteTime,
-        end: this.contentDownload.end?.absoluteTime
-      },
-      tlsHandshake: this.tlsHandshake ? {
-        duration: this.tlsHandshake.duration,
-        start: this.tlsHandshake.start?.absoluteTime,
-        end: this.tlsHandshake.end?.absoluteTime
-      } : null,
+      dnsLookup: this.dnsLookup.toJSON(),
+      tcpConnect: this.tcpConnect.toJSON(),
+      serverProcessing: this.serverProcessing.toJSON(),
+      contentDownload: this.contentDownload.toJSON(),
+      tlsHandshake: this.tlsHandshake ? this.tlsHandshake.toJSON() : null,
     };
   }
 }

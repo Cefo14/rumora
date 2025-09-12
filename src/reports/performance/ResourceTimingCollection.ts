@@ -181,8 +181,8 @@ export class ResourceTimingCollection {
 
   toJSON() {
     return {
-      createdAt: this.createdAt.toJSON(),
-      lastUpdated: this.lastUpdated.toJSON(),
+      createdAt: this.createdAt.absoluteTime,
+      lastUpdated: this.lastUpdated.absoluteTime,
       totalResources: this.totalResources,
       totalTransferSize: this.totalTransferSize,
       totalDecodedSize: this.totalDecodedSize,
