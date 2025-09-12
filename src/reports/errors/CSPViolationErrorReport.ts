@@ -3,8 +3,6 @@ import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'unknown';
 
-type RecommendedAction = 'whitelist' | 'refactor' | 'investigate' | 'monitor'
-
 interface CSPViolationErrorData {
   id: string;
   createdAt: PerformanceTimestamp;
@@ -259,17 +257,6 @@ export class CSPViolationErrorReport implements ErrorReport {
   }
 
   /**
-   * Checks if this violation requires immediate security attention.
-   * 
-   * Critical violations and high-severity inline violations typically
-   * indicate security risks that should be addressed urgently.
-   */
-  public get requiresImmediateAction(): boolean {
-    return this.severity === 'critical' || 
-           (this.severity === 'high' && this.isInlineViolation);
-  }
-
-  /**
    * Checks if the blocked URI is a special CSP keyword.
    * 
    * Special URIs like 'inline', 'eval', 'data:', etc. have specific
@@ -280,17 +267,6 @@ export class CSPViolationErrorReport implements ErrorReport {
     return specialURIs.some(special => 
       this.blockedURI.startsWith(special) || this.blockedURI === special
     );
-  }
-
-  /**
-   * Gets recommended action based on violation type and severity.
-   */
-  public get recommendedAction(): RecommendedAction {
-    if (this.isEvalBlocked) return 'refactor';
-    if (this.isInlineViolation && this.severity === 'critical') return 'refactor';
-    if (this.isSameOriginViolation) return 'whitelist';
-    if (this.isThirdPartyViolation && this.severity === 'high') return 'investigate';
-    return 'monitor';
   }
 
   /**
@@ -393,35 +369,22 @@ export class CSPViolationErrorReport implements ErrorReport {
        * @enum {string} 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'other'
        */
       violationType: this.violationType,
-      /**
-       * Indicates if this violation requires immediate security attention
-       */
-      requiresImmediateAction: this.requiresImmediateAction,
-      /**
-       * Recommended action based on violation type and severity
-       * - whitelist: Legitimate resource, consider adding to CSP whitelist
-       * - refactor: Unsafe practice, refactor code to comply with CSP
-       * - investigate: Potential security risk, investigate further
-       * - monitor: Low risk, monitor for patterns over time
-       * @enum {string} 'whitelist' | 'refactor' | 'investigate' | 'monitor'
-       */
-      recommendedAction: this.recommendedAction
     };
   }
 
-  private getCurrentHost(): string {
+  private getCurrentHost(): string | null {
     try {
       return window.location.hostname;
     } catch {
-      return UNKNOWN;
+      return null;
     }
   }
 
-  private getCurrentOrigin(): string {
+  private getCurrentOrigin(): string | null {
     try {
       return window.location.origin;
     } catch {
-      return UNKNOWN;
+      return null;
     }
   }
 }

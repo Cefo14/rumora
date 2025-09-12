@@ -14,24 +14,6 @@ import { Serialized } from "@/shared/Serialized";
  * This helps identify resource loading bottlenecks and optimize web performance
  * by analyzing each resource's loading characteristics and identifying patterns
  * in slow-loading assets.
- * 
- * @example
- * ```typescript
- * const resourceTiming = new ResourceTiming();
- * 
- * resourceTiming.subscribe((error, report) => {
- *   if (error) {
- *     console.error('Resource Timing not supported:', error.message);
- *     return;
- *   }
- *   
- *   if (report.isProblematic) {
- *     console.warn(`Slow resource detected: ${report.name}`);
- *     console.warn(`Category: ${report.category}, Duration: ${report.duration}ms`);
- *     console.warn(`Primary bottleneck: ${report.primaryBottleneck}`);
- *   }
- * });
- * ```
  */
 export class ResourceTiming extends PerformanceMetricObserver<Serialized<ResourceTimingCollection>> {
   private readonly resourceCollection: ResourceTimingCollection = new ResourceTimingCollection();

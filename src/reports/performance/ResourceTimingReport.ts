@@ -2,18 +2,36 @@ import { Report } from "@/shared/Report";
 import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
 
 /**
+ * Network timing segment with start, end, and calculated duration
+ */
+interface TimingSegment {
+  start?: PerformanceTimestamp;
+  end?: PerformanceTimestamp;
+  duration: number;
+}
+
+/**
+ * Grouped network timing segments for easier analysis
+ */
+interface NetworkSegments {
+  dnsLookup: TimingSegment;
+  tcpConnect: TimingSegment;
+  tlsHandshake?: TimingSegment;
+  serverProcessing: TimingSegment;
+  contentDownload: TimingSegment;
+}
+
+/**
  * Data structure for creating a ResourceTimingReport.
  */
 interface ResourceTimingData {
   /** Unique identifier for the report */
   id: string;
-
   /** Timestamp when the report was created */
   createdAt: PerformanceTimestamp;
-
-  /** Timestamp when the resource was loaded */
+  /** Timestamp when the resource loading occurred */
   occurredAt: PerformanceTimestamp;
-
+  
   // Core resource information
   /** Resource name/URL */
   name: string;
@@ -30,45 +48,28 @@ interface ResourceTimingData {
   /** Transfer size in bytes (over the wire) */
   transferSize: number;
   /** Encoded body size in bytes (compressed) */
-  encodedBodySize: number;
+  encodedSize: number;
   /** Decoded body size in bytes (uncompressed) */
-  decodedBodySize: number;
-  
-  // Network timing details (optional for detailed analysis)
-  domainLookupStart?: PerformanceTimestamp;
-  domainLookupEnd?: PerformanceTimestamp;
-  connectStart?: PerformanceTimestamp;
-  connectEnd?: PerformanceTimestamp;
-  secureConnectionStart?: PerformanceTimestamp;
-  requestStart?: PerformanceTimestamp;
-  responseStart?: PerformanceTimestamp;
+  decodedSize: number;
+
+  /** DNS resolution timing */
+  dnsLookup: TimingSegment;
+  /** TCP connection establishment */
+  tcpConnect: TimingSegment;
+  /** TLS/SSL handshake (only for HTTPS) */
+  tlsHandshake?: TimingSegment;
+  /** Server processing time (request sent to first byte received) */
+  serverProcessing: TimingSegment;
+  /** Content download time */
+  contentDownload: TimingSegment;
 }
 
 /**
  * Report for Resource Timing API performance entries.
  * 
  * Resource timing provides detailed network timing information for loading
- * resources such as stylesheets, scripts, images, and fonts. This helps
- * identify network bottlenecks and optimize resource loading performance.
- * 
- * The report focuses on actionable insights for performance optimization
- * rather than exposing all raw timing data.
- * 
- * @example
- * ```typescript
- * // From PerformanceObserver
- * const report = ResourceTimingReport.fromPerformanceEntry(
- *   'rt-001',
- *   PerformanceTimestamp.fromAbsoluteTime(Date.now()),
- *   resourceEntry
- * );
- * 
- * // Check if resource is problematic
- * if (report.isProblematic) {
- *   console.log(`Slow resource: ${report.name}`);
- *   console.log(`Bottleneck: ${report.primaryBottleneck}`);
- *   console.log(`Started at: ${new Date(report.startTime.absolute)}`);
- * }
+ * resources such as stylesheets, scripts, images, and fonts. This report
+ * organizes timing data into logical segments for easier bottleneck identification.
  * ```
  */
 export class ResourceTimingReport implements Report {
@@ -78,7 +79,7 @@ export class ResourceTimingReport implements Report {
   /** Timestamp when the report was created */
   public readonly createdAt: PerformanceTimestamp;
 
-  /** Timestamp when the resource was loaded */
+  /** Timestamp when the resource loading occurred */
   public readonly occurredAt: PerformanceTimestamp;
   
   /** Resource name/URL */
@@ -97,19 +98,26 @@ export class ResourceTimingReport implements Report {
   public readonly transferSize: number;
   
   /** Encoded body size in bytes (compressed size) */
-  public readonly encodedBodySize: number;
-  
+  public readonly encodedSize: number;
+
   /** Decoded body size in bytes (uncompressed size) */
-  public readonly decodedBodySize: number;
-  
-  // Optional timing details (for detailed analysis)
-  private readonly domainLookupStart?: PerformanceTimestamp;
-  private readonly domainLookupEnd?: PerformanceTimestamp;
-  private readonly connectStart?: PerformanceTimestamp;
-  private readonly connectEnd?: PerformanceTimestamp;
-  private readonly secureConnectionStart?: PerformanceTimestamp;
-  private readonly requestStart?: PerformanceTimestamp;
-  private readonly responseStart?: PerformanceTimestamp;
+  public readonly decodedSize: number;
+
+  /** DNS resolution timing */
+  private readonly dnsLookup: TimingSegment;
+
+  /** TCP connection establishment */
+  private readonly tcpConnect: TimingSegment;
+
+  /** TLS/SSL handshake (only for HTTPS) */
+  private readonly tlsHandshake?: TimingSegment;
+
+  /** Server processing time (request sent to first byte received) */
+  private readonly serverProcessing: TimingSegment;
+
+  /** Content download time */
+  private readonly contentDownload: TimingSegment;
+
 
   /**
    * Creates a new ResourceTimingReport instance.
@@ -126,17 +134,13 @@ export class ResourceTimingReport implements Report {
     this.duration = data.duration;
     this.startTime = data.startTime;
     this.transferSize = data.transferSize;
-    this.encodedBodySize = data.encodedBodySize;
-    this.decodedBodySize = data.decodedBodySize;
-    
-    // Optional timing details
-    this.domainLookupStart = data.domainLookupStart;
-    this.domainLookupEnd = data.domainLookupEnd;
-    this.connectStart = data.connectStart;
-    this.connectEnd = data.connectEnd;
-    this.secureConnectionStart = data.secureConnectionStart;
-    this.requestStart = data.requestStart;
-    this.responseStart = data.responseStart;
+    this.encodedSize = data.encodedSize;
+    this.decodedSize = data.decodedSize;
+    this.dnsLookup = data.dnsLookup;
+    this.tcpConnect = data.tcpConnect;
+    this.tlsHandshake = data.tlsHandshake;
+    this.serverProcessing = data.serverProcessing;
+    this.contentDownload = data.contentDownload;
   }
 
   /**
@@ -154,7 +158,7 @@ export class ResourceTimingReport implements Report {
    * 
    * @param id - Unique identifier for the report
    * @param entry - PerformanceResourceTiming entry from Resource Timing API
-   * @returns New ResourceTimingReport instance with converted timing data
+   * @returns New ResourceTimingReport instance with calculated network segments
    */
   public static fromPerformanceResourceTiming(
     id: string,
@@ -165,6 +169,9 @@ export class ResourceTimingReport implements Report {
       return relativeTime > 0 ? PerformanceTimestamp.fromRelativeTime(relativeTime) : undefined;
     };
 
+    // Calculate network timing segments
+    const networkSegments = this.calculateNetworkSegments(entry, fromRelativeTime);
+
     return new ResourceTimingReport({
       id,
       createdAt: PerformanceTimestamp.now(),
@@ -174,16 +181,73 @@ export class ResourceTimingReport implements Report {
       duration: entry.duration,
       startTime: PerformanceTimestamp.fromRelativeTime(entry.fetchStart),
       transferSize: entry.transferSize || 0,
-      encodedBodySize: entry.encodedBodySize || 0,
-      decodedBodySize: entry.decodedBodySize || 0,
-      domainLookupStart: fromRelativeTime(entry.domainLookupStart),
-      domainLookupEnd: fromRelativeTime(entry.domainLookupEnd),
-      connectStart: fromRelativeTime(entry.connectStart),
-      connectEnd: fromRelativeTime(entry.connectEnd),
-      secureConnectionStart: fromRelativeTime(entry.secureConnectionStart),
-      requestStart: fromRelativeTime(entry.requestStart),
-      responseStart: fromRelativeTime(entry.responseStart),
+      encodedSize: entry.encodedBodySize || 0,
+      decodedSize: entry.decodedBodySize || 0,
+      dnsLookup: networkSegments.dnsLookup,
+      tcpConnect: networkSegments.tcpConnect,
+      tlsHandshake: networkSegments.tlsHandshake,
+      serverProcessing: networkSegments.serverProcessing,
+      contentDownload: networkSegments.contentDownload,
     });
+  }
+
+  /**
+   * Calculates network timing segments from PerformanceResourceTiming entry.
+   * 
+   * @param entry - Performance resource timing entry
+   * @param fromRelativeTime - Helper function to create PerformanceTimestamp
+   * @returns Calculated network segments
+   * @private
+   */
+  private static calculateNetworkSegments(
+    entry: PerformanceResourceTiming,
+    fromRelativeTime: (time: number) => PerformanceTimestamp | undefined
+  ): NetworkSegments {
+    // DNS Lookup: domain resolution time
+    const dnsLookup: TimingSegment = {
+      start: fromRelativeTime(entry.domainLookupStart),
+      end: fromRelativeTime(entry.domainLookupEnd),
+      duration: Math.max(0, entry.domainLookupEnd - entry.domainLookupStart)
+    };
+
+    // TCP Connect: connection establishment time
+    const tcpConnect: TimingSegment = {
+      start: fromRelativeTime(entry.connectStart),
+      end: fromRelativeTime(entry.connectEnd),
+      duration: Math.max(0, entry.connectEnd - entry.connectStart)
+    };
+
+    // TLS Handshake: SSL/TLS negotiation (only for HTTPS)
+    let tlsHandshake: TimingSegment | undefined;
+      if (entry.secureConnectionStart > 0) {
+        tlsHandshake = {
+        start: fromRelativeTime(entry.secureConnectionStart),
+        end: fromRelativeTime(entry.connectEnd),
+        duration: Math.max(0, entry.connectEnd - entry.secureConnectionStart)
+      };
+    }
+
+    // Server Processing: time from request sent to first response byte
+    const serverProcessing: TimingSegment = {
+      start: fromRelativeTime(entry.requestStart),
+      end: fromRelativeTime(entry.responseStart),
+      duration: Math.max(0, entry.responseStart - entry.requestStart)
+    };
+
+    // Content Download: time to download the response body
+    const contentDownload: TimingSegment = {
+      start: fromRelativeTime(entry.responseStart),
+      end: fromRelativeTime(entry.responseEnd),
+      duration: Math.max(0, entry.responseEnd - entry.responseStart)
+    };
+
+    return {
+      dnsLookup,
+      tcpConnect,
+      tlsHandshake,
+      serverProcessing,
+      contentDownload
+    };
   }
 
   /**
@@ -210,8 +274,13 @@ export class ResourceTimingReport implements Report {
     }
   }
 
+  /**
+   * Checks if the resource has compression applied.
+   * 
+   * @returns True if encoded size is smaller than decoded size
+   */
   public get hasCompression(): boolean {
-    return this.encodedBodySize < this.decodedBodySize;
+    return this.encodedSize < this.decodedSize;
   }
 
   /**
@@ -220,15 +289,55 @@ export class ResourceTimingReport implements Report {
    * @returns Compression ratio (0-1), where higher values mean better compression
    */
   public get compressionRatio(): number {
-    if (this.decodedBodySize === 0) return 0;
-    return Math.max(0, (this.decodedBodySize - this.encodedBodySize) / this.decodedBodySize);
+    if (this.decodedSize === 0) return 0;
+    return Math.max(0, (this.decodedSize - this.encodedSize) / this.decodedSize);
   }
 
   /**
-   * Checks if detailed timing information is available.
+   * Identifies the primary network bottleneck.
+   * 
+   * @returns The network segment with the longest duration
    */
-  private get hasDetailedTiming(): boolean {
-    return !!(this.requestStart && this.responseStart && this.domainLookupStart);
+  public get primaryBottleneck(): 'dns' | 'tcp' | 'tls' | 'server' | 'download' | 'none' {
+    let maxDuration = 0;
+    let bottleneck: 'dns' | 'tcp' | 'tls' | 'server' | 'download' | 'none' = 'none';
+
+    if (this.dnsLookup.duration > maxDuration) {
+      maxDuration = this.dnsLookup.duration;
+      bottleneck = 'dns';
+    }
+
+    if (this.tcpConnect.duration > maxDuration) {
+      maxDuration = this.tcpConnect.duration;
+      bottleneck = 'tcp';
+    }
+
+    if (this.tlsHandshake && this.tlsHandshake.duration > maxDuration) {
+      maxDuration = this.tlsHandshake.duration;
+      bottleneck = 'tls';
+    }
+
+    if (this.serverProcessing.duration > maxDuration) {
+      maxDuration = this.serverProcessing.duration;
+      bottleneck = 'server';
+    }
+
+    if (this.contentDownload.duration > maxDuration) {
+      maxDuration = this.contentDownload.duration;
+      bottleneck = 'download';
+    }
+
+    return bottleneck;
+  }
+
+  /**
+   * Checks if the resource has detailed timing information available.
+   * 
+   * @returns True if network segments have timing data
+   */
+  public get hasDetailedTiming(): boolean {
+    return this.serverProcessing.duration > 0 ||
+           this.dnsLookup.duration > 0;
   }
 
   /**
@@ -250,50 +359,68 @@ export class ResourceTimingReport implements Report {
    * @returns String representation with key performance insights
    */
   public toString(): string {
-    return `ResourceTimingReport: ${this.name} - ${this.duration}ms`;
+    const bottleneck = this.primaryBottleneck !== 'none' ? ` (bottleneck: ${this.primaryBottleneck})` : '';
+    return `ResourceTimingReport: ${this.name} - ${this.duration}ms${bottleneck}`;
   }
 
   /**
    * Converts the report to a JSON object suitable for serialization.
    * 
-   * @returns JSON representation with analysis insights
+   * @returns JSON representation with network segment analysis
    */
   public toJSON() {
     return {
+      // Basic report metadata
       id: this.id,
       createdAt: this.createdAt.absoluteTime,
       occurredAt: this.occurredAt.absoluteTime,
+      
+      // Resource identification
       name: this.name,
       domain: this.domain,
       type: this.type,
+      
+      // Overall timing
       duration: this.duration,
       startTime: this.startTime.absoluteTime,
       endTime: this.endTime.absoluteTime,
 
-      // Size analysis
+      // Resource size and compression analysis
       transferSize: this.transferSize,
-      encodedBodySize: this.encodedBodySize,
-      decodedBodySize: this.decodedBodySize,
+      encodedSize: this.encodedSize,
+      decodedSize: this.decodedSize,
       compressionRatio: this.compressionRatio,
       hasCompression: this.hasCompression,
 
-      // Origin analysis
       isThirdParty: this.isThirdParty,
-      
-      // Optional detailed timing (only if available)
-      ...(this.hasDetailedTiming && {
-        detailedTiming: {
-          domainLookupStart: this.domainLookupStart?.toJSON(),
-          domainLookupEnd: this.domainLookupEnd?.toJSON(),
-          connectStart: this.connectStart?.toJSON(),
-          connectEnd: this.connectEnd?.toJSON(),
-          secureConnectionStart: this.secureConnectionStart?.toJSON(),
-          requestStart: this.requestStart?.toJSON(),
-          responseStart: this.responseStart?.toJSON()
-        }
-      })
+      primaryBottleneck: this.primaryBottleneck,
+
+      // Detailed network timing segments
+      dnsLookup: {
+        duration: this.dnsLookup.duration,
+        start: this.dnsLookup.start?.absoluteTime,
+        end: this.dnsLookup.end?.absoluteTime
+      },
+      tcpConnect: {
+        duration: this.tcpConnect.duration,
+        start: this.tcpConnect.start?.absoluteTime,
+        end: this.tcpConnect.end?.absoluteTime
+      },
+      serverProcessing: {
+        duration: this.serverProcessing.duration,
+        start: this.serverProcessing.start?.absoluteTime,
+        end: this.serverProcessing.end?.absoluteTime
+      },
+      contentDownload: {
+        duration: this.contentDownload.duration,
+        start: this.contentDownload.start?.absoluteTime,
+        end: this.contentDownload.end?.absoluteTime
+      },
+      tlsHandshake: this.tlsHandshake ? {
+        duration: this.tlsHandshake.duration,
+        start: this.tlsHandshake.start?.absoluteTime,
+        end: this.tlsHandshake.end?.absoluteTime
+      } : null,
     };
   }
 }
-
-export type ResourceTimingReportJSON = ReturnType<ResourceTimingReport['toJSON']>;

@@ -9,25 +9,12 @@ import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
  * ResourceTiming observer to maintain state and provide useful analytics
  * about resource loading performance.
  * 
- * @example
- * ```typescript
- * const collection = new ResourceTimingCollection();
- * 
- * // Add individual reports (typically from observer)
- * collection.addResource(resourceReport);
- * 
- * // Get aggregated insights
- * console.log(`Total resources: ${collection.totalResources}`);
- * console.log(`Scripts: ${collection.getResourceCountByType('script')}`);
- * console.log(`Slow resources: ${collection.getSlowResources().length}`);
- * 
- * // Get summary for reporting
- * const summary = collection.getSummary();
- * ```
  */
 export class ResourceTimingCollection {
   /** Internal collection of resource timing reports */
   private readonly resources: Map<string, ResourceTimingReport> = new Map();
+
+  private resourcesAsArray: ResourceTimingReport[] = [];
 
   public createdAt: PerformanceTimestamp;
 
@@ -48,7 +35,7 @@ export class ResourceTimingCollection {
    * 
    * @returns Number of resources in the collection
    */
-  public get size(): number {
+  public get totalResources(): number {
     return this.resources.size;
   }
 
@@ -62,6 +49,120 @@ export class ResourceTimingCollection {
   }
 
   /**
+   * Gets total transfer size of all resources (bytes over the wire)
+   * 
+   * @returns Total bytes transferred across all resources
+   */
+  public get totalTransferSize(): number {
+    return this.resourcesAsArray
+      .reduce((total, resource) => total + resource.transferSize, 0);
+  }
+
+  /**
+   * Gets total decoded size of all resources (uncompressed)
+   * 
+   * @returns Total uncompressed bytes across all resources
+   */
+  public get totalDecodedSize(): number {
+    return this.resourcesAsArray
+      .reduce((total, resource) => total + resource.decodedSize, 0);
+  }
+
+  /**
+   * Gets total encoded size of all resources (compressed)
+   * 
+   * @returns Total compressed bytes across all resources
+   */
+  public get totalEncodedSize(): number {
+    return this.resourcesAsArray
+      .reduce((total, resource) => total + resource.encodedSize, 0);
+  }
+
+  /**
+   * Gets the slowest loading resource
+   * 
+   * @returns Slowest resource or null if collection is empty
+   */
+  public get slowestResource(): ResourceTimingReport | null {
+    if (this.isEmpty) return null;
+
+    return this.resourcesAsArray
+      .reduce((slowest, current) =>
+        current.duration > slowest.duration ? current : slowest
+      );
+  }
+
+  /**
+   * Gets all unique resource types in the collection
+   * 
+   * @returns Set of resource types present
+   */
+  public get resourceTypes(): Set<string> {
+    return new Set(this.resourcesAsArray.map(resource => resource.type));
+  }
+
+  /**
+   * Gets all third-party resources in the collection
+   * 
+   * @returns Array of third-party ResourceTimingReport instances
+   */
+  public get thirdPartyResources(): ResourceTimingReport[] {
+    return this.resourcesAsArray.filter(resource => resource.isThirdParty);
+  }
+
+  /**
+   * Groups resources by their type (e.g., script, image, css).
+   * 
+   * @returns Record mapping resource types to arrays of ResourceTimingReport
+   */
+  public get resourcesByType (): Record<string, ResourceTimingReport[]> {
+    const byType: Record<string, ResourceTimingReport[]> = {};
+    this.resourcesAsArray.forEach(resource => {
+      if (!byType[resource.type]) {
+        byType[resource.type] = [];
+      }
+      byType[resource.type].push(resource);
+    });
+    return byType;
+  }
+
+  /**
+   * Gets the average load time across all resources
+   * 
+   * @returns Average load time in milliseconds, or 0 if collection is empty
+   */
+  public get averageLoadTime(): number {
+    return this.isEmpty ? 0 : 
+      Math.round(this.resourcesAsArray.reduce((sum, r) => sum + r.duration, 0) / this.totalResources);
+  }
+
+  /**
+   * Gets total compression savings across all resources
+   * 
+   * @returns Total bytes saved due to compression
+   */
+  public get compressionSavings(): number {
+    return this.totalDecodedSize - this.totalEncodedSize;
+  }
+
+  /**
+   * Groups resources by their domain.
+   * 
+   * @returns Record mapping domains to arrays of ResourceTimingReport
+   */
+  public get resourcesByDomain(): Record<string, ResourceTimingReport[]> {
+    const byDomain: Record<string, ResourceTimingReport[]> = {};
+    this.resourcesAsArray.forEach(resource => {
+      const domain = resource.domain;
+      if (!byDomain[domain]) {
+        byDomain[domain] = [];
+      }
+      byDomain[domain].push(resource);
+    });
+    return byDomain;
+  }
+
+  /**
    * Adds a resource timing report to the collection.
    * 
    * If a resource with the same ID already exists, it will be replaced.
@@ -71,31 +172,42 @@ export class ResourceTimingCollection {
    */
   public addResource(report: ResourceTimingReport): void {
     this.resources.set(report.id, report);
-    this.updateLastUpdatedTime();
+    this.refresh();
   }
 
   toString(): string {
-    return `ResourceTimingCollection: ${this.size} resources`;
+    return `ResourceTimingCollection: ${this.totalResources} resources, ${Math.round(this.totalTransferSize / 1024)}KB total`;
   }
 
   toJSON() {
     return {
-      /**
-       * Unix timestamp in milliseconds when the collection was created
-       */
       createdAt: this.createdAt.toJSON(),
-      /**
-       * Unix timestamp in milliseconds when the collection was last updated
-       */
       lastUpdated: this.lastUpdated.toJSON(),
-      /**
-       * Array of resource timing reports
-       */
-      resources: Array.from(this.resources.values()).map(resource => resource.toJSON())
+      totalResources: this.totalResources,
+      totalTransferSize: this.totalTransferSize,
+      totalDecodedSize: this.totalDecodedSize,
+      totalEncodedSize: this.totalEncodedSize,
+      compressionSavings: this.compressionSavings,
+      averageLoadTime: this.averageLoadTime,
+      
+      resources: this.resourcesAsArray.map(resource => resource.toJSON()),
+      resourcesByType: Object.fromEntries(
+        Object.entries(this.resourcesByType).map(
+          ([type, resources]) => [type, resources.map(r => r.toJSON())]
+        )
+      ),
+      resourcesByDomain: Object.fromEntries(
+        Object.entries(this.resourcesByDomain).map(
+          ([domain, resources]) => [domain, resources.map(r => r.toJSON())]
+        )
+      ),
+      thirdPartyResources: this.thirdPartyResources.map(resource => resource.toJSON()),
+      slowestResource: this.slowestResource?.toJSON() ?? null,
     };
   }
 
-  private updateLastUpdatedTime(): void {
+  private refresh(): void {
     this.lastUpdated = PerformanceTimestamp.now();
+    this.resourcesAsArray = Array.from(this.resources.values());
   }
 }
