@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;

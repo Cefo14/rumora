@@ -1,4 +1,4 @@
-import { Report } from "@/shared/Report";
+import type { Report } from "@/reports/Report";
 
 export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';
 

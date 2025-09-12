@@ -1,5 +1,5 @@
-import { Entity } from "./Entity";
-import { ValueObject } from "./ValueObject";
+import { Entity } from "../reports/Entity";
+import { ValueObject } from "@/value-objects/ValueObject";
 
 /**
  * Extracts the serialized data from an Entity or ValueObject.

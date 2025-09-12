@@ -1,6 +1,6 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
 import { LayoutShiftEntry } from "@/shared/PerformanceEntryTypes";
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 /**
  * Cumulative Layout Shift (CLS) report for measuring visual stability.

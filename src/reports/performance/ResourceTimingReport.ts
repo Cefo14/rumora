@@ -1,6 +1,6 @@
-import { Report } from "@/shared/Report";
-import { PerformanceTime } from "@/shared/PerformanceTime";
-import { TimeSegment } from "@/shared/TimeSegment";
+import type { Report } from "@/reports/Report";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import { TimeSegment } from "@/value-objects/TimeSegment";
 
 
 /**

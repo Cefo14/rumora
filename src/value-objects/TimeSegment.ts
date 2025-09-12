@@ -1,4 +1,4 @@
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 import { ValueObject } from "./ValueObject";
 import { InvalidTimeSegmentException, InvalidEndTimeException } from "@/errors/TimeSegmentExceptions";
 

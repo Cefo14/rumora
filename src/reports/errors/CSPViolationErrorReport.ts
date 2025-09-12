@@ -1,4 +1,4 @@
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'unknown';

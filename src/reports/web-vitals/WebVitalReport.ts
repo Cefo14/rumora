@@ -1,5 +1,5 @@
-import { Report } from "@/shared/Report";
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import type { Report } from "@/reports/Report";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 /**
  * Rating classification for Web Vital metrics based on Google's Core Web Vitals thresholds.

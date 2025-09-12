@@ -1,5 +1,5 @@
 import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 /**
  * Collection and aggregator for ResourceTimingReport instances.

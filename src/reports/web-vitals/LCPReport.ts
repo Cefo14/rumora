@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/shared/PerformanceTime";
+import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 /**
  * Largest Contentful Paint (LCP) report for measuring loading performance.
