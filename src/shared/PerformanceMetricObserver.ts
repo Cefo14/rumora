@@ -1,8 +1,7 @@
 import { FallibleObserver } from "@/shared/FallibleObserver";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
 import { ObserverNotStartedException, PerformanceMetricObserverError } from "@/errors/PerformanceMetricObserverExceptions";
-
-type PerformanceObserverConfig = PerformanceObserverInit & { durationThreshold?: number };
+import { PerformanceObserverConfig } from "@/types/PerformanceObserverTypes";
 
 export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
   private performanceObserver: PerformanceObserver;
