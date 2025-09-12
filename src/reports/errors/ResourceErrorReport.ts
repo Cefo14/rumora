@@ -1,5 +1,5 @@
 import { PerformanceTime } from "@/value-objects/PerformanceTime";
-import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
+import { ErrorReport, SeverityLevel } from "./ErrorReport";
 
 interface ResourceErrorData {
   id: string;
@@ -11,9 +11,6 @@ interface ResourceErrorData {
 
 /**
  * Extracts resource type from ErrorEvent target element.
- * 
- * @param errorEvent - The ErrorEvent from resource loading failure
- * @returns Resource type or 'unknown' if unable to determine
  */
 const getResourceType = (errorEvent: ErrorEvent): string => {
   const target = errorEvent.target as HTMLElement;
@@ -22,10 +19,6 @@ const getResourceType = (errorEvent: ErrorEvent): string => {
   if (tagName === 'link') {
     const rel = (target as HTMLLinkElement).rel;
     if (rel?.includes('stylesheet')) return 'stylesheet';
-    if (rel?.includes('preload')) return 'preload';
-    if (rel?.includes('prefetch')) return 'prefetch';
-    if (rel?.includes('icon') || rel?.includes('shortcut')) return 'favicon';
-    if (rel?.includes('manifest')) return 'manifest';
     return 'link';
   }
 
@@ -34,49 +27,26 @@ const getResourceType = (errorEvent: ErrorEvent): string => {
 
 /**
  * Extracts resource URL from ErrorEvent target element.
- * 
- * @param errorEvent - The ErrorEvent from resource loading failure
- * @returns Resource URL or 'unknown' if unable to determine
  */
 const getResourceURL = (errorEvent: ErrorEvent): string => {
   const target = errorEvent.target as HTMLElement;
   if ('src' in target && target.src) return target.src as string;
   if ('href' in target && target.href) return target.href as string;
   if ('data' in target && target.data) return target.data as string;
-  return UNKNOWN;
+  return 'Unknown resource';
 };
 
 /**
- * Report for capturing and analyzing resource loading failures.
+ * Report for capturing resource loading failures.
  * 
- * Provides structured error information including resource classification,
- * severity assessment based on resource criticality, and third-party/CDN
- * detection for better error monitoring and debugging capabilities.
+ * Provides structured error information for monitoring
+ * and debugging failed resource loads.
  */
 export class ResourceErrorReport implements ErrorReport {
-  /** Unique identifier for the error report */
   public readonly id: string;
-  
-  /** Timestamp when the error report was created */
   public readonly createdAt: PerformanceTime;
-
-  /** Timestamp when the performance event occurred */
   public readonly occurredAt: PerformanceTime;
-
-  /**
-   * URL of the resource that failed to load.
-   * 
-   * Contains the complete URL of the resource that caused the loading
-   * error, essential for identifying and debugging failed resources.
-   */
   public readonly resourceUrl: string;
-
-  /**
-   * Type of resource that failed to load (e.g., script, stylesheet, image).
-   * 
-   * Categorizes the resource type for severity assessment and targeted
-   * analysis of different failure patterns.
-   */
   public readonly resourceType: string;
 
   private constructor(data: ResourceErrorData) {
@@ -91,9 +61,6 @@ export class ResourceErrorReport implements ErrorReport {
 
   /**
    * Creates a ResourceErrorReport from provided data.
-   * 
-   * @param data - Resource error data
-   * @returns New ResourceErrorReport instance
    */
   public static create(data: ResourceErrorData): ResourceErrorReport {
     return new ResourceErrorReport(data);
@@ -101,72 +68,45 @@ export class ResourceErrorReport implements ErrorReport {
 
   /**
    * Creates a ResourceErrorReport from an ErrorEvent.
-   * 
-   * @param id - Unique identifier for the error report
-   * @param errorEvent - ErrorEvent from resource loading failure
-   * @returns New ResourceErrorReport instance with extracted resource data
    */
   public static fromErrorEvent(id: string, errorEvent: ErrorEvent): ResourceErrorReport {
-    const resourceUrl = getResourceURL(errorEvent);
-    const resourceType = getResourceType(errorEvent);
-
-    const data: ResourceErrorData = {
+    return new ResourceErrorReport({
       id,
       createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(errorEvent.timeStamp),
-      resourceUrl,
-      resourceType,
-    };
-
-    return new ResourceErrorReport(data);
+      resourceUrl: getResourceURL(errorEvent),
+      resourceType: getResourceType(errorEvent),
+    });
   }
 
   /**
-   * Determines the severity level of the resource loading failure.
-   * 
-   * Classification based on resource criticality and failure impact:
-   * - CRITICAL: First-party scripts that break application functionality
-   * - HIGH: Stylesheets and critical resources affecting user experience
-   * - MEDIUM: Images and interactive content affecting visual presentation
-   * - LOW: Media content and non-essential resources
+   * Basic severity classification based on resource type.
    */
   public get severity(): SeverityLevel {
-    // CRITICAL - First-party scripts are application-breaking
-    if (this.resourceType === 'script' && !this.isThirdParty) {
-      return 'critical';
+    // Critical: Scripts can break functionality
+    if (this.resourceType === 'script') {
+      return this.isThirdParty ? 'high' : 'critical';
     }
 
-    // HIGH - Third-party scripts and all stylesheets affect major functionality
-    if (this.resourceType === 'script' && this.isThirdParty) {
-      return 'high';
-    }
-    
-    if (['stylesheet', 'link'].includes(this.resourceType)) {
+    // High: Stylesheets affect appearance significantly
+    if (this.resourceType === 'stylesheet' || this.resourceType === 'link') {
       return 'high';
     }
 
-    // MEDIUM - Visual and interactive content
-    if (['image', 'img', 'iframe', 'object', 'embed'].includes(this.resourceType)) {
+    // Medium: Images and interactive content
+    if (['img', 'image', 'iframe'].includes(this.resourceType)) {
       return 'medium';
     }
 
-    // LOW - Media and supplementary content
-    if (['video', 'audio', 'source', 'track', 'favicon', 'manifest'].includes(this.resourceType)) {
-      return 'low';
-    }
-
-    // DEFAULT for unknown resource types
+    // Low: Everything else (audio, video, etc.)
     return 'low';
   }
 
   /**
-   * Determines if the resource is loaded from a different domain.
-   * 
-   * Third-party resources often indicate external dependencies that
-   * may fail due to network issues outside of application control.
+   * Checks if resource is from a different domain.
    */
   public get isThirdParty(): boolean {
-    if (this.resourceUrl === UNKNOWN) return false;
+    if (this.resourceUrl === 'Unknown resource') return false;
 
     try {
       const resourceHost = new URL(this.resourceUrl).hostname;
@@ -178,142 +118,45 @@ export class ResourceErrorReport implements ErrorReport {
   }
 
   /**
-   * Determines if this is a critical resource for application functionality.
-   * 
-   * Critical resources are those that significantly impact user experience
-   * or application functionality when they fail to load.
-   */
-  public get isCriticalResource(): boolean {
-    return this.resourceType === 'script' || 
-           this.resourceType === 'stylesheet' ||
-           this.resourceType === 'link';
-  }
-
-  /**
-   * Extracts the domain name from the resource URL.
-   * 
-   * Useful for categorizing failures by domain and identifying
-   * patterns in third-party service reliability.
-   * 
-   * @returns Domain name or 'unknown' if URL is invalid
+   * Gets the domain name from the resource URL.
    */
   public get resourceDomain(): string {
     try {
       return new URL(this.resourceUrl).hostname;
     } catch {
-      return UNKNOWN;
+      return 'Unknown domain';
     }
   }
 
   /**
-   * Checks if the resource is loaded from a known CDN.
-   * 
-   * CDN failures often indicate network issues rather than application problems.
+   * Checks if this is a critical resource type.
    */
-  public get isFromCDN(): boolean {
-    const cdnPatterns = [
-      // Popular JavaScript CDNs
-      'cdn.jsdelivr.net',
-      'cdnjs.cloudflare.com', 
-      'unpkg.com',
-      'ajax.googleapis.com',
-      'code.jquery.com',
-      
-      // CSS Framework CDNs
-      'stackpath.bootstrapcdn.com',
-      'maxcdn.bootstrapcdn.com',
-      'use.fontawesome.com',
-      
-      // Cloud CDNs
-      'amazonaws.com',
-      'cloudfront.net',
-      'azureedge.net',
-      'github.io',
-      'gitcdn.xyz',
-      
-      // Image CDNs
-      'images.unsplash.com',
-      'via.placeholder.com',
-      'picsum.photos',
-      
-      // Font CDNs
-      'fonts.googleapis.com',
-      'fonts.gstatic.com',
-      'use.typekit.net'
-    ];
-
-    return cdnPatterns.some(pattern => 
-      this.resourceDomain.includes(pattern)
-    );
+  public get isCriticalResource(): boolean {
+    return ['script', 'stylesheet'].includes(this.resourceType);
   }
 
   /**
    * String representation of the resource loading error.
-   * 
-   * @returns Formatted string with severity, type, and location details
    */
   public toString(): string {
-    const severity = this.severity.toUpperCase();
-    const thirdParty = this.isThirdParty ? ' (3rd party)' : '';
-    const cdn = this.isFromCDN ? ' (CDN)' : '';
-
-    return `RESOURCE [${severity}]: Failed to load ${this.resourceType} - ${this.resourceUrl}${thirdParty}${cdn}`;
+    const thirdParty = this.isThirdParty ? ' [3rd-party]' : '';
+    return `Resource Error [${this.severity.toUpperCase()}]: Failed to load ${this.resourceType} - ${this.resourceUrl}${thirdParty}`;
   }
 
   /**
    * JSON representation for serialization.
-   * 
-   * @returns Object with all resource error data and computed analysis
    */
   public toJSON() {
     return {
-      /**
-       * Unique identifier for the error report
-       * This is typically a UUID or similar unique string
-       */
       id: this.id,
-      /**
-       * Timestamp when the error report was created
-       */
       createdAt: this.createdAt.absoluteTime,
-      /**
-       * Timestamp when the performance event occurred
-       * This may differ from createdAt if the report is generated after the event
-       */
       occurredAt: this.occurredAt.absoluteTime,
-      /**
-       * Severity level of the resource loading failure
-       * - 'critical' for first-party scripts
-       * - 'high' for stylesheets and critical resources
-       * - 'medium' for images and interactive content
-       * - 'low' for media and non-essential resources
-       * @enum {string} 'critical' | 'high' | 'medium' | 'low'
-       */
-      severity: this.severity,
-      /**
-       * URL of the resource that failed to load
-       */
       resourceUrl: this.resourceUrl,
-      /**
-       * Type of resource that failed to load (e.g., script, stylesheet, image)
-       */
       resourceType: this.resourceType,
-      /**
-       * Domain name extracted from the resource URL
-       */
       resourceDomain: this.resourceDomain,
-      /**
-       * Indicates if the resource is from a third-party domain
-       */
+      severity: this.severity,
       isThirdParty: this.isThirdParty,
-      /**
-       * Indicates if the resource is considered critical for functionality
-       */
       isCriticalResource: this.isCriticalResource,
-      /**
-       * Indicates if the resource is loaded from a known CDN
-       */
-      isFromCDN: this.isFromCDN,
     };
   }
 }
