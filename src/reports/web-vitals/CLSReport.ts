@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { LayoutShiftEntry } from "@/shared/PerformanceEntryTypes";
+import { LayoutShiftEntry } from "@/types/PerformanceEntryTypes";
 import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 /**

@@ -1,8 +1,8 @@
 import { INPReport } from "@/reports/web-vitals/INPReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { PerformanceEventTimingEntry } from "@/shared/PerformanceEntryTypes";
-import { Serialized } from "@/shared/Serialized";
+import { PerformanceEventTimingEntry } from "@/types/PerformanceEntryTypes";
+import { Serialized } from "@/types/Serialized";
 
 export class INP extends PerformanceMetricObserver<Serialized<INPReport>> {
   constructor() {

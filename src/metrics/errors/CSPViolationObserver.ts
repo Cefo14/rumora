@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
-import { Serialized } from "@/shared/Serialized";
+import { Serialized } from "@/types/Serialized";
 
 export class CSPViolationObserver extends SimpleObserver<Serialized<CSPViolationErrorReport>> {
   private isListening = false;

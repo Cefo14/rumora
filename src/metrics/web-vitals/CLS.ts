@@ -1,8 +1,8 @@
 import { CLSReport } from "@/reports/web-vitals/CLSReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { LayoutShiftEntry } from "@/shared/PerformanceEntryTypes";
-import { Serialized } from "@/shared/Serialized";
+import { LayoutShiftEntry } from "@/types/PerformanceEntryTypes";
+import { Serialized } from "@/types/Serialized";
 
 export class CLS extends PerformanceMetricObserver<Serialized<CLSReport>> {
   private cls = 0;

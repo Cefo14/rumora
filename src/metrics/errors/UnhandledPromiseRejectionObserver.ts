@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { UnhandledPromiseRejectionReport } from "@/reports/errors/UnhandledPromiseRejectionReport";
-import { Serialized } from "@/shared/Serialized";
+import { Serialized } from "@/types/Serialized";
 
 export class UnhandledPromiseRejectionObserver extends SimpleObserver<Serialized<UnhandledPromiseRejectionReport>> {
   private isListening = false;

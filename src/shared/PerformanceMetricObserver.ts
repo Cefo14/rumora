@@ -1,6 +1,6 @@
 import { FallibleObserver } from "@/shared/FallibleObserver";
 import { UnsupportedMetricException } from "@/errors/UnsupportedMetricException";
-import { RumoraException } from "@/errors/RumoraException";
+import { ObserverNotStartedException, PerformanceMetricObserverError } from "@/errors/PerformanceMetricObserverExceptions";
 
 type PerformanceObserverConfig = PerformanceObserverInit & { durationThreshold?: number };
 
@@ -52,7 +52,7 @@ export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
       this.onPerformanceObserver(entryList);
     }
     catch (error) {
-      const wrappedError = new RumoraException("Error processing performance entries", { cause: error });
+      const wrappedError = new PerformanceMetricObserverError(error);
       this.notifyError(wrappedError);
     }
   }
@@ -60,9 +60,9 @@ export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
   private start(): void {
     try {
       this.performanceObserver.observe(this.performanceObserverConfig);
-    } catch (error) {
+    } catch (error) { 
       this.stop();
-      const newError = new RumoraException("Failed to start PerformanceObserver", { cause: error });
+      const newError = new ObserverNotStartedException(error);
       this.notifyError(newError);
     }
   }

@@ -1,7 +1,7 @@
 import { LCPReport } from "@/reports/web-vitals/LCPReport";
 import { generateId } from "@/shared/generateId";
 import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { Serialized } from "@/shared/Serialized";
+import { Serialized } from "@/types/Serialized";
 
 export class LCP extends PerformanceMetricObserver<Serialized<LCPReport>> {
   constructor() {

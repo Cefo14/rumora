@@ -1,7 +1,7 @@
 import { LongTaskReport } from "@/reports/performance/LongTaskReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
+import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
 
 /**
  * Observer for Long Tasks API performance entries.|

@@ -1,5 +1,5 @@
 import type { Report } from "@/reports/Report";
-import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
+import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
 import { PerformanceTime } from "@/value-objects/PerformanceTime";
 
 interface TaskAttributionTiming {

@@ -1,7 +1,7 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { UnhandledJavaScriptErrorReport } from "@/reports/errors/UnhandledJavaScriptErrorReport";
-import { Serialized } from "@/shared/Serialized";
+import { Serialized } from "@/types/Serialized";
 
 export class UnhandledJavaScriptErrorObserver extends SimpleObserver<Serialized<UnhandledJavaScriptErrorReport>> {
   private isListening = false;
