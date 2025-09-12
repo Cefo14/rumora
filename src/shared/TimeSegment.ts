@@ -1,6 +1,6 @@
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ValueObject } from "./ValueObject";
-import { InvalidTimeSegmentException, InvalidEndTimeException } from "@/errors/TimeSegmentException";
+import { InvalidTimeSegmentException, InvalidEndTimeException } from "@/errors/TimeSegmentExceptions";
 
 const isValidTime = (time: number) => Number.isFinite(time) && time >= 0;
 
@@ -8,8 +8,8 @@ const isValidTime = (time: number) => Number.isFinite(time) && time >= 0;
  * Data structure for creating a TimeSegment.
  */
 interface TimeSegmentData {
-  start: PerformanceTimestamp;
-  end: PerformanceTimestamp;
+  start: PerformanceTime;
+  end: PerformanceTime;
 }
 
 /**
@@ -20,10 +20,10 @@ interface TimeSegmentData {
  */
 export class TimeSegment implements ValueObject {
   /** Start timestamp of the timing segment */
-  public readonly start: PerformanceTimestamp;
+  public readonly start: PerformanceTime;
 
   /** End timestamp of the timing segment */
-  public readonly end: PerformanceTimestamp;
+  public readonly end: PerformanceTime;
 
 
   /**
@@ -62,21 +62,21 @@ export class TimeSegment implements ValueObject {
     if (!isValidTime(endTime)) throw new InvalidTimeSegmentException(endTime);
     if (endTime < startTime) throw new InvalidEndTimeException(startTime, endTime);
 
-    const start = PerformanceTimestamp.fromRelativeTime(startTime);
-    const end = PerformanceTimestamp.fromRelativeTime(endTime);
+    const start = PerformanceTime.fromRelativeTime(startTime);
+    const end = PerformanceTime.fromRelativeTime(endTime);
     return new TimeSegment({ start, end });
   }
 
   /**
-   * Creates a TimeSegment from PerformanceTimestamp objects.
+   * Creates a TimeSegment from PerformanceTime objects.
    * 
-   * @param start - Start PerformanceTimestamp (optional)
-   * @param end - End PerformanceTimestamp (optional)
+   * @param start - Start PerformanceTime (optional)
+   * @param end - End PerformanceTime (optional)
    * @returns New TimeSegment with calculated duration
    */
   public static fromTimestamps(
-    start: PerformanceTimestamp,
-    end: PerformanceTimestamp
+    start: PerformanceTime,
+    end: PerformanceTime
   ): TimeSegment {
     if (!isValidTime(start.relativeTime)) throw new InvalidTimeSegmentException(start.relativeTime);
     if (!isValidTime(end.relativeTime)) throw new InvalidTimeSegmentException(end.relativeTime);

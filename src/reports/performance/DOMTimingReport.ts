@@ -1,10 +1,10 @@
 import type { Report } from "@/shared/Report";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 interface DOMTimingData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   interactiveTime: number;
   processingTime: number;
   contentLoadedDuration: number;
@@ -22,10 +22,10 @@ export class DOMTimingReport implements Report {
   public readonly id: string;
   
   /** Timestamp when the report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /**
    * Time until DOM became interactive (DOMContentLoaded ready) in milliseconds.
@@ -94,8 +94,8 @@ export class DOMTimingReport implements Report {
   ): DOMTimingReport {
     const data: DOMTimingData = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       interactiveTime: Math.max(0, entry.domInteractive - entry.startTime),
       processingTime: Math.max(0, entry.domComplete - entry.domInteractive),
       contentLoadedDuration: Math.max(0, entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart),

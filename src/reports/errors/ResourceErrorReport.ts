@@ -1,10 +1,10 @@
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 interface ResourceErrorData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   resourceUrl: string;
   resourceType: string;
 }
@@ -58,10 +58,10 @@ export class ResourceErrorReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the performance event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /**
    * URL of the resource that failed to load.
@@ -112,8 +112,8 @@ export class ResourceErrorReport implements ErrorReport {
 
     const data: ResourceErrorData = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(errorEvent.timeStamp),
       resourceUrl,
       resourceType,
     };

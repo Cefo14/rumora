@@ -1,12 +1,12 @@
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type ErrorCategory = 'syntax' | 'runtime' | 'network' | 'resource' | 'unknown';
 
 interface JavaScriptErrorData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   errorMessage: string;
   errorName?: string;
   stack?: string;
@@ -59,12 +59,12 @@ export class UnhandledJavaScriptErrorReport implements ErrorReport {
   /**
    * Timestamp when the error report was created
    */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /**
    * Timestamp when the performance event occurred
    */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /**
    * Human-readable error message describing what went wrong.
@@ -148,8 +148,8 @@ export class UnhandledJavaScriptErrorReport implements ErrorReport {
   public static fromErrorEvent(id: string, errorEvent: ErrorEvent): UnhandledJavaScriptErrorReport {
     return new UnhandledJavaScriptErrorReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(errorEvent.timeStamp),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(errorEvent.timeStamp),
       errorMessage: extractErrorMessage(errorEvent),
       errorName: errorEvent.error?.name,
       stack: errorEvent.error?.stack,

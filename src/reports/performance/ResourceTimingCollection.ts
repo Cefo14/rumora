@@ -1,5 +1,5 @@
 import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 /**
  * Collection and aggregator for ResourceTimingReport instances.
@@ -16,16 +16,16 @@ export class ResourceTimingCollection {
 
   private resourcesAsArray: ResourceTimingReport[] = [];
 
-  public createdAt: PerformanceTimestamp;
+  public createdAt: PerformanceTime;
 
   /** Timestamp of the last update to the collection */
-  public lastUpdated: PerformanceTimestamp;
+  public lastUpdated: PerformanceTime;
 
   /**
    * Creates a new ResourceTimingCollection instance.
    */
   constructor() {
-    const now = PerformanceTimestamp.now();
+    const now = PerformanceTime.now();
     this.createdAt = now;
     this.lastUpdated = now;
   }
@@ -207,7 +207,7 @@ export class ResourceTimingCollection {
   }
 
   private refresh(): void {
-    this.lastUpdated = PerformanceTimestamp.now();
+    this.lastUpdated = PerformanceTime.now();
     this.resourcesAsArray = Array.from(this.resources.values());
   }
 }

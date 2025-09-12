@@ -1,6 +1,6 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
 import { LayoutShiftEntry } from "@/shared/PerformanceEntryTypes";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 /**
  * Cumulative Layout Shift (CLS) report for measuring visual stability.
@@ -30,8 +30,8 @@ export class CLSReport extends WebVitalReport {
   public static fromLayoutShiftEntry(id: string, entry: LayoutShiftEntry): CLSReport {
     const data: WebVitalReportDTO = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       value: entry.value,
     };
     return new CLSReport(data);

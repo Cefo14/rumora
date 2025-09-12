@@ -1,12 +1,12 @@
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type ViolationType = 'script' | 'style' | 'network' | 'media' | 'frame' | 'font' | 'unknown';
 
 interface CSPViolationErrorData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   directive: string;
   blockedURI: string;
   sourceFile?: string;
@@ -26,10 +26,10 @@ export class CSPViolationErrorReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the error occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /**
    * CSP directive that was violated (e.g., script-src, style-src, connect-src).
@@ -106,8 +106,8 @@ export class CSPViolationErrorReport implements ErrorReport {
   ): CSPViolationErrorReport {
     return new CSPViolationErrorReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(violationEvent.timeStamp),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(violationEvent.timeStamp),
       directive: violationEvent.effectiveDirective,
       blockedURI: violationEvent.blockedURI,
       sourceFile: violationEvent.sourceFile,

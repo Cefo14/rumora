@@ -1,12 +1,12 @@
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { ErrorReport, SeverityLevel, UNKNOWN } from "./ErrorReport";
 
 type RejectionType = 'network' | 'javascript' | 'parsing' | 'timeout' | 'memory' | 'loading' | 'generic';
 
 interface PromiseErrorData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   errorMessage: string;
   errorName?: string;
   stack?: string;
@@ -61,10 +61,10 @@ export class UnhandledPromiseRejectionReport implements ErrorReport {
   public readonly id: string;
   
   /** Timestamp when the error report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the performance event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /**
    * Human-readable error message describing what went wrong.
@@ -124,8 +124,8 @@ export class UnhandledPromiseRejectionReport implements ErrorReport {
   ): UnhandledPromiseRejectionReport {
     return new UnhandledPromiseRejectionReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(promiseError.timeStamp),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(promiseError.timeStamp),
       errorMessage: extractErrorMessage(promiseError),
       errorName: promiseError.reason?.name,
       stack: promiseError.reason?.stack,

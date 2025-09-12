@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 /**
  * First Contentful Paint (FCP) report for measuring loading performance.
@@ -30,8 +30,8 @@ export class FCPReport extends WebVitalReport {
   public static fromPerformancePaintTiming(id: string, entry: PerformanceEntry): FCPReport {
     const data: WebVitalReportDTO = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       value: entry.startTime,
     };
     return new FCPReport(data);

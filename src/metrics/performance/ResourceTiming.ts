@@ -116,7 +116,7 @@ export class ResourceTiming extends PerformanceMetricObserver<Serialized<Resourc
    * Creates a ResourceTimingReport from a performance entry.
    * 
    * Converts the raw PerformanceResourceTiming data into a structured
-   * report with PerformanceTimestamp objects for consistent timing handling
+   * report with PerformanceTime objects for consistent timing handling
    * and comprehensive resource analysis capabilities.
    * 
    * @param entry - Performance resource timing entry

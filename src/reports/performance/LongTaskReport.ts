@@ -1,6 +1,6 @@
 import { PerformanceLongTaskTimingEntry } from "@/shared/PerformanceEntryTypes";
 import { Report } from "@/shared/Report";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 interface TaskAttributionTiming {
   containerType: string;
@@ -11,8 +11,8 @@ interface TaskAttributionTiming {
 
 interface LongTaskData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   duration: number;
   name: string;
   attribution?: TaskAttributionTiming[];
@@ -34,10 +34,10 @@ export class LongTaskReport implements Report {
   public readonly id: string;
   
   /** Timestamp when the report was created (in milliseconds) */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the long task occurred (in milliseconds) */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /** Duration of the long task in milliseconds */
   public readonly duration: number;
@@ -84,8 +84,8 @@ export class LongTaskReport implements Report {
     const { duration, name, attribution } = entry;
     return new LongTaskReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       duration,
       name,
       attribution

@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 /**
  * Largest Contentful Paint (LCP) report for measuring loading performance.
@@ -30,8 +30,8 @@ export class LCPReport extends WebVitalReport {
   public static fromLargestContentfulPaint(id: string, entry: LargestContentfulPaint): LCPReport {
     const data: WebVitalReportDTO = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       value: entry.startTime
     };
     return new LCPReport(data);

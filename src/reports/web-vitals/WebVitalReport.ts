@@ -1,5 +1,5 @@
 import { Report } from "@/shared/Report";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 /**
  * Rating classification for Web Vital metrics based on Google's Core Web Vitals thresholds.
@@ -13,9 +13,9 @@ export interface WebVitalReportDTO {
   /** Unique identifier for the report */
   id: string;
   /** Timestamp when the performance event occurred */
-  occurredAt: PerformanceTimestamp;
+  occurredAt: PerformanceTime;
   /** Timestamp when the report was created */
-  createdAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
   /** Measured value of the web vital metric */
   value: number;
 }
@@ -34,10 +34,10 @@ export abstract class WebVitalReport implements Report {
   public readonly id: string;
   
   /** Timestamp when this report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the performance event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
   
   /** The measured value of the web vital metric */
   public readonly value: number;

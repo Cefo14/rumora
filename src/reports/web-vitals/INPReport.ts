@@ -1,5 +1,5 @@
 import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 
 interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;
@@ -40,8 +40,8 @@ export class INPReport extends WebVitalReport {
     const inpValue = entry.processingEnd - entry.startTime;
     const data: INPReportDTO = {
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       value: inpValue,
       eventName: entry.name
     };

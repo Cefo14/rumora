@@ -1,5 +1,5 @@
 import type { Report } from "@/shared/Report";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { TimeSegment } from "@/shared/TimeSegment";
 
 /**
@@ -19,8 +19,8 @@ interface NavigationSegments {
  */
 interface NetworkTimingData {
   id: string;
-  createdAt: PerformanceTimestamp;
-  occurredAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
+  occurredAt: PerformanceTime;
   
   // Size information
   transferSize: number;
@@ -48,10 +48,10 @@ export class NetworkTimingReport implements Report {
   public readonly id: string;
   
   /** Timestamp when the report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the event occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
 
   /** Transfer size in bytes (actual bytes over network including headers) */
   public readonly transferSize: number;
@@ -129,8 +129,8 @@ export class NetworkTimingReport implements Report {
     
     return new NetworkTimingReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       transferSize: entry.transferSize || 0,
       encodedSize: entry.encodedBodySize || 0,
       decodedSize: entry.decodedBodySize || 0,
@@ -147,7 +147,7 @@ export class NetworkTimingReport implements Report {
    * Calculates network timing segments from PerformanceNavigationTiming entry.
    * 
    * @param entry - Performance navigation timing entry
-   * @param fromRelativeTime - Helper function to create PerformanceTimestamp
+   * @param fromRelativeTime - Helper function to create PerformanceTime
    * @returns Calculated navigation segments
    * @private
    */

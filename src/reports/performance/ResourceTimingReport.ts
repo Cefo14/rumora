@@ -1,5 +1,5 @@
 import { Report } from "@/shared/Report";
-import { PerformanceTimestamp } from "@/shared/PerformanceTimestamp";
+import { PerformanceTime } from "@/shared/PerformanceTime";
 import { TimeSegment } from "@/shared/TimeSegment";
 
 
@@ -21,9 +21,9 @@ interface ResourceTimingData {
   /** Unique identifier for the report */
   id: string;
   /** Timestamp when the report was created */
-  createdAt: PerformanceTimestamp;
+  createdAt: PerformanceTime;
   /** Timestamp when the resource loading occurred */
-  occurredAt: PerformanceTimestamp;
+  occurredAt: PerformanceTime;
   
   // Core resource information
   /** Resource name/URL */
@@ -35,7 +35,7 @@ interface ResourceTimingData {
   /** Total load duration in milliseconds */
   duration: number;
   /** Start time of the resource load */
-  startTime: PerformanceTimestamp;
+  startTime: PerformanceTime;
   
   // Size information
   /** Transfer size in bytes (over the wire) */
@@ -70,10 +70,10 @@ export class ResourceTimingReport implements Report {
   public readonly id: string;
   
   /** Timestamp when the report was created */
-  public readonly createdAt: PerformanceTimestamp;
+  public readonly createdAt: PerformanceTime;
 
   /** Timestamp when the resource loading occurred */
-  public readonly occurredAt: PerformanceTimestamp;
+  public readonly occurredAt: PerformanceTime;
   
   /** Resource name/URL */
   public readonly name: string;
@@ -85,7 +85,7 @@ export class ResourceTimingReport implements Report {
   public readonly duration: number;
   
   /** Start time of the resource load */
-  public readonly startTime: PerformanceTimestamp;
+  public readonly startTime: PerformanceTime;
   
   /** Transfer size in bytes (actual bytes over network) */
   public readonly transferSize: number;
@@ -162,12 +162,12 @@ export class ResourceTimingReport implements Report {
 
     return new ResourceTimingReport({
       id,
-      createdAt: PerformanceTimestamp.now(),
-      occurredAt: PerformanceTimestamp.fromRelativeTime(entry.startTime),
+      createdAt: PerformanceTime.now(),
+      occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
       name: entry.name,
       type: entry.initiatorType,
       duration: entry.duration,
-      startTime: PerformanceTimestamp.fromRelativeTime(entry.fetchStart),
+      startTime: PerformanceTime.fromRelativeTime(entry.fetchStart),
       transferSize: entry.transferSize || 0,
       encodedSize: entry.encodedBodySize || 0,
       decodedSize: entry.decodedBodySize || 0,
@@ -183,7 +183,7 @@ export class ResourceTimingReport implements Report {
    * Calculates network timing segments from PerformanceResourceTiming entry.
    * 
    * @param entry - Performance resource timing entry
-   * @param fromRelativeTime - Helper function to create PerformanceTimestamp
+   * @param fromRelativeTime - Helper function to create PerformanceTime
    * @returns Calculated network segments
    * @private
    */
@@ -237,7 +237,7 @@ export class ResourceTimingReport implements Report {
    * 
    * @returns End time calculated from start time and duration
    */
-  public get endTime(): PerformanceTimestamp {
+  public get endTime(): PerformanceTime {
     return this.startTime.add(this.duration);
   }
 

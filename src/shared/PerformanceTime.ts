@@ -1,5 +1,9 @@
-import { InvalidPerformanceTimestampError } from "@/errors/InvalidPerformanceTimestampError";
+import { InvalidPerformanceTimeException } from "@/errors/PerformanceTimeExceptions";
 import { ValueObject } from "./ValueObject";
+
+const isValidPerformanceTime = (time: number) => {
+  return Number.isFinite(time) && time >= 0;
+};
 
 /**
  * Immutable value object representing a performance timestamp.
@@ -13,7 +17,7 @@ import { ValueObject } from "./ValueObject";
  * but can be accessed in either format as needed.ccurredAt = new Date(event.timestamp.absolute);
  *
  */
-export class PerformanceTimestamp implements ValueObject {
+export class PerformanceTime implements ValueObject {
   /** 
    * Internal storage of the timestamp as relative time from navigation start.
    * Stored as relative time for consistency with performance timing APIs.
@@ -27,7 +31,7 @@ export class PerformanceTimestamp implements ValueObject {
   private readonly _absoluteTime: number;
 
   /**
-   * Creates a new PerformanceTimestamp instance.
+   * Creates a new PerformanceTime instance.
    * 
    * @param relativeTime - Time in milliseconds relative to navigation start
    * @private Use static factory methods instead
@@ -40,72 +44,72 @@ export class PerformanceTimestamp implements ValueObject {
 
 
   /**
-   * Creates a PerformanceTimestamp from a relative time value.
+   * Creates a PerformanceTime from a relative time value.
    * 
    * Use this method when working with values from performance APIs like
    * PerformanceEntry.startTime, PerformanceEntry.responseStart, etc.
    * These values are typically relative to navigation start.
    * 
    * @param time - Time in milliseconds relative to navigation start
-   * @returns New immutable PerformanceTimestamp instance
+   * @returns New immutable PerformanceTime instance
    * 
    * @example
    * ```typescript
-   * const now = PerformanceTimestamp.fromRelativeTime(performance.now());
+   * const now = PerformanceTime.fromRelativeTime(performance.now());
    * ```
    */
-  static fromRelativeTime(time: number): PerformanceTimestamp {
-    if (!Number.isFinite(time) || time < 0) {
-      throw new InvalidPerformanceTimestampError();
+  static fromRelativeTime(time: number): PerformanceTime {
+    if (!isValidPerformanceTime(time)) {
+      throw new InvalidPerformanceTimeException();
     }
-    return new PerformanceTimestamp(time);
+    return new PerformanceTime(time);
   }
 
   /**
-   * Creates a PerformanceTimestamp from an absolute timestamp.
+   * Creates a PerformanceTime from an absolute timestamp.
    * 
    * Use this method when working with epoch timestamps (like Date.now())
    * or when creating mock timestamps for testing. The absolute time will
    * be converted to relative time internally.
    * 
    * @param time - Absolute timestamp in milliseconds since Unix epoch
-   * @returns New immutable PerformanceTimestamp instance
+   * @returns New immutable PerformanceTime instance
    * 
    * @example
    * ```typescript
    * // For testing with known absolute time
-   * const mockTimestamp = PerformanceTimestamp.fromAbsoluteTime(1703123456789);
+   * const mockTimestamp = PerformanceTime.fromAbsoluteTime(1703123456789);
    * 
    * // From Date.now()
-   * const nowTimestamp = PerformanceTimestamp.fromAbsoluteTime(Date.now());
+   * const nowTimestamp = PerformanceTime.fromAbsoluteTime(Date.now());
    * 
    */
-  static fromAbsoluteTime(time: number): PerformanceTimestamp {
-    if (!Number.isFinite(time)) {
-      throw new InvalidPerformanceTimestampError();
+  static fromAbsoluteTime(time: number): PerformanceTime {
+    if (!isValidPerformanceTime(time)) {
+      throw new InvalidPerformanceTimeException();
     }
 
     const relative = time - performance.timeOrigin;
-    return new PerformanceTimestamp(Math.max(0, relative));
+    return new PerformanceTime(Math.max(0, relative));
   }
 
   /**
-   * Gets the current timestamp as a PerformanceTimestamp.
+   * Gets the current timestamp as a PerformanceTime.
    * 
    * This is a convenience method for creating a timestamp representing
    * the current time. It uses performance.now() to get a high-resolution
    * timestamp relative to the start of the navigation.
    * 
-   * @returns Current timestamp as PerformanceTimestamp
+   * @returns Current timestamp as PerformanceTime
    * 
    * @example
    * ```typescript
-   * const now = PerformanceTimestamp.now();
+   * const now = PerformanceTime.now();
    * console.log(`Current time: ${now}`);
    * ```
    */
-  static now(): PerformanceTimestamp {
-    return PerformanceTimestamp.fromRelativeTime(performance.now());
+  static now(): PerformanceTime {
+    return PerformanceTime.fromRelativeTime(performance.now());
   }
 
   /**
@@ -162,18 +166,18 @@ export class PerformanceTimestamp implements ValueObject {
   /**
    * Compares this timestamp with another for equality.
    * 
-   * Two PerformanceTimestamp instances are considered equal if they
+   * Two PerformanceTime instances are considered equal if they
    * represent the same relative time, regardless of how they were created.
    * This implements value equality rather than reference equality.
    * 
-   * @param other - Another PerformanceTimestamp to compare with
+   * @param other - Another PerformanceTime to compare with
    * @returns True if both timestamps represent the same time
    * 
    * @example
    * ```typescript
-   * const time1 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time2 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time3 = PerformanceTimestamp.fromAbsoluteTime(
+   * const time1 = PerformanceTime.fromRelativeTime(100);
+   * const time2 = PerformanceTime.fromRelativeTime(100);
+   * const time3 = PerformanceTime.fromAbsoluteTime(
    *   100 + performance.timeOrigin
    * );
    * 
@@ -181,79 +185,79 @@ export class PerformanceTimestamp implements ValueObject {
    * console.log(time1.equals(time3)); // true - same time, different creation
    * ```
    */
-  equals(other: PerformanceTimestamp): boolean {
+  equals(other: PerformanceTime): boolean {
     return this.relativeTime === other.relativeTime;
   }
 
   /**
    * Checks if this timestamp is greater than or equal to another.
    * 
-   * @param other - Another PerformanceTimestamp to compare with
+   * @param other - Another PerformanceTime to compare with
    * @returns True if this timestamp is greater than or equal to the other
    * 
    * @example
    * ```typescript
-   * const time1 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time2 = PerformanceTimestamp.fromRelativeTime(200);
+   * const time1 = PerformanceTime.fromRelativeTime(100);
+   * const time2 = PerformanceTime.fromRelativeTime(200);
    * console.log(time1.isGreaterThanOrEqual(time2)); // false
    * console.log(time2.isGreaterThanOrEqual(time1)); // true
    * ```
    */
-  isGreaterThanOrEqual(other: PerformanceTimestamp): boolean {
+  isGreaterThanOrEqual(other: PerformanceTime): boolean {
     return this.relativeTime >= other.relativeTime;
   }
 
   /**
    * Checks if this timestamp is greater than another.
    * 
-   * @param other - Another PerformanceTimestamp to compare with
+   * @param other - Another PerformanceTime to compare with
    * @returns True if this timestamp is greater than the other
    * 
    * @example
    * ```typescript
-   * const time1 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time2 = PerformanceTimestamp.fromRelativeTime(200);
+   * const time1 = PerformanceTime.fromRelativeTime(100);
+   * const time2 = PerformanceTime.fromRelativeTime(200);
    * console.log(time1.isGreaterThan(time2)); // false
    * console.log(time2.isGreaterThan(time1)); // true
    * ```
    */
-  isGreaterThan(other: PerformanceTimestamp): boolean {
+  isGreaterThan(other: PerformanceTime): boolean {
     return this.relativeTime > other.relativeTime;
   }
 
   /**
    * Checks if this timestamp is less than or equal to another.
    * 
-   * @param other - Another PerformanceTimestamp to compare with
+   * @param other - Another PerformanceTime to compare with
    * @returns True if this timestamp is less than or equal to the other
    * 
    * @example
    * ```typescript
-   * const time1 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time2 = PerformanceTimestamp.fromRelativeTime(200);
+   * const time1 = PerformanceTime.fromRelativeTime(100);
+   * const time2 = PerformanceTime.fromRelativeTime(200);
    * console.log(time1.isLessThanOrEqual(time2)); // true
    * console.log(time2.isLessThanOrEqual(time1)); // false
    * ```
    */
-  isLessThanOrEqual(other: PerformanceTimestamp): boolean {
+  isLessThanOrEqual(other: PerformanceTime): boolean {
     return this.relativeTime <= other.relativeTime;
   }
 
   /**
    * Checks if this timestamp is less than another.
    * 
-   * @param other - Another PerformanceTimestamp to compare with
+   * @param other - Another PerformanceTime to compare with
    * @returns True if this timestamp is less than the other
    * 
    * @example
    * ```typescript
-   * const time1 = PerformanceTimestamp.fromRelativeTime(100);
-   * const time2 = PerformanceTimestamp.fromRelativeTime(200);
+   * const time1 = PerformanceTime.fromRelativeTime(100);
+   * const time2 = PerformanceTime.fromRelativeTime(200);
    * console.log(time1.isLessThan(time2)); // true
    * console.log(time2.isLessThan(time1)); // false
    * ```
    */
-  isLessThan(other: PerformanceTimestamp): boolean {
+  isLessThan(other: PerformanceTime): boolean {
     return this.relativeTime < other.relativeTime;
   }
 
@@ -261,44 +265,44 @@ export class PerformanceTimestamp implements ValueObject {
    * Adds a duration to this timestamp.
    * 
    * @param value - Duration to add (in milliseconds)
-   * @returns New PerformanceTimestamp with added duration
+   * @returns New PerformanceTime with added duration
    * 
    * @example
    * ```typescript
-   * const timestamp = PerformanceTimestamp.fromRelativeTime(1000);
+   * const timestamp = PerformanceTime.fromRelativeTime(1000);
    * const newTimestamp = timestamp.add(500);
    * console.log(newTimestamp); // 1500
    * 
-   * const anotherTimestamp = PerformanceTimestamp.fromRelativeTime(200);
+   * const anotherTimestamp = PerformanceTime.fromRelativeTime(200);
    * const yetAnotherTimestamp = newTimestamp.subtract(anotherTimestamp);
    * console.log(yetAnotherTimestamp); // -200
    * ```
    */
-  add(value: number | PerformanceTimestamp): PerformanceTimestamp {
+  add(value: number | PerformanceTime): PerformanceTime {
     const relativeValue = typeof value === "number" ? value : value.relativeTime;
-    return PerformanceTimestamp.fromRelativeTime(this.relativeTime + relativeValue);
+    return PerformanceTime.fromRelativeTime(this.relativeTime + relativeValue);
   }
 
   /**
    * Subtracts a duration from this timestamp.
    * 
    * @param value - Duration to subtract (in milliseconds)
-   * @returns New PerformanceTimestamp with subtracted duration
+   * @returns New PerformanceTime with subtracted duration
    * 
    * @example
    * ```typescript
-   * const timestamp = PerformanceTimestamp.fromRelativeTime(1000);
+   * const timestamp = PerformanceTime.fromRelativeTime(1000);
    * const newTimestamp = timestamp.subtract(500);
    * console.log(newTimestamp); // 500
    * 
-   * const anotherTimestamp = PerformanceTimestamp.fromRelativeTime(200);
+   * const anotherTimestamp = PerformanceTime.fromRelativeTime(200);
    * const yetAnotherTimestamp = newTimestamp.subtract(anotherTimestamp);
    * console.log(yetAnotherTimestamp); // -200
    * ```
    */
-  subtract(value: number | PerformanceTimestamp): PerformanceTimestamp {
+  subtract(value: number | PerformanceTime): PerformanceTime {
     const relativeValue = typeof value === "number" ? value : value.relativeTime;
-    return PerformanceTimestamp.fromRelativeTime(this.relativeTime - relativeValue);
+    return PerformanceTime.fromRelativeTime(this.relativeTime - relativeValue);
   }
 
   /**
@@ -311,7 +315,7 @@ export class PerformanceTimestamp implements ValueObject {
    * 
    * @example
    * ```typescript
-   * const timestamp = PerformanceTimestamp.fromRelativeTime(1234.56);
+   * const timestamp = PerformanceTime.fromRelativeTime(1234.56);
    * console.log(`Event at: ${timestamp}`); // "Event at: 1703123456789.12"
    * ```
    */
@@ -330,7 +334,7 @@ export class PerformanceTimestamp implements ValueObject {
    * 
    * @example
    * ```typescript
-   * const timestamp = PerformanceTimestamp.fromRelativeTime(1234.56);
+   * const timestamp = PerformanceTime.fromRelativeTime(1234.56);
    * const json = JSON.stringify(timestamp);
    * console.log(json); // '{"absolute":1703123456789.12,"relative":1234.56}'
    * ```
