@@ -1,9 +1,8 @@
 import { LCPReport } from "@/reports/web-vitals/LCPReport";
 import { generateId } from "@/shared/generateId";
 import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { Serialized } from "@/types/Serialized";
 
-export class LCP extends PerformanceMetricObserver<Serialized<LCPReport>> {
+export class LCP extends PerformanceMetricObserver<LCPReport> {
   constructor() {
     super("largest-contentful-paint");
   }
@@ -14,7 +13,7 @@ export class LCP extends PerformanceMetricObserver<Serialized<LCPReport>> {
     if (entries.length > 0) {
       const lastEntry = entries[entries.length - 1];
       const report = LCPReport.fromLargestContentfulPaint(generateId(), lastEntry);
-      this.notifySuccess(report.toJSON());
+      this.notifySuccess(report);
     }
   }
 }

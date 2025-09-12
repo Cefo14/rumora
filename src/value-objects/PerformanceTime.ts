@@ -22,13 +22,13 @@ export class PerformanceTime implements ValueObject {
    * Internal storage of the timestamp as relative time from navigation start.
    * Stored as relative time for consistency with performance timing APIs.
    */
-  private readonly _relativeTime: number;
+  public readonly relativeTime: number;
 
   /** 
    * Internal storage of the timestamp as absolute time (epoch timestamp).
    * Calculated from relative time and performance.timeOrigin.
    */
-  private readonly _absoluteTime: number;
+  public readonly absoluteTime: number;
 
   /**
    * Creates a new PerformanceTime instance.
@@ -37,8 +37,8 @@ export class PerformanceTime implements ValueObject {
    * @private Use static factory methods instead
    */
   private constructor(relativeTime: number) {
-    this._relativeTime = relativeTime;
-    this._absoluteTime = relativeTime + performance.timeOrigin;
+    this.relativeTime = relativeTime;
+    this.absoluteTime = relativeTime + performance.timeOrigin;
     Object.freeze(this);
   }
 
@@ -110,57 +110,6 @@ export class PerformanceTime implements ValueObject {
    */
   static now(): PerformanceTime {
     return PerformanceTime.fromRelativeTime(performance.now());
-  }
-
-  /**
-   * Gets the timestamp as relative time from navigation start.
-   * 
-   * Use this when calculating durations or working with other performance
-   * timing values. Relative times are more accurate for duration calculations
-   * as they avoid precision issues with large epoch timestamps.
-   * 
-   * @returns Time in milliseconds since navigation start
-   * 
-   * @example
-   * ```typescript
-   * // Calculate duration using relative times
-   * const duration = endTime.relative - startTime.relative;
-   * 
-   * // Compare with performance.now()
-   * const elapsed = performance.now() - timestamp.relative;
-   * 
-   * // Use in performance calculations
-   * const isWithinBudget = timestamp.relative < performanceBudget;
-   * ```
-   */
-  get relativeTime(): number {
-    return this._relativeTime;
-  }
-
-  /**
-   * Gets the timestamp as absolute time (epoch timestamp).
-   * 
-   * Use this when correlating events across different time contexts,
-   * logging, or when you need actual wall-clock time. Absolute times
-   * are useful for debugging and reporting but less accurate for durations.
-   * 
-   * @returns Absolute timestamp in milliseconds since Unix epoch
-   * 
-   * @example
-   * ```typescript
-   * // Convert to Date for logging
-   * const eventTime = new Date(timestamp.absolute);
-   * console.log(`Event occurred at: ${eventTime}`);
-   * 
-   * // Correlate with server logs
-   * const serverLogTime = timestamp.absolute;
-   * 
-   * // JSON serialization (automatic)
-   * JSON.stringify(report); // Uses absolute time by default
-   * ```
-   */
-  get absoluteTime(): number {
-    return this._absoluteTime;
   }
 
   /**
@@ -320,7 +269,7 @@ export class PerformanceTime implements ValueObject {
    * ```
    */
   toString(): string {
-    return this._absoluteTime.toString();
+    return this.absoluteTime.toString();
   }
 
   /**
@@ -341,8 +290,8 @@ export class PerformanceTime implements ValueObject {
    */
   toJSON() {
     return {
-      absolute: this._absoluteTime,
-      relative: this._relativeTime,
+      absolute: this.absoluteTime,
+      relative: this.relativeTime,
     }
   }
 }
