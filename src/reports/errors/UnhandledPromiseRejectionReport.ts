@@ -97,28 +97,35 @@ export class UnhandledPromiseRejectionReport implements ErrorReport {
    * Basic severity classification based on error patterns.
    */
   public get severity(): SeverityLevel {
-    const errorText = `${this.errorMessage} ${this.errorName || ''}`.toLowerCase();
+    const errorName = this.errorName?.toLowerCase() ?? '';
+    const errorMessage = this.errorMessage?.toLowerCase() ?? '';
 
     // Critical: Memory/system failures
-    if (errorText.includes('out of memory') || 
-        errorText.includes('stack overflow') ||
-        errorText.includes('chunk load failed')) {
+    if (errorMessage.includes('out of memory') || 
+        errorMessage.includes('stack overflow') ||
+        errorMessage.includes('chunk load failed') ||
+        errorName === 'syntaxerror'
+      ) {
       return 'critical';
     }
 
     // High: Network and major functionality errors
-    if (errorText.includes('failed to fetch') ||
-        errorText.includes('network') ||
-        errorText.includes('cors') ||
-        this.errorName === 'TypeError') {
+    if (errorMessage.includes('failed to fetch') ||
+        errorMessage.includes('network') ||
+        errorMessage.includes('cors') ||
+        errorName === 'typeerror' ||
+        errorName === 'referenceerror'
+      ) {
       return 'high';
     }
 
     // Medium: Parsing and timeout errors
-    if (errorText.includes('timeout') ||
-        errorText.includes('json') ||
-        errorText.includes('abort') ||
-        this.errorName === 'SyntaxError') {
+    if (errorMessage.includes('timeout') ||
+        errorMessage.includes('json') ||
+        errorMessage.includes('abort') ||
+        errorName === 'rangeerror' ||
+        errorName === 'urierror'
+      ) {
       return 'medium';
     }
 

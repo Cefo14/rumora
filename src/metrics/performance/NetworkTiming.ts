@@ -1,9 +1,7 @@
 import { NetworkTimingReport } from "@/reports/performance/NetworkTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { Serialized } from "@/types/Serialized";
-
-export class NetworkTiming extends PerformanceMetricObserver<Serialized<NetworkTimingReport>> {
+export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
  constructor() {
    super("navigation");
  }
@@ -16,7 +14,7 @@ export class NetworkTiming extends PerformanceMetricObserver<Serialized<NetworkT
         generateId(),
         entry
       );
-      this.notifySuccess(report.toJSON());
+      this.notifySuccess(report);
       this.stop();
       break;
     }

@@ -1,9 +1,8 @@
 import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { UnhandledPromiseRejectionReport } from "@/reports/errors/UnhandledPromiseRejectionReport";
-import { Serialized } from "@/types/Serialized";
 
-export class UnhandledPromiseRejectionObserver extends SimpleObserver<Serialized<UnhandledPromiseRejectionReport>> {
+export class UnhandledPromiseRejectionObserver extends SimpleObserver<UnhandledPromiseRejectionReport> {
   private isListening = false;
 
   protected override onSubscribe(): void {
@@ -35,6 +34,6 @@ export class UnhandledPromiseRejectionObserver extends SimpleObserver<Serialized
       event
     );
 
-    this.notify(report.toJSON());
+    this.notify(report);
   };
 }
