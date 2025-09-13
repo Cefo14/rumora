@@ -1,5 +1,5 @@
 import { FallibleObserver } from '@/shared/FallibleObserver';
-import { UnsupportedMetricException } from '@/errors/UnsupportedMetricException';
+import { UnsupportedMetricException } from '@/errors/UnsupportedExceptions';
 import { ObserverNotStartedException, PerformanceMetricObserverError } from '@/errors/PerformanceMetricObserverExceptions';
 import type { PerformanceObserverConfig } from '@/types/PerformanceObserverTypes';
 

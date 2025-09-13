@@ -1,9 +1,17 @@
 import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
 import type { ValueObject } from './ValueObject';
+import { UnsupportedPerformanceAPIException } from '@/errors/UnsupportedExceptions';
 
 const isValidPerformanceTime = (time: number) => {
   return Number.isFinite(time) && time >= 0;
 };
+
+const isPerformanceAPIAvailable = () => (
+  typeof window !== 'undefined' &&
+  typeof performance !== 'undefined' &&
+  typeof performance.timeOrigin === 'number' &&
+  typeof performance.now === 'function'
+);
 
 /**
  * Immutable value object representing a performance timestamp.
@@ -27,6 +35,9 @@ export class PerformanceTime implements ValueObject {
    * Use with values from performance APIs (PerformanceEntry.startTime, etc.)
    */
   static fromRelativeTime(time: number): PerformanceTime {
+    if (!isPerformanceAPIAvailable()) {
+      throw new UnsupportedPerformanceAPIException();
+    }
     if (!isValidPerformanceTime(time)) {
       throw new InvalidPerformanceTimeException();
     }
@@ -38,6 +49,9 @@ export class PerformanceTime implements ValueObject {
    * Use with epoch timestamps (Date.now()) or for testing.
    */
   static fromAbsoluteTime(time: number): PerformanceTime {
+    if (!isPerformanceAPIAvailable()) {
+      throw new UnsupportedPerformanceAPIException();
+    }
     if (!isValidPerformanceTime(time)) {
       throw new InvalidPerformanceTimeException();
     }
