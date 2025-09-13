@@ -2,7 +2,6 @@ import { ResourceTimingCollection } from '@/reports/performance/ResourceTimingCo
 import { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
 import { generateId } from '@/shared/generateId';
 import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
-import type { Serialized } from '@/types/Serialized';
 
 /**
  * Observer for Resource Timing performance entries.
@@ -11,7 +10,7 @@ import type { Serialized } from '@/types/Serialized';
  * images, and other assets. Provides detailed network timing information
  * including DNS lookup, TCP connection, request/response times, and transfer sizes.
  */
-export class ResourceTiming extends PerformanceMetricObserver<Serialized<ResourceTimingCollection>> {
+export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingCollection> {
   /**
    * Resource prefixes to ignore - browser internal resources and extensions.
    */
@@ -34,16 +33,23 @@ export class ResourceTiming extends PerformanceMetricObserver<Serialized<Resourc
    */
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceResourceTiming[];
-    const resourceCollection = new ResourceTimingCollection();
+    const resources: ResourceTimingReport[] = [];
 
     for (const entry of entries) {
       if (this.isValidResource(entry)) {
-        const report = ResourceTimingReport.fromPerformanceResourceTiming(generateId(), entry);
-        resourceCollection.addResource(report);
+        const report = ResourceTimingReport.fromPerformanceResourceTiming(
+          generateId(),
+          entry
+        );
+        resources.push(report);
       }
     }
 
-    this.notifySuccess(resourceCollection.toJSON());
+    const resourceTimingCollection = ResourceTimingCollection.fromResourceTimingReports(
+      generateId(),
+      resources
+    );
+    this.notifySuccess(resourceTimingCollection);
   }
 
   /**

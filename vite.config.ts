@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
-import dts from 'vite-plugin-dts'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
-const rootDir = resolve(__dirname, 'src')
+const rootDir = resolve(__dirname, 'src');
 
 export default defineConfig({
   build: {
@@ -27,4 +27,4 @@ export default defineConfig({
       '@': rootDir
     }
   }
-})
+});

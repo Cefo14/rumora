@@ -1,6 +1,12 @@
 import type { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
+interface ResourceTimingCollectionData {
+  id: string;
+  createdAt: PerformanceTime;
+  resources: ResourceTimingReport[];
+}
+
 /**
  * Collection and aggregator for ResourceTimingReport instances.
  * 
@@ -12,29 +18,36 @@ import { PerformanceTime } from '@/value-objects/PerformanceTime';
  */
 export class ResourceTimingCollection {
   /** Internal collection of resource timing reports */
-  private readonly resources = new Map<string, ResourceTimingReport>();
+  private readonly resources: ResourceTimingReport[];
 
-  /** Timestamp when the collection was created */
+  public id: string;
+
   public createdAt: PerformanceTime;
-
-  /** Timestamp of the last update to the collection */
-  public lastUpdated: PerformanceTime;
 
   /**
    * Creates a new ResourceTimingCollection instance.
    */
-  constructor() {
-    const now = PerformanceTime.now();
-    this.createdAt = now;
-    this.lastUpdated = now;
+  private constructor(data: ResourceTimingCollectionData) {
+    this.id = data.id;
+    this.resources = Array.from(data.resources);
+    this.createdAt = data.createdAt;
+
+    Object.freeze(this);
   }
 
-  /** Gets all resources as an array.
-   * 
-   * @returns Array of ResourceTimingReport instances
-   */
-  public get resourcesAsArray(): ResourceTimingReport[] {
-    return Array.from(this.resources.values());
+  public static create(data: ResourceTimingCollectionData): ResourceTimingCollection {
+    return new ResourceTimingCollection(data);
+  }
+
+  public static fromResourceTimingReports(
+    id: string,
+    reports: ResourceTimingReport[]
+  ): ResourceTimingCollection {
+    return new ResourceTimingCollection({
+      id,
+      createdAt: PerformanceTime.now(),
+      resources: reports,
+    });
   }
 
   /**
@@ -43,7 +56,7 @@ export class ResourceTimingCollection {
    * @returns Number of resources in the collection
    */
   public get totalResources(): number {
-    return this.resources.size;
+    return this.resources.length;
   }
 
   /**
@@ -52,7 +65,7 @@ export class ResourceTimingCollection {
    * @returns True if no resources are in the collection
    */
   public get isEmpty(): boolean {
-    return this.resources.size === 0;
+    return this.resources.length === 0;
   }
 
   /**
@@ -61,7 +74,7 @@ export class ResourceTimingCollection {
    * @returns Total bytes transferred across all resources
    */
   public get totalTransferSize(): number {
-    return this.resourcesAsArray
+    return this.resources
       .reduce((total, resource) => total + resource.transferSize, 0);
   }
 
@@ -71,7 +84,7 @@ export class ResourceTimingCollection {
    * @returns Total uncompressed bytes across all resources
    */
   public get totalDecodedSize(): number {
-    return this.resourcesAsArray
+    return this.resources
       .reduce((total, resource) => total + resource.decodedSize, 0);
   }
 
@@ -81,7 +94,7 @@ export class ResourceTimingCollection {
    * @returns Total compressed bytes across all resources
    */
   public get totalEncodedSize(): number {
-    return this.resourcesAsArray
+    return this.resources
       .reduce((total, resource) => total + resource.encodedSize, 0);
   }
 
@@ -93,7 +106,7 @@ export class ResourceTimingCollection {
   public get slowestResource(): ResourceTimingReport | null {
     if (this.isEmpty) return null;
 
-    return this.resourcesAsArray
+    return this.resources
       .reduce((slowest, current) =>
         current.duration > slowest.duration ? current : slowest
       );
@@ -105,7 +118,7 @@ export class ResourceTimingCollection {
    * @returns Array of third-party ResourceTimingReport instances
    */
   public get thirdPartyResources(): ResourceTimingReport[] {
-    return this.resourcesAsArray.filter(resource => resource.isThirdParty);
+    return this.resources.filter(resource => resource.isThirdParty);
   }
 
   /**
@@ -115,7 +128,7 @@ export class ResourceTimingCollection {
    */
   public get resourcesByType (): Record<string, ResourceTimingReport[]> {
     const byType: Record<string, ResourceTimingReport[]> = {};
-    this.resourcesAsArray.forEach(resource => {
+    this.resources.forEach(resource => {
       if (!byType[resource.type]) {
         byType[resource.type] = [];
       }
@@ -131,7 +144,7 @@ export class ResourceTimingCollection {
    */
   public get averageLoadTime(): number {
     return this.isEmpty ? 0 : 
-      Math.round(this.resourcesAsArray.reduce((sum, r) => sum + r.duration, 0) / this.totalResources);
+      Math.round(this.resources.reduce((sum, r) => sum + r.duration, 0) / this.totalResources);
   }
 
   /**
@@ -150,7 +163,7 @@ export class ResourceTimingCollection {
    */
   public get resourcesByDomain(): Record<string, ResourceTimingReport[]> {
     const byDomain: Record<string, ResourceTimingReport[]> = {};
-    this.resourcesAsArray.forEach(resource => {
+    this.resources.forEach(resource => {
       const domain = resource.domain;
       if (!byDomain[domain]) {
         byDomain[domain] = [];
@@ -160,18 +173,6 @@ export class ResourceTimingCollection {
     return byDomain;
   }
 
-  /**
-   * Adds a resource timing report to the collection.
-   * 
-   * If a resource with the same ID already exists, it will be replaced.
-   * This allows for updating existing entries while avoiding duplicates.
-   * 
-   * @param report - ResourceTimingReport to add
-   */
-  public addResource(report: ResourceTimingReport): void {
-    this.resources.set(report.id, report);
-    this.refresh();
-  }
 
   toString(): string {
     return `ResourceTimingCollection: ${this.totalResources} resources, ${Math.round(this.totalTransferSize / 1024)}KB total`;
@@ -179,12 +180,6 @@ export class ResourceTimingCollection {
 
   toJSON() {
     return {
-      /**
-       * Unix timestamp in milliseconds when the collection was created
-       */
-      createdAt: this.createdAt.absoluteTime,
-      /** Unix timestamp in milliseconds when the collection was last updated */
-      lastUpdated: this.lastUpdated.absoluteTime,
       /**
        * Total number of resources in the collection
        */
@@ -213,7 +208,7 @@ export class ResourceTimingCollection {
       /**
        * Array of all ResourceTimingReport instances in the collection
        */
-      resources: this.resourcesAsArray,
+      resources: Array.from(this.resources),
       /**
        * Map of resource types to arrays of ResourceTimingReport instances
        */
@@ -231,9 +226,5 @@ export class ResourceTimingCollection {
        */
       slowestResource: this.slowestResource ?? null,
     };
-  }
-
-  private refresh(): void {
-    this.lastUpdated = PerformanceTime.now();
   }
 }

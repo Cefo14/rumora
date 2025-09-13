@@ -1,7 +1,6 @@
 import { ElementTimingReport } from '@/reports/performance/ElementTimingReport';
 import { generateId } from '@/shared/generateId';
 import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
-import type { Serialized } from '@/types/Serialized';
 import type { PerformanceElementTiming } from '@/types/PerformanceEntryTypes';
 
 /**
@@ -14,7 +13,7 @@ import type { PerformanceElementTiming } from '@/types/PerformanceEntryTypes';
  * Usage: Add elementtiming="identifier" to elements you want to track.
  * Example: <img src="hero.jpg" elementtiming="hero-image" />
  */
-export class ElementTiming extends PerformanceMetricObserver<Serialized<ElementTimingReport>> {
+export class ElementTiming extends PerformanceMetricObserver<ElementTimingReport> {
   constructor() {
     super('element', {
       type: 'element',
@@ -31,7 +30,7 @@ export class ElementTiming extends PerformanceMetricObserver<Serialized<ElementT
     for (const entry of entries) {
       if (this.isValidElement(entry)) {
         const report = ElementTimingReport.fromPerformanceElementTiming(generateId(), entry);
-        this.notifySuccess(report.toJSON());
+        this.notifySuccess(report);
       }
     }
   }

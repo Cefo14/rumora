@@ -1,6 +1,6 @@
 import { RumoraException } from '@/errors/RumoraException';
 
-class PerformanceTimeException extends RumoraException {}
+export class PerformanceTimeException extends RumoraException {}
 
 export class InvalidPerformanceTimeException extends PerformanceTimeException {
   constructor() {
