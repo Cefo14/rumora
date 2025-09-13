@@ -109,7 +109,6 @@ export abstract class WebVitalReport implements Report {
    * Returns a string representation of the web vital report.
    * 
    * @returns A formatted string showing the metric name, value, and rating
-   * @example "LARGEST_CONTENTFUL_PAINT: 2500ms (NEEDS_IMPROVEMENT)"
    */
   public toString(): string {
     return `[${this.name}]: ${this.value}ms (${this.rating})`;
