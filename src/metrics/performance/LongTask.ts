@@ -9,19 +9,6 @@ import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
  * The Long Tasks API only reports tasks that exceed 50ms duration, as these
  * are considered the threshold where users begin to perceive delays in
  * interface responsiveness.
- * 
- * @example
- * ```typescript
- * const longTask = new LongTask();
- * 
- * longTask.subscribe((error, report) => {
- *   if (error) {
- *     console.error('Long Tasks not supported:', error.message);
- *     return;
- *   }
- *   console.log('Long task detected:', report);
- * });
- * ```
  */
 export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
   constructor() {
