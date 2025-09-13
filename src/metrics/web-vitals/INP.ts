@@ -3,6 +3,11 @@ import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceEventTimingEntry } from "@/types/PerformanceEntryTypes";
 
+/**
+ * Observer for capturing Interaction to Next Paint (INP) metrics using PerformanceEventTiming.
+ * INP measures the responsiveness of a webpage by tracking the latency of user interactions,
+ * providing insights into how quickly the page responds to user inputs.
+ */
 export class INP extends PerformanceMetricObserver<INPReport> {
   constructor() {
     super(

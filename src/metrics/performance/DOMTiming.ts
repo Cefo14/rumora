@@ -2,6 +2,11 @@ import { DOMTimingReport } from "@/reports/performance/DOMTimingReport";
 import { generateId } from "@/shared/generateId";
 import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 
+/**
+ * Observer for capturing DOM timing metrics using PerformanceNavigationTiming.
+ * Focuses on key DOM events such as DOMContentLoaded and load event timings,
+ * which are critical for understanding page interactivity and usability.
+ */
 export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   constructor() {
     super("navigation");

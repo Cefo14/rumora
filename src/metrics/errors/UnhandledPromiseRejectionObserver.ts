@@ -2,6 +2,12 @@ import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { UnhandledPromiseRejectionReport } from "@/reports/errors/UnhandledPromiseRejectionReport";
 
+/**
+ * Observer for capturing unhandled promise rejections.
+ * Listens for 'unhandledrejection' events on the window and generates reports
+ * when unhandled promise rejections occur, providing insights into
+ * asynchronous issues that affect the user experience.
+ */
 export class UnhandledPromiseRejectionObserver extends SimpleObserver<UnhandledPromiseRejectionReport> {
   private isListening = false;
 

@@ -4,11 +4,9 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
 import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
 
 /**
- * Observer for Long Tasks API performance entries.|
- * 
- * The Long Tasks API only reports tasks that exceed 50ms duration, as these
- * are considered the threshold where users begin to perceive delays in
- * interface responsiveness.
+ * Observer for capturing long task performance metrics using PerformanceLongTaskTiming.
+ * Long tasks are tasks that block the main thread for 50ms or more,
+ * potentially causing poor user experience by delaying user interactions.
  */
 export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
   constructor() {

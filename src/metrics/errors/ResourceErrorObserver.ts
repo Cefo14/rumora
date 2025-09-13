@@ -2,6 +2,12 @@ import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { ResourceErrorReport } from "@/reports/errors/ResourceErrorReport";
 
+/**
+ * Observer for capturing resource loading errors.
+ * Listens for 'error' events on the window and generates reports
+ * when resource loading errors occur, providing insights into issues
+ * with loading external resources like scripts, stylesheets, or images.
+ */
 export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
   private isListening = false;
 

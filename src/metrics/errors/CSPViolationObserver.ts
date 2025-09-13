@@ -2,6 +2,11 @@ import { SimpleObserver } from "@/shared/SimpleObserver";
 import { generateId } from "@/shared/generateId";
 import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
 
+/**
+ * Observer for capturing Content Security Policy (CSP) violation errors.
+ * Listens for 'securitypolicyviolation' events on the document and generates reports
+ * when such violations occur, providing insights into potential security issues.
+ */
 export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport> {
   private isListening = false;
 
