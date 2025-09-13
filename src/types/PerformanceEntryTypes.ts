@@ -3,25 +3,35 @@ export interface PerformanceEventTimingEntry extends PerformanceEventTiming {
 }
 
 interface LayoutShiftAttributionEntry {
-  currentRect: DOMRectReadOnly;
-  previousRect: DOMRectReadOnly;
-  node: HTMLElement;
+  readonly currentRect: DOMRectReadOnly;
+  readonly previousRect: DOMRectReadOnly;
+  readonly node: HTMLElement;
 }
 
 export interface LayoutShiftEntry extends PerformanceEntry {
-  hadRecentInput: boolean;
-  lastInputTime: number;
-  sources: LayoutShiftAttributionEntry[];
-  value: number;
+  readonly hadRecentInput: boolean;
+  readonly lastInputTime: number;
+  readonly sources: LayoutShiftAttributionEntry[];
+  readonly value: number;
 }
 
 interface TaskAttributionTimingEntry extends PerformanceEntry {
-  containerType: string;
-  containerName: string;
-  containerSrc: string;
-  containerId: string;
+  readonly containerType: string;
+  readonly containerName: string;
+  readonly containerSrc: string;
+  readonly containerId: string;
 }
 
 export interface PerformanceLongTaskTimingEntry extends PerformanceEventTimingEntry {
-  attribution: TaskAttributionTimingEntry[];
+  readonly attribution: TaskAttributionTimingEntry[];
+}
+
+export interface PerformanceElementTiming extends PerformanceEntry {
+  readonly id: string;
+  readonly identifier: string;
+  readonly loadTime: number;
+  readonly renderTime: number;
+  readonly naturalWidth?: number;
+  readonly naturalHeight?: number;
+  readonly url?: string;
 }

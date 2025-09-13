@@ -13,6 +13,7 @@ import { ResourceErrorObserver } from './metrics/errors/ResourceErrorObserver';
 import { CSPViolationObserver } from './metrics/errors/CSPViolationObserver';
 import { LongTask } from './metrics/performance/LongTask';
 import { ResourceTiming } from './metrics/performance/ResourceTiming';
+import { ElementTiming } from './metrics/performance/ElementTiming';
 
 new LCP()
 .subscribe((error, report) => {
@@ -103,6 +104,15 @@ new LongTask()
     console.error('Error:', error);
   } else {
     console.log('Long Task Report:', report);
+  }
+});
+
+new ElementTiming()
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Element Timing Report:', report);
   }
 });
 
