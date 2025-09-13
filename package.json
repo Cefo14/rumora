@@ -21,15 +21,15 @@
     "url": "https://github.com/Cefo14/rumora/issues"
   },
   "homepage": "https://github.com/Cefo14/rumora#readme",
-  "main": "dist/rumora.cjs.js",
-  "module": "dist/rumora.es.js",
-  "types": "dist/rumora.es.d.ts",
+  "main": "./dist/rumora.cjs.js",
+  "module": "./dist/rumora.es.js", 
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist",
     "LICENSE",
     "README.md"
   ],
-  "sideEffects": false,
   "scripts": {
     "dev": "vite",
     "build": "vite build",

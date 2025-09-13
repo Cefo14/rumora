@@ -7,10 +7,17 @@ const rootDir = resolve(__dirname, 'src');
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(rootDir, 'main.ts'),
+      entry: resolve(rootDir, 'index.ts'),
       name: 'Rumora',
       formats: ['es', 'cjs'],
       fileName: (format) => `rumora.${format}.js`
+    },
+    rollupOptions: {
+      output: {
+        preserveModules: true,
+        preserveModulesRoot: 'src',
+        exports: 'named'
+      }
     },
     sourcemap: true,
     outDir: 'dist',
