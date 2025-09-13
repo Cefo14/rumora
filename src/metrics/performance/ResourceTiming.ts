@@ -12,8 +12,6 @@ import type { Serialized } from '@/types/Serialized';
  * including DNS lookup, TCP connection, request/response times, and transfer sizes.
  */
 export class ResourceTiming extends PerformanceMetricObserver<Serialized<ResourceTimingCollection>> {
-  private readonly resourceCollection: ResourceTimingCollection = new ResourceTimingCollection();
-
   /**
    * Resource prefixes to ignore - browser internal resources and extensions.
    */
@@ -36,15 +34,16 @@ export class ResourceTiming extends PerformanceMetricObserver<Serialized<Resourc
    */
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceResourceTiming[];
+    const resourceCollection = new ResourceTimingCollection();
 
     for (const entry of entries) {
       if (this.isValidResource(entry)) {
         const report = ResourceTimingReport.fromPerformanceResourceTiming(generateId(), entry);
-        this.resourceCollection.addResource(report);
+        resourceCollection.addResource(report);
       }
     }
-    
-    this.notifySuccess(this.resourceCollection.toJSON());
+
+    this.notifySuccess(resourceCollection.toJSON());
   }
 
   /**
