@@ -1,8 +1,8 @@
-import { ResourceTimingCollection } from "@/reports/performance/ResourceTimingCollection";
-import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { Serialized } from "@/types/Serialized";
+import { ResourceTimingCollection } from '@/reports/performance/ResourceTimingCollection';
+import { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
+import type { Serialized } from '@/types/Serialized';
 
 /**
  * Observer for Resource Timing performance entries.
@@ -25,8 +25,8 @@ export class ResourceTiming extends PerformanceMetricObserver<Serialized<Resourc
   ] as const;
 
   constructor() {
-    super("resource", {
-      type: "resource",
+    super('resource', {
+      type: 'resource',
       buffered: true
     });
   }

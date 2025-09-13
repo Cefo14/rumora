@@ -1,5 +1,5 @@
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
-import { ErrorReport, SeverityLevel } from "./ErrorReport";
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
+import type { ErrorReport, SeverityLevel } from './ErrorReport';
 
 interface PromiseErrorData {
   id: string;

@@ -1,7 +1,7 @@
-import { INPReport } from "@/reports/web-vitals/INPReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { PerformanceEventTimingEntry } from "@/types/PerformanceEntryTypes";
+import { INPReport } from '@/reports/web-vitals/INPReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
+import type { PerformanceEventTimingEntry } from '@/types/PerformanceEntryTypes';
 
 /**
  * Observer for capturing Interaction to Next Paint (INP) metrics using PerformanceEventTiming.
@@ -11,7 +11,7 @@ import { PerformanceEventTimingEntry } from "@/types/PerformanceEntryTypes";
 export class INP extends PerformanceMetricObserver<INPReport> {
   constructor() {
     super(
-      "event",
+      'event',
       {
         durationThreshold: 16,
       }

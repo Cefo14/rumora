@@ -1,6 +1,6 @@
-import type { Report } from "@/reports/Report";
-import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { Report } from '@/reports/Report';
+import type { PerformanceLongTaskTimingEntry } from '@/types/PerformanceEntryTypes';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 interface TaskAttributionTiming {
   containerType: string;

@@ -1,9 +1,9 @@
-import { RumoraException } from "@/errors/RumoraException";
+import { RumoraException } from '@/errors/RumoraException';
 
 class PerformanceTimeException extends RumoraException {}
 
 export class InvalidPerformanceTimeException extends PerformanceTimeException {
   constructor() {
-    super("Invalid performance timestamp: must be a non-negative finite number");
+    super('Invalid performance timestamp: must be a non-negative finite number');
   }
 }

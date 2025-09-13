@@ -1,5 +1,5 @@
-import { ResourceTimingReport } from "@/reports/performance/ResourceTimingReport";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 /**
  * Collection and aggregator for ResourceTimingReport instances.
@@ -12,7 +12,7 @@ import { PerformanceTime } from "@/value-objects/PerformanceTime";
  */
 export class ResourceTimingCollection {
   /** Internal collection of resource timing reports */
-  private readonly resources: Map<string, ResourceTimingReport> = new Map();
+  private readonly resources = new Map<string, ResourceTimingReport>();
 
   /** Timestamp when the collection was created */
   public createdAt: PerformanceTime;

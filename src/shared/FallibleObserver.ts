@@ -1,7 +1,7 @@
 export type FallibleObserverCallback<T> = (error: Error | null, value: T | null) => void;
 
 export abstract class FallibleObserver<T> {
-  private subscribers: Set<FallibleObserverCallback<T>> = new Set();
+  private subscribers = new Set<FallibleObserverCallback<T>>();
 
   public subscribe(callback: FallibleObserverCallback<T>): this {
     this.subscribers.add(callback);

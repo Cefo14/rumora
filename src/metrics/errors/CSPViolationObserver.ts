@@ -1,6 +1,6 @@
-import { SimpleObserver } from "@/shared/SimpleObserver";
-import { generateId } from "@/shared/generateId";
-import { CSPViolationErrorReport } from "@/reports/errors/CSPViolationErrorReport";
+import { SimpleObserver } from '@/shared/SimpleObserver';
+import { generateId } from '@/shared/generateId';
+import { CSPViolationErrorReport } from '@/reports/errors/CSPViolationErrorReport';
 
 /**
  * Observer for capturing Content Security Policy (CSP) violation errors.

@@ -1,6 +1,6 @@
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
-import { ValueObject } from "./ValueObject";
-import { InvalidTimeSegmentException, InvalidEndTimeException } from "@/errors/TimeSegmentExceptions";
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
+import type { ValueObject } from './ValueObject';
+import { InvalidTimeSegmentException, InvalidEndTimeException } from '@/errors/TimeSegmentExceptions';
 
 const isValidTime = (time: number) => Number.isFinite(time) && time >= 0;
 

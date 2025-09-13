@@ -1,6 +1,6 @@
-import { FIDReport } from "@/reports/web-vitals/FIDReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { FIDReport } from '@/reports/web-vitals/FIDReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
 
 /**
  * Observer for capturing First Input Delay (FID) metrics using PerformanceEventTiming.
@@ -10,7 +10,7 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  */
 export class FID extends PerformanceMetricObserver<FIDReport> {
   constructor() {
-    super("first-input");
+    super('first-input');
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

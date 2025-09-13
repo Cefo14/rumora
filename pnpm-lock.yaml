@@ -28,8 +28,8 @@ importers:
         specifier: 9.33.0
         version: 9.33.0(jiti@2.5.1)
       globals:
-        specifier: ^6.3.0
-        version: 6.4.1
+        specifier: 6.3.0
+        version: 6.3.0
       jiti:
         specifier: 2.5.1
         version: 2.5.1
@@ -773,8 +773,8 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@6.4.1:
-    resolution: {integrity: sha512-Lh7H0bYRNBMc2CapY+TYsCzcSM4HWHGFoQORuEcePk3y3IhpaZmFSJDirhNYSwq8QeHvaCqV/tHI2bdUhYryuw==}
+  globals@6.3.0:
+    resolution: {integrity: sha512-Bf3dzeFZBvNxiUtnTUwr5ALd4np/XaibMVOSQ4eg+tlLKXYTXbzz5ArthtwZio79L2YvBOEhkVBslT/trX18eg==}
     engines: {node: '>=0.10.0'}
 
   graceful-fs@4.2.11:
@@ -1906,7 +1906,7 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@6.4.1: {}
+  globals@6.3.0: {}
 
   graceful-fs@4.2.11: {}
 

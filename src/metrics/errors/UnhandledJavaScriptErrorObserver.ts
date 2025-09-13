@@ -1,6 +1,6 @@
-import { SimpleObserver } from "@/shared/SimpleObserver";
-import { generateId } from "@/shared/generateId";
-import { UnhandledJavaScriptErrorReport } from "@/reports/errors/UnhandledJavaScriptErrorReport";
+import { SimpleObserver } from '@/shared/SimpleObserver';
+import { generateId } from '@/shared/generateId';
+import { UnhandledJavaScriptErrorReport } from '@/reports/errors/UnhandledJavaScriptErrorReport';
 
 /**
  * Observer for capturing unhandled JavaScript errors.

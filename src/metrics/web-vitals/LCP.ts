@@ -1,6 +1,6 @@
-import { LCPReport } from "@/reports/web-vitals/LCPReport";
-import { generateId } from "@/shared/generateId";
-import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { LCPReport } from '@/reports/web-vitals/LCPReport';
+import { generateId } from '@/shared/generateId';
+import {PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
 
 /**
  * Observer for capturing Largest Contentful Paint (LCP) metrics using LargestContentfulPaint.
@@ -9,7 +9,7 @@ import {PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  */
 export class LCP extends PerformanceMetricObserver<LCPReport> {
   constructor() {
-    super("largest-contentful-paint");
+    super('largest-contentful-paint');
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

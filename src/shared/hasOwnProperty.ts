@@ -3,4 +3,4 @@ export const hasOwnProperty = <T extends object, K extends PropertyKey>(
   key: K
 ): obj is T & Record<K, unknown> => {
   return Object.prototype.hasOwnProperty.call(obj, key);
-}
+};

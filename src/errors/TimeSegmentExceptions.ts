@@ -1,4 +1,4 @@
-import { RumoraException } from "./RumoraException";
+import { RumoraException } from './RumoraException';
 
 export class TimeSegmentException extends RumoraException {}
 

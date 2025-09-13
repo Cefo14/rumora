@@ -1,6 +1,6 @@
-import { FCPReport } from "@/reports/web-vitals/FCPReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { FCPReport } from '@/reports/web-vitals/FCPReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
 
 /**
  * Observer for capturing First Contentful Paint (FCP) metrics using PerformancePaintTiming.
@@ -9,7 +9,7 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  */
 export class FCP extends PerformanceMetricObserver<FCPReport> {
   constructor() {
-    super("paint");
+    super('paint');
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

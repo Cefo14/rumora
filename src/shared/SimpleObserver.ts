@@ -1,7 +1,7 @@
 export type SimpleCallback<T> = (value: T) => void;
 
 export abstract class SimpleObserver<T> {
-  private subscribers: Set<SimpleCallback<T>> = new Set();
+  private subscribers = new Set<SimpleCallback<T>>();
 
   public subscribe(callback: SimpleCallback<T>): this {
     this.subscribers.add(callback);

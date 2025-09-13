@@ -1,6 +1,6 @@
-import { DOMTimingReport } from "@/reports/performance/DOMTimingReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { DOMTimingReport } from '@/reports/performance/DOMTimingReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
 
 /**
  * Observer for capturing DOM timing metrics using PerformanceNavigationTiming.
@@ -9,7 +9,7 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  */
 export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   constructor() {
-    super("navigation");
+    super('navigation');
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

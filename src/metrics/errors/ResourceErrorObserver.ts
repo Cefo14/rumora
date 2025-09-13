@@ -1,6 +1,6 @@
-import { SimpleObserver } from "@/shared/SimpleObserver";
-import { generateId } from "@/shared/generateId";
-import { ResourceErrorReport } from "@/reports/errors/ResourceErrorReport";
+import { SimpleObserver } from '@/shared/SimpleObserver';
+import { generateId } from '@/shared/generateId';
+import { ResourceErrorReport } from '@/reports/errors/ResourceErrorReport';
 
 /**
  * Observer for capturing resource loading errors.

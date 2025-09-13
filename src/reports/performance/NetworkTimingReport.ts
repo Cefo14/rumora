@@ -1,6 +1,6 @@
-import type { Report } from "@/reports/Report";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
-import { TimeSegment } from "@/value-objects/TimeSegment";
+import type { Report } from '@/reports/Report';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
+import { TimeSegment } from '@/value-objects/TimeSegment';
 
 /**
  * Grouped network timing segments for navigation timing analysis
@@ -158,7 +158,7 @@ export class NetworkTimingReport implements Report {
     const redirects: TimeSegment = TimeSegment.fromTiming(
       entry.redirectStart,
       entry.redirectEnd
-    )
+    );
 
     // DNS Lookup: domain resolution time
     const dnsLookup: TimeSegment = TimeSegment.fromTiming(

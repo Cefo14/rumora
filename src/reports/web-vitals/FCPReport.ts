@@ -1,5 +1,6 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
+import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 /**
  * First Contentful Paint (FCP) report for measuring loading performance.
@@ -14,7 +15,7 @@ import { PerformanceTime } from "@/value-objects/PerformanceTime";
  * - Poor: >= 3.0s
  */
 export class FCPReport extends WebVitalReport {
-  public readonly name = "FIRST_CONTENTFUL_PAINT";
+  public readonly name = 'FIRST_CONTENTFUL_PAINT';
   public readonly goodThreshold = 1800;
   public readonly poorThreshold = 3000;
 

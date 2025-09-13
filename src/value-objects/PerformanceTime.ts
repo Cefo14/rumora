@@ -1,5 +1,5 @@
-import { InvalidPerformanceTimeException } from "@/errors/PerformanceTimeExceptions";
-import { ValueObject } from "./ValueObject";
+import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
+import type { ValueObject } from './ValueObject';
 
 const isValidPerformanceTime = (time: number) => {
   return Number.isFinite(time) && time >= 0;
@@ -92,7 +92,7 @@ export class PerformanceTime implements ValueObject {
    * Adds a duration to this timestamp.
    */
   add(value: number | PerformanceTime): PerformanceTime {
-    const relativeValue = typeof value === "number" ? value : value.relativeTime;
+    const relativeValue = typeof value === 'number' ? value : value.relativeTime;
     return PerformanceTime.fromRelativeTime(this.relativeTime + relativeValue);
   }
 
@@ -100,7 +100,7 @@ export class PerformanceTime implements ValueObject {
    * Subtracts a duration from this timestamp.
    */
   subtract(value: number | PerformanceTime): PerformanceTime {
-    const relativeValue = typeof value === "number" ? value : value.relativeTime;
+    const relativeValue = typeof value === 'number' ? value : value.relativeTime;
     return PerformanceTime.fromRelativeTime(this.relativeTime - relativeValue);
   }
 
@@ -118,6 +118,6 @@ export class PerformanceTime implements ValueObject {
     return {
       absolute: this.absoluteTime,
       relative: this.relativeTime,
-    }
+    };
   }
 }

@@ -1,18 +1,18 @@
-import { CLS } from "./metrics/web-vitals/CLS";
-import { FCP } from "./metrics/web-vitals/FCP";
-import { FID } from "./metrics/web-vitals/FID";
-import { LCP } from "./metrics/web-vitals/LCP";
-import { INP } from "./metrics/web-vitals/INP";
+import { CLS } from './metrics/web-vitals/CLS';
+import { FCP } from './metrics/web-vitals/FCP';
+import { FID } from './metrics/web-vitals/FID';
+import { LCP } from './metrics/web-vitals/LCP';
+import { INP } from './metrics/web-vitals/INP';
 
-import { NetworkTiming } from "./metrics/performance/NetworkTiming";
-import { DOMTiming } from "./metrics/performance/DOMTiming";
+import { NetworkTiming } from './metrics/performance/NetworkTiming';
+import { DOMTiming } from './metrics/performance/DOMTiming';
 
-import { UnhandledJavaScriptErrorObserver } from "./metrics/errors/UnhandledJavaScriptErrorObserver";
-import { UnhandledPromiseRejectionObserver } from "./metrics/errors/UnhandledPromiseRejectionObserver";
-import { ResourceErrorObserver } from "./metrics/errors/ResourceErrorObserver";
-import { CSPViolationObserver } from "./metrics/errors/CSPViolationObserver";
-import { LongTask } from "./metrics/performance/LongTask";
-import { ResourceTiming } from "./metrics/performance/ResourceTiming";
+import { UnhandledJavaScriptErrorObserver } from './metrics/errors/UnhandledJavaScriptErrorObserver';
+import { UnhandledPromiseRejectionObserver } from './metrics/errors/UnhandledPromiseRejectionObserver';
+import { ResourceErrorObserver } from './metrics/errors/ResourceErrorObserver';
+import { CSPViolationObserver } from './metrics/errors/CSPViolationObserver';
+import { LongTask } from './metrics/performance/LongTask';
+import { ResourceTiming } from './metrics/performance/ResourceTiming';
 
 new LCP()
 .subscribe((error, report) => {
@@ -106,11 +106,11 @@ new LongTask()
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   function forceLongTask() {
     const loop = () => {
       for (let i = 0; i < 10000; i++) {
-        console.log("sync");
+        console.log('sync');
       }
     };
 
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
   forceLongTask();
 });
 
-window.addEventListener("load", () => {
+window.addEventListener('load', () => {
   new ResourceTiming()
   .subscribe((error, report) => {
     if (error) {

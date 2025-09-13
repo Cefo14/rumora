@@ -1,5 +1,5 @@
-import { Entity } from "../reports/Entity";
-import { ValueObject } from "@/value-objects/ValueObject";
+import type { Entity } from '../reports/Entity';
+import type { ValueObject } from '@/value-objects/ValueObject';
 
 /**
  * Extracts the serialized data from an Entity or ValueObject.
@@ -7,5 +7,5 @@ import { ValueObject } from "@/value-objects/ValueObject";
  * If T is neither an Entity nor a ValueObject, the type resolves to never.
  */
 export type Serialized<T> = T extends (ValueObject | Entity) 
-  ? ReturnType<T["toJSON"]> 
+  ? ReturnType<T['toJSON']> 
   : never;

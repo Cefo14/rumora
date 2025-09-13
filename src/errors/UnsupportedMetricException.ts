@@ -1,4 +1,4 @@
-import { RumoraException } from "./RumoraException";
+import { RumoraException } from './RumoraException';
 
 export class UnsupportedMetricException extends RumoraException {
   constructor(metric: string) {

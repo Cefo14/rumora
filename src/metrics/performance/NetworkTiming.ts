@@ -1,6 +1,6 @@
-import { NetworkTimingReport } from "@/reports/performance/NetworkTimingReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
+import { NetworkTimingReport } from '@/reports/performance/NetworkTimingReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
 
 /**
  * Observer for capturing network timing metrics using PerformanceNavigationTiming.
@@ -9,7 +9,7 @@ import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
  */
 export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
  constructor() {
-   super("navigation");
+   super('navigation');
  }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

@@ -1,5 +1,6 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
+import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;
@@ -19,7 +20,7 @@ interface INPReportDTO extends WebVitalReportDTO {
  * - Poor: >= 500ms
  */
 export class INPReport extends WebVitalReport {
-  public readonly name = "INTERACTION_TO_NEXT_PAINT";
+  public readonly name = 'INTERACTION_TO_NEXT_PAINT';
   public readonly goodThreshold = 200;
   public readonly poorThreshold = 500;
 

@@ -1,5 +1,6 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
+import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 /**
  * Largest Contentful Paint (LCP) report for measuring loading performance.
@@ -14,7 +15,7 @@ import { PerformanceTime } from "@/value-objects/PerformanceTime";
  * - Poor: >= 4.0s
  */
 export class LCPReport extends WebVitalReport {
-  public readonly name = "LARGEST_CONTENTFUL_PAINT";
+  public readonly name = 'LARGEST_CONTENTFUL_PAINT';
   public readonly goodThreshold = 2500;
   public readonly poorThreshold = 4000;
 

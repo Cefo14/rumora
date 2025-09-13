@@ -1,5 +1,5 @@
-import { Entity } from "../reports/Entity";
-import { PerformanceTime } from "../value-objects/PerformanceTime";
+import type { Entity } from '../reports/Entity';
+import type { PerformanceTime } from '../value-objects/PerformanceTime';
 
 export interface Report extends Entity {
   readonly createdAt: PerformanceTime;

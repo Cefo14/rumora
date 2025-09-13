@@ -1,7 +1,7 @@
-import { LongTaskReport } from "@/reports/performance/LongTaskReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
+import { LongTaskReport } from '@/reports/performance/LongTaskReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
+import type { PerformanceLongTaskTimingEntry } from '@/types/PerformanceEntryTypes';
 
 /**
  * Observer for capturing long task performance metrics using PerformanceLongTaskTiming.
@@ -10,7 +10,7 @@ import { PerformanceLongTaskTimingEntry } from "@/types/PerformanceEntryTypes";
  */
 export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
   constructor() {
-    super("longtask");
+    super('longtask');
   }
 
   /**
@@ -29,7 +29,7 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
       const report = LongTaskReport.fromPerformanceLongTaskTimingEntry(
         generateId(),
         entry
-      )
+      );
       this.notifySuccess(report);
     }
   }

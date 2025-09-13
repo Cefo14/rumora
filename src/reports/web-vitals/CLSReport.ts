@@ -1,6 +1,7 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { LayoutShiftEntry } from "@/types/PerformanceEntryTypes";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
+import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
+import type { LayoutShiftEntry } from '@/types/PerformanceEntryTypes';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 /**
  * Cumulative Layout Shift (CLS) report for measuring visual stability.
@@ -14,7 +15,7 @@ import { PerformanceTime } from "@/value-objects/PerformanceTime";
  * - Poor: >= 0.25
  */
 export class CLSReport extends WebVitalReport {
-  public readonly name = "CUMULATIVE_LAYOUT_SHIFT";
+  public readonly name = 'CUMULATIVE_LAYOUT_SHIFT';
   public readonly goodThreshold = 0.1;
   public readonly poorThreshold = 0.25;
 

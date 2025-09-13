@@ -1,7 +1,7 @@
-import { CLSReport } from "@/reports/web-vitals/CLSReport";
-import { generateId } from "@/shared/generateId";
-import { PerformanceMetricObserver } from "@/shared/PerformanceMetricObserver";
-import { LayoutShiftEntry } from "@/types/PerformanceEntryTypes";
+import { CLSReport } from '@/reports/web-vitals/CLSReport';
+import { generateId } from '@/shared/generateId';
+import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
+import type { LayoutShiftEntry } from '@/types/PerformanceEntryTypes';
 
 /**
  * Observer for capturing Cumulative Layout Shift (CLS) metrics using LayoutShiftEntry.
@@ -12,7 +12,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
   private cls = 0;
 
   constructor() {
-    super("layout-shift");
+    super('layout-shift');
   }
 
   protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {

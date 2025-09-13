@@ -1,5 +1,5 @@
-import type { Report } from "@/reports/Report";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { Report } from '@/reports/Report';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 interface DOMTimingData {
   id: string;

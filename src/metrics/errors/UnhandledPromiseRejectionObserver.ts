@@ -1,6 +1,6 @@
-import { SimpleObserver } from "@/shared/SimpleObserver";
-import { generateId } from "@/shared/generateId";
-import { UnhandledPromiseRejectionReport } from "@/reports/errors/UnhandledPromiseRejectionReport";
+import { SimpleObserver } from '@/shared/SimpleObserver';
+import { generateId } from '@/shared/generateId';
+import { UnhandledPromiseRejectionReport } from '@/reports/errors/UnhandledPromiseRejectionReport';
 
 /**
  * Observer for capturing unhandled promise rejections.

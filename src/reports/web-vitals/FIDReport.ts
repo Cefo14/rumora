@@ -1,5 +1,6 @@
-import { WebVitalReport, WebVitalReportDTO } from "@/reports/web-vitals/WebVitalReport";
-import { PerformanceTime } from "@/value-objects/PerformanceTime";
+import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
+import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
+import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 /**
  * First Input Delay (FID) report for measuring interactivity.
@@ -14,7 +15,7 @@ import { PerformanceTime } from "@/value-objects/PerformanceTime";
  * - Poor: >= 300ms
  */
 export class FIDReport extends WebVitalReport {
-  public readonly name = "FIRST_INPUT_DELAY";
+  public readonly name = 'FIRST_INPUT_DELAY';
   public readonly goodThreshold = 100;
   public readonly poorThreshold = 300;
 
