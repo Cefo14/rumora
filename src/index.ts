@@ -17,11 +17,6 @@ export { CSPViolationObserver } from './metrics/errors/CSPViolationObserver';
 
 export { RumoraException } from './errors/RumoraException';
 export {
-  PerformanceMetricObserverException,
-  ObserverNotStartedException,
-  PerformanceMetricObserverError
-} from './errors/PerformanceMetricObserverExceptions';
-export {
   PerformanceTimeException,
   InvalidPerformanceTimeException
 } from './errors/PerformanceTimeExceptions';
@@ -35,3 +30,11 @@ export {
   UnsupportedMetricException,
   UnsupportedPerformanceAPIException
 } from './errors/UnsupportedExceptions';
+export {
+  PerformanceObserverException,
+  PerformanceHandlerException,
+} from './errors/PerformanceObserverExceptions';
+export {
+  EventObserverException,
+  EventObserverHandlerException,
+} from './errors/EventObserverExceptions';

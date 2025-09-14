@@ -18,7 +18,7 @@ export class INP extends PerformanceMetricObserver<INPReport> {
     );
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceEventTimingEntry[];
     for (const entry of entries) {
       const eventEntry = entry;

@@ -1,10 +1,11 @@
 import { FallibleObserver } from '@/shared/FallibleObserver';
-import { UnsupportedMetricException } from '@/errors/UnsupportedExceptions';
-import { ObserverNotStartedException, PerformanceMetricObserverError } from '@/errors/PerformanceMetricObserverExceptions';
 import type { PerformanceObserverConfig } from '@/types/PerformanceObserverTypes';
+import { isSSR } from './isSSR';
+import { UnsupportedMetricException, UnsupportedSSRException } from '@/errors/UnsupportedExceptions';
+import { PerformanceHandlerException } from '@/errors/PerformanceObserverExceptions';
 
 export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
-  private performanceObserver: PerformanceObserver;
+  private performanceObserver: PerformanceObserver | null = null;
   private readonly performanceObserverConfig: PerformanceObserverConfig;
   private readonly entryType: string;
   private isListening: boolean;
@@ -24,22 +25,17 @@ export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
   }
 
   public dispose(): void {
-    if (this.isListening) return;
     this.stop();
     this.clearSubscribers();
-    this.isListening = false;
+    this.performanceObserver = null;
   }
 
   protected stop(): void {
-    this.performanceObserver.disconnect();
+    this.performanceObserver?.disconnect();
+    this.isListening = false;
   }
 
   protected override onSubscribe(): void {
-    if (!this.isSupported()) {
-      const error = new UnsupportedMetricException(this.entryType);
-      this.notifyError(error);
-      return;
-    }
     if (this.isListening) return;
     this.start();
   }
@@ -51,24 +47,33 @@ export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
       this.onPerformanceObserver(entryList);
     }
     catch (error) {
-      const wrappedError = new PerformanceMetricObserverError(error);
+      const wrappedError = new PerformanceHandlerException(error);
       this.notifyError(wrappedError);
     }
   }
 
   private start(): void {
-    try {
-      this.performanceObserver.observe(this.performanceObserverConfig);
-    } catch (error) { 
-      this.stop();
-      const newError = new ObserverNotStartedException(error);
-      this.notifyError(newError);
+    if (isSSR()) {
+      const error = new UnsupportedSSRException();
+      this.notifyError(error);
+      return;
     }
+
+    if (!this.isSupported()) {
+      const error = new UnsupportedMetricException(this.entryType);
+      this.notifyError(error);
+      return;
+    }
+
+    this.performanceObserver = new PerformanceObserver(
+      this.handleOnPerformanceObserver.bind(this)
+    );
+    this.performanceObserver.observe(this.performanceObserverConfig);
+    this.isListening = true;
   }
 
   private isSupported(): boolean {
     return (
-      typeof window !== 'undefined' &&
       'PerformanceObserver' in window &&
       PerformanceObserver.supportedEntryTypes.includes(this.entryType)
     );

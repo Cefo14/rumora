@@ -13,3 +13,9 @@ export class UnsupportedPerformanceAPIException extends UnsupportedException {
     super('Performance API is not supported in this browser.');
   }
 }
+
+export class UnsupportedSSRException extends UnsupportedException {
+  constructor() {
+    super('SSR (Server-Side Rendering) is not supported in this environment.');
+  }
+}

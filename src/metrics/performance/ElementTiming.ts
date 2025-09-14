@@ -24,7 +24,7 @@ export class ElementTiming extends PerformanceMetricObserver<ElementTimingReport
   /**
    * Processes element timing entries and creates reports.
    */
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceElementTiming[];
 
     for (const entry of entries) {

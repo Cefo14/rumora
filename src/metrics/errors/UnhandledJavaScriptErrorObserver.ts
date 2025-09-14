@@ -1,44 +1,24 @@
-import { SimpleObserver } from '@/shared/SimpleObserver';
 import { generateId } from '@/shared/generateId';
 import { UnhandledJavaScriptErrorReport } from '@/reports/errors/UnhandledJavaScriptErrorReport';
+import { WindowEventObserver } from '@/shared/WindowEventObserver';
 
 /**
  * Observer for capturing unhandled JavaScript errors.
+ * 
  * Listens for 'error' events on the window and generates reports
  * when unhandled JavaScript errors occur, providing insights into
  * runtime issues that affect the user experience.
  */
-export class UnhandledJavaScriptErrorObserver extends SimpleObserver<UnhandledJavaScriptErrorReport> {
-  private isListening = false;
-
-  protected override onSubscribe(): void {
-    if (!this.isListening) this.start();
+export class UnhandledJavaScriptErrorObserver extends WindowEventObserver<'error', UnhandledJavaScriptErrorReport> {
+  constructor() {
+    super('error');
   }
 
-  public dispose(): void {
-    this.stop();
-    this.clearSubscribers();
-  }
-
-  private start(): void {
-    if (this.isListening) return;
-
-    window.addEventListener('error', this.handleErrorEvent, true);
-    this.isListening = true;
-  }
-
-  private stop(): void {
-    if (!this.isListening) return;
-    window.removeEventListener('error', this.handleErrorEvent, true);
-    this.isListening = false;
-  }
-
-  private handleErrorEvent = (errorEvent: ErrorEvent): void => {
-    if (errorEvent.target !== window) return;
+  protected onEvent(event: ErrorEvent): void {
     const report = UnhandledJavaScriptErrorReport.fromErrorEvent(
       generateId(),
-      errorEvent
+      event
     );
-    this.notify(report);
+    this.notifySuccess(report);
   };
 }

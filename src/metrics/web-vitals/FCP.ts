@@ -12,7 +12,7 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
     super('paint');
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries();
     for (const entry of entries) {
       const fcpEntry = entry as PerformancePaintTiming;

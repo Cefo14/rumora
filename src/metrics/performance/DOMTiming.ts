@@ -12,7 +12,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
     super('navigation');
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceNavigationTiming[];
     for (const entry of entries) {
       if (entry.loadEventEnd <= 0) continue;

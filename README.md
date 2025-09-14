@@ -164,14 +164,22 @@ import {
 
 // JavaScript runtime errors
 const jsErrors = new UnhandledJavaScriptErrorObserver();
-jsErrors.subscribe((report) => {
+jsErrors.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+    return;
+  }
   console.log(`JS Error: ${report.errorMessage} (${report.severity})`);
 });
 
 // Failed promise rejections
 const promiseErrors = new UnhandledPromiseRejectionObserver();
-promiseErrors.subscribe((report) => {
-  console.log(`Promise rejection: ${report.errorMessage}`);
+promiseErrors.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+    return;
+  }
+  console.log(`Promise Rejection: ${report.reason} (${report.severity})`);
 });
 ```
 

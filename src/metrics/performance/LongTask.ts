@@ -22,7 +22,7 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
    * @param entryList - List of performance entries from the observer
    * @protected
    */
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceLongTaskTimingEntry[];
     for (const entry of entries) {
       if (entry.entryType !== 'longtask') continue;

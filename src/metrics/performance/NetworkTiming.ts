@@ -12,7 +12,7 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
    super('navigation');
  }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceNavigationTiming[];
     for (const entry of entries) {
       if (entry.responseEnd <= 0) continue;

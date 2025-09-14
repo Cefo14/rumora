@@ -1,44 +1,22 @@
-import { SimpleObserver } from '@/shared/SimpleObserver';
 import { generateId } from '@/shared/generateId';
 import { CSPViolationErrorReport } from '@/reports/errors/CSPViolationErrorReport';
+import { WindowEventObserver } from '@/shared/WindowEventObserver';
 
 /**
  * Observer for capturing Content Security Policy (CSP) violation errors.
  * Listens for 'securitypolicyviolation' events on the document and generates reports
  * when such violations occur, providing insights into potential security issues.
  */
-export class CSPViolationObserver extends SimpleObserver<CSPViolationErrorReport> {
-  private isListening = false;
-
-  protected override onSubscribe(): void {
-    if (!this.isListening) this.start();
+export class CSPViolationObserver extends WindowEventObserver<'securitypolicyviolation', CSPViolationErrorReport> {
+  constructor() {
+    super('securitypolicyviolation');
   }
 
-  public dispose(): void {
-    this.stop();
-    this.clearSubscribers();
-  }
-
-  private start(): void {
-    if (this.isListening) return;
-
-    document.addEventListener('securitypolicyviolation', this.handleCSPViolation);
-    this.isListening = true;
-  }
-
-  private stop(): void {
-    if (!this.isListening) return;
-
-    document.removeEventListener('securitypolicyviolation', this.handleCSPViolation);
-    this.isListening = false;
-  }
-
-  private handleCSPViolation = (event: SecurityPolicyViolationEvent): void => {
+  protected override onEvent(event: SecurityPolicyViolationEvent): void {
     const report = CSPViolationErrorReport.fromSecurityPolicyViolationEvent(
       generateId(),
       event
     );
-
-    this.notify(report);
+    this.notifySuccess(report);
   };
 }

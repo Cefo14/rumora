@@ -1,9 +1,12 @@
 export abstract class Exception extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = new.target.name;
-    if (Error.captureStackTrace) Error.captureStackTrace(this, new.target);
+    this.name = this.constructor.name;
+    
     Object.setPrototypeOf(this, new.target.prototype);
-    Object.freeze(this);
+    
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }

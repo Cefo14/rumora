@@ -12,7 +12,7 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
     super('largest-contentful-paint');
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as LargestContentfulPaint[];
 
     if (entries.length > 0) {

@@ -13,7 +13,7 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
     super('first-input');
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceEventTiming[];
     for (const entry of entries) {
       const report = FIDReport.fromPerformanceEventTiming(

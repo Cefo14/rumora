@@ -79,23 +79,39 @@ new DOMTiming()
 });
 
 new UnhandledJavaScriptErrorObserver()
-.subscribe((report) => {
-  console.log('Error Tracking Report:', report);
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Error Tracking Report:', report);
+  }
 });
 
 new UnhandledPromiseRejectionObserver()
-.subscribe((report) => {
-  console.log('Unhandled Promise Rejections Report:', report);
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Unhandled Promise Rejection Report:', report);
+  }
 });
 
 new ResourceErrorObserver()
-.subscribe((report) => {
-  console.log('Resource Error Report:', report);
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('Resource Error Report:', report);
+  }
 });
 
 new CSPViolationObserver()
-.subscribe((report) => {
-  console.log('CSP Violation Report:', report);
+.subscribe((error, report) => {
+  if (error) {
+    console.error('Error:', error);
+  } else {
+    console.log('CSP Violation Report:', report);
+  }
 });
 
 new LongTask()

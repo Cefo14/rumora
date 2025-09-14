@@ -31,7 +31,7 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
   /**
    * Processes resource timing entries and creates reports for valid resources.
    */
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceResourceTiming[];
     const resources: ResourceTimingReport[] = [];
 

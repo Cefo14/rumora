@@ -1,6 +1,6 @@
-import { SimpleObserver } from '@/shared/SimpleObserver';
 import { generateId } from '@/shared/generateId';
 import { ResourceErrorReport } from '@/reports/errors/ResourceErrorReport';
+import { WindowEventObserver } from '@/shared/WindowEventObserver';
 
 /**
  * Observer for capturing resource loading errors.
@@ -8,38 +8,18 @@ import { ResourceErrorReport } from '@/reports/errors/ResourceErrorReport';
  * when resource loading errors occur, providing insights into issues
  * with loading external resources like scripts, stylesheets, or images.
  */
-export class ResourceErrorObserver extends SimpleObserver<ResourceErrorReport> {
-  private isListening = false;
-
-  protected override onSubscribe(): void {
-    this.start();
+export class ResourceErrorObserver extends WindowEventObserver<'error', ResourceErrorReport> {
+  constructor() {
+    super('error');
   }
 
-  public dispose(): void {
-    this.stop();
-    this.clearSubscribers();
-  }
-
-  private start(): void {
-    if (this.isListening) return;
-    window.addEventListener('error', this.handleErrorEvent, true);
-    this.isListening = true;
-  }
-
-  private stop(): void {
-    if (!this.isListening) return;
-    window.removeEventListener('error', this.handleErrorEvent, true);
-    this.isListening = false;
-  }
-
-  private handleErrorEvent = (errorEvent: ErrorEvent): void => {
-    if (!errorEvent.target || errorEvent.target === window) return;
-
+  protected override onEvent(event: ErrorEvent): void {
+    // Only handle resource loading errors, not JS errors
+    if (!event.target || event.target === window) return;
     const report = ResourceErrorReport.fromErrorEvent(
       generateId(),
-      errorEvent
+      event
     );
-
-    this.notify(report);
-  };
+    this.notifySuccess(report);
+  }
 }

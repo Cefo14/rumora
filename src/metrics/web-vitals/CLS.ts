@@ -15,7 +15,7 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     super('layout-shift');
   }
 
-  protected onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
+  protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as LayoutShiftEntry[];
     for (const entry of entries) {
       if (entry.hadRecentInput) continue;
