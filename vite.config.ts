@@ -13,6 +13,7 @@ export default defineConfig({
       fileName: (format) => `rumora.${format}.js`
     },
     rollupOptions: {
+      external: ['@/test-utils'],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',

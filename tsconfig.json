@@ -48,5 +48,7 @@
     "dist",
     "jest.config.mts",
     "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts",
   ]
 }

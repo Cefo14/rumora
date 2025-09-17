@@ -245,6 +245,7 @@ To monitor specific elements, add the `elementtiming` attribute:
 - 🔄 Memory Usage Observer
 - 🔄 Connection Quality Observer
 - 🔄 User Timing Observer
+- 🔄 Sampling/throttling para high-traffic sites
 
 ## TypeScript Support
 
