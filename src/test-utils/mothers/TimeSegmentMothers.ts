@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
-import type { TimeSegment } from '../../value-objects/TimeSegment';
+import type { TimeSegment } from '@/value-objects/TimeSegment';
 import { TimeSegmentBuilder } from '../builders/TimeSegmentBuilder';
 
 export class TimeSegmentMothers {
