@@ -2,7 +2,7 @@ import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
 import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
-interface INPReportDTO extends WebVitalReportDTO {
+export interface INPReportDTO extends WebVitalReportDTO {
   eventName: string;
 }
 
