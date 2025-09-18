@@ -3,15 +3,12 @@ import { vi } from 'vitest';
 /**
  * Predictable timestamps for testing
  */
-export const TEST_TIMESTAMPS = {
+export const PERFORMANCE_TIMESTAMPS = {
   // Simple epoch-based timestamp (day 2 of Unix epoch)
-  TIME_ORIGIN: new Date('1970-01-02T00:00:00Z').getTime(), // 86400000
-  
-  // Common test values
-  CURRENT_TIME: 1000,
-  FAST_DURATION: 50,
-  SLOW_DURATION: 2000,
-  LONG_TASK_DURATION: 100
+  TIME_ORIGIN: Date.now() - 1,
+
+  // Current time for tests (can be adjusted as needed)
+  CURRENT_TIME: Date.now(),
 } as const;
 
 /**
@@ -20,20 +17,20 @@ export const TEST_TIMESTAMPS = {
 export function setupPerformanceAPI() {
   // Mock performance.timeOrigin
   Object.defineProperty(performance, 'timeOrigin', {
-    value: TEST_TIMESTAMPS.TIME_ORIGIN,
+    value: PERFORMANCE_TIMESTAMPS.TIME_ORIGIN,
     writable: true,
     configurable: true
   });
 
   // Mock performance.now
-  vi.spyOn(performance, 'now').mockReturnValue(TEST_TIMESTAMPS.CURRENT_TIME);
+  vi.spyOn(performance, 'now').mockReturnValue(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
 
   // Mock other performance methods if needed
   vi.spyOn(performance, 'mark').mockImplementation((markName: string, _markOptions?: PerformanceMarkOptions) => {
     return {
       name: markName,
       entryType: 'mark',
-      startTime: TEST_TIMESTAMPS.CURRENT_TIME,
+      startTime: PERFORMANCE_TIMESTAMPS.CURRENT_TIME,
       duration: 0,
       toJSON: () => ({})
     } as PerformanceMark;
@@ -42,7 +39,7 @@ export function setupPerformanceAPI() {
     return {
       name: measureName,
       entryType: 'measure',
-      startTime: TEST_TIMESTAMPS.CURRENT_TIME,
+      startTime: PERFORMANCE_TIMESTAMPS.CURRENT_TIME,
       duration: 0,
       toJSON: () => ({})
     } as PerformanceMeasure;
@@ -71,5 +68,5 @@ export function setupCustomTimeOrigin(customTimeOrigin: number) {
  * Helper to calculate expected absolute time from relative
  */
 export function getExpectedAbsoluteTime(relativeTime: number): number {
-  return TEST_TIMESTAMPS.TIME_ORIGIN + relativeTime;
+  return PERFORMANCE_TIMESTAMPS.TIME_ORIGIN + relativeTime;
 }
