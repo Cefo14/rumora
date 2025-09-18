@@ -28,7 +28,7 @@ export class FCPReport extends WebVitalReport {
     return new FCPReport(data);
   }
 
-  public static fromPerformancePaintTiming(id: string, entry: PerformanceEntry): FCPReport {
+  public static fromPerformancePaintTiming(id: string, entry: PerformancePaintTiming): FCPReport {
     const data: WebVitalReportDTO = {
       id,
       createdAt: PerformanceTime.now(),
