@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { PerformanceTimeBuilder } from '@/test-utils/builders/PerformanceTimeBuilder';
-import { performanceAPIHelper } from '@/test-utils/PerformanceAPIHelper';
+import { performanceAPIHelper } from '@/test-utils/helpers/PerformanceAPIHelper';
 
 import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
 import { UnsupportedPerformanceAPIException } from '@/errors/UnsupportedExceptions';

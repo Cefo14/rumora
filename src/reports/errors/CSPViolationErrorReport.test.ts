@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { CSPViolationErrorReportMothers } from '@/test-utils/mothers/CSPViolationErrorReportMothers';
 import { SecurityPolicyViolationEventMother } from '@/test-utils/mothers/SecurityPolicyViolationEventMother';
-import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
+import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 import { CSPViolationErrorReport } from './CSPViolationErrorReport';

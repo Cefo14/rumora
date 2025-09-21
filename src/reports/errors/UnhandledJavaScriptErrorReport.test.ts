@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { UnhandledJavaScriptErrorReportMothers } from '@/test-utils/mothers/UnhandledJavaScriptErrorReportMothers';
 import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
+import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 import { UnhandledJavaScriptErrorReport } from './UnhandledJavaScriptErrorReport';

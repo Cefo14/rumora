@@ -4,7 +4,7 @@ import { ResourceTimingCollectionMothers } from '@/test-utils/mothers/ResourceTi
 import { ResourceTimingReportMothers } from '@/test-utils/mothers/ResourceTimingReportMothers';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
-import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
+import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
 
 import { ResourceTimingCollection } from './ResourceTimingCollection';
 

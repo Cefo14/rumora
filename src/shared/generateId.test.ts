@@ -5,7 +5,7 @@ import {
   hasValidUUIDStructure, 
   hasValidUUIDVersion, 
   hasValidUUIDVariant 
-} from '@/test-utils/uuidHelpers';
+} from '@/test-utils/helpers/uuidHelpers';
 
 describe('generateId', () => {
   afterEach(() => {
