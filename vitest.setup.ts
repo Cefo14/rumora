@@ -14,7 +14,7 @@ Object.defineProperty(globalThis, 'performance', {
   writable: true
 });
 
-// Mock PerformanceObserver
+// Mock PerformanceObserver globally
 Object.defineProperty(globalThis, 'PerformanceObserver', {
   value: vi.fn().mockImplementation((_callback) => ({
     observe: vi.fn(),
@@ -22,6 +22,30 @@ Object.defineProperty(globalThis, 'PerformanceObserver', {
     takeRecords: vi.fn(() => [])
   })),
   writable: true
+});
+
+// Mock SecurityPolicyViolationEvent globally
+Object.defineProperty(globalThis, 'SecurityPolicyViolationEvent', {
+  value: class SecurityPolicyViolationEvent extends Event {
+    public readonly effectiveDirective: string;
+    public readonly blockedURI: string;
+    public readonly sourceFile: string | undefined;
+    public readonly lineNumber: number | undefined;
+    public readonly columnNumber: number | undefined;
+    public readonly violatedDirective: string;
+
+    constructor(type: string, init: SecurityPolicyViolationEventInit) {
+      super(type);
+      this.effectiveDirective = init.effectiveDirective || '';
+      this.blockedURI = init.blockedURI || '';
+      this.sourceFile = init.sourceFile;
+      this.lineNumber = init.lineNumber;
+      this.columnNumber = init.columnNumber;
+      this.violatedDirective = init.violatedDirective || '';
+    }
+  },
+  writable: true,
+  configurable: true
 });
 
 beforeEach(() => {
