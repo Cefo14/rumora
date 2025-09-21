@@ -103,7 +103,7 @@ export class UnhandledPromiseRejectionReport implements ErrorReport {
     // Critical: Memory/system failures
     if (errorMessage.includes('out of memory') || 
         errorMessage.includes('stack overflow') ||
-        errorMessage.includes('chunk load failed') ||
+        errorMessage.includes('chunk') ||
         errorName === 'syntaxerror'
       ) {
       return 'critical';
