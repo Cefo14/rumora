@@ -393,9 +393,7 @@ export class NetworkTimingReport implements Report {
    * @returns Formatted string with key timing metrics and performance level
    */
   public toString(): string {
-    const bottleneck = this.primaryBottleneck !== 'dns' ? ` (bottleneck: ${this.primaryBottleneck})` : '';
-    const sizeInfo = this.transferSize > 0 ? `, ${Math.round(this.transferSize / 1024)}KB` : '';
-    return `NetworkTiming: ${this.totalNetworkTime}ms (TTFB: ${this.timeToFirstByte}ms)${sizeInfo}${bottleneck}`;
+    return `NetworkTiming: ${this.totalNetworkTime}ms`;
   }
 
   /**
