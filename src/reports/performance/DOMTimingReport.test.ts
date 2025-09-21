@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
 import { DOMTimingReportMothers } from '@/test-utils/mothers/DOMTimingReportMothers';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { DOMTimingReport } from './DOMTimingReport';
@@ -43,7 +42,7 @@ describe('DOMTimingReport', () => {
       const id = 'test-dom-timing';
       const entry = DOMTimingReportMothers.createPerformanceNavigationTiming('fast');
       vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-        PerformanceTime.fromAbsoluteTime(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN)
+        PerformanceTime.fromAbsoluteTime(performance.timeOrigin)
       );
 
       // When

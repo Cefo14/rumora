@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { FIDReportMothers } from '@/test-utils/mothers/FIDReportMothers';
 import { PerformanceEventTimingMother } from '@/test-utils/mothers/PerformanceEventTimingMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';
@@ -52,7 +51,7 @@ describe('FIDReport', () => {
         const startTime = 150;
         const eventEntry = PerformanceEventTimingMother.withCustomValues({ startTime });
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -62,7 +61,7 @@ describe('FIDReport', () => {
         expect(report.id).toBe(id);
         expect(report.value).toBe(startTime);
         expect(report.occurredAt.relativeTime).toBe(startTime);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
     });
   });
@@ -118,7 +117,7 @@ describe('FIDReport', () => {
         poorThreshold: 300
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 

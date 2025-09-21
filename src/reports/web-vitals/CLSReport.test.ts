@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { CLSReportMothers } from '@/test-utils/mothers/CLSReportMothers';
 import { LayoutShiftEntryMother } from '@/test-utils/mothers/LayoutShiftEntryMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';
@@ -56,7 +55,7 @@ describe('CLSReport', () => {
           startTime 
         });
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -66,7 +65,7 @@ describe('CLSReport', () => {
         expect(report.id).toBe(id);
         expect(report.value).toBe(entryValue);
         expect(report.occurredAt.relativeTime).toBe(startTime);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
     });
   });
@@ -138,7 +137,7 @@ describe('CLSReport', () => {
         poorThreshold: 0.25
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 

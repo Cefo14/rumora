@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { ResourceErrorReportMothers } from '@/test-utils/mothers/ResourceErrorReportMothers';
 import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { ResourceErrorReport } from './ResourceErrorReport';
@@ -66,7 +65,7 @@ describe('ResourceErrorReport', () => {
         const id = 'resource-from-event-123';
         const scriptErrorEvent = ErrorEventMother.withScriptError();
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -77,7 +76,7 @@ describe('ResourceErrorReport', () => {
         expect(report.resourceUrl).toBe('https://example.com/app.js');
         expect(report.resourceType).toBe('script');
         expect(report.occurredAt.relativeTime).toBe(scriptErrorEvent.timeStamp);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
 
       it('should extract resource type and URL correctly from different elements', () => {
@@ -245,7 +244,7 @@ describe('ResourceErrorReport', () => {
         isCriticalResource: true
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 

@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { UnhandledPromiseRejectionReportMothers } from '@/test-utils/mothers/UnhandledPromiseRejectionReportMothers';
 import { PromiseRejectionEventMother } from '@/test-utils/mothers/PromiseRejectionEventMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { UnhandledPromiseRejectionReport } from './UnhandledPromiseRejectionReport';
@@ -53,7 +52,7 @@ describe('UnhandledPromiseRejectionReport', () => {
         const id = 'promise-from-event-123';
         const networkErrorEvent = PromiseRejectionEventMother.withNetworkError();
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -64,7 +63,7 @@ describe('UnhandledPromiseRejectionReport', () => {
         expect(report.errorMessage).toBe('Failed to fetch');
         expect(report.errorName).toBe('Error');
         expect(report.occurredAt.relativeTime).toBe(networkErrorEvent.timeStamp);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
 
       it('should extract error message with fallback hierarchy for different reason types', () => {
@@ -217,7 +216,7 @@ describe('UnhandledPromiseRejectionReport', () => {
         isJavaScriptError: true
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 

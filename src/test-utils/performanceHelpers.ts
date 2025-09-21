@@ -5,10 +5,10 @@ import { vi } from 'vitest';
  */
 export const PERFORMANCE_TIMESTAMPS = {
   // Simple epoch-based timestamp (day 2 of Unix epoch)
-  TIME_ORIGIN: Date.now() - 1,
+  TIME_ORIGIN: 86400000, // Jan 2, 1970, 00:00:00 GMT
 
   // Current time for tests (can be adjusted as needed)
-  CURRENT_TIME: Date.now(),
+  CURRENT_TIME: 86400000 + 1000, // Jan 2, 1970, 00:00:01 GMTa
 } as const;
 
 /**

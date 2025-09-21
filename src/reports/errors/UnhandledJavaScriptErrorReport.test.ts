@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { UnhandledJavaScriptErrorReportMothers } from '@/test-utils/mothers/UnhandledJavaScriptErrorReportMothers';
 import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { UnhandledJavaScriptErrorReport } from './UnhandledJavaScriptErrorReport';
@@ -74,7 +73,7 @@ describe('UnhandledJavaScriptErrorReport', () => {
         const id = 'error-from-event-123';
         const errorEvent = ErrorEventMother.withTypeError();
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -88,7 +87,7 @@ describe('UnhandledJavaScriptErrorReport', () => {
         expect(report.lineNumber).toBe(errorEvent.lineno);
         expect(report.columnNumber).toBe(errorEvent.colno);
         expect(report.occurredAt.relativeTime).toBe(errorEvent.timeStamp);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
 
       it('should extract error message with fallback hierarchy', () => {
@@ -230,7 +229,7 @@ describe('UnhandledJavaScriptErrorReport', () => {
         isProgrammingError: true
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 

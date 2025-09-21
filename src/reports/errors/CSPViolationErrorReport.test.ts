@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { CSPViolationErrorReportMothers } from '@/test-utils/mothers/CSPViolationErrorReportMothers';
 import { SecurityPolicyViolationEventMother } from '@/test-utils/mothers/SecurityPolicyViolationEventMother';
-import { PERFORMANCE_TIMESTAMPS } from '@/test-utils/performanceHelpers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { CSPViolationErrorReport } from './CSPViolationErrorReport';
@@ -72,7 +71,7 @@ describe('CSPViolationErrorReport', () => {
         const id = 'csp-from-event-123';
         const violationEvent = SecurityPolicyViolationEventMother.withScriptSrcViolation();
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
-          PerformanceTime.fromRelativeTime(PERFORMANCE_TIMESTAMPS.CURRENT_TIME)
+          PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
 
         // When
@@ -86,7 +85,7 @@ describe('CSPViolationErrorReport', () => {
         expect(report.lineNumber).toBe(violationEvent.lineNumber);
         expect(report.columnNumber).toBe(violationEvent.columnNumber);
         expect(report.occurredAt.relativeTime).toBe(violationEvent.timeStamp);
-        expect(report.createdAt.relativeTime).toBe(PERFORMANCE_TIMESTAMPS.CURRENT_TIME);
+        expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
     });
   });
@@ -277,7 +276,7 @@ describe('CSPViolationErrorReport', () => {
         isSpecialURI: false
       });
       expect(typeof result.createdAt).toBe('number');
-      expect(result.createdAt).toBeGreaterThan(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN);
+      expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
     });
   });
 
