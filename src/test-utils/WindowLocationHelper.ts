@@ -15,17 +15,11 @@ interface MockLocationConfig {
 
 class WindowLocationHelper {
   private originalLocation: Location | undefined;
-  private hasBeenMocked = false;
 
   /**
    * Mock window.location with custom configuration
    */
   mockLocation(config: MockLocationConfig = {}) {
-    // Store original location if this is the first mock
-    if (!this.hasBeenMocked && typeof window !== 'undefined') {
-      this.originalLocation = window.location;
-    }
-
     const defaultConfig: Required<MockLocationConfig> = {
       hostname: 'example.com',
       href: 'https://example.com/',
@@ -45,7 +39,6 @@ class WindowLocationHelper {
       configurable: true
     });
 
-    this.hasBeenMocked = true;
     return mockLocation;
   }
 
@@ -53,14 +46,11 @@ class WindowLocationHelper {
    * Restore original window.location
    */
   restoreLocation() {
-    if (this.hasBeenMocked && this.originalLocation) {
-      Object.defineProperty(window, 'location', {
-        value: this.originalLocation,
-        writable: true,
-        configurable: true
-      });
-      this.hasBeenMocked = false;
-    }
+    Object.defineProperty(window, 'location', {
+      value: this.originalLocation,
+      writable: true,
+      configurable: true
+    });
   }
 
   /**

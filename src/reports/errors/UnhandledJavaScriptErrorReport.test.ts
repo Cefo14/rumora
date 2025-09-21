@@ -2,24 +2,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { UnhandledJavaScriptErrorReportMothers } from '@/test-utils/mothers/UnhandledJavaScriptErrorReportMothers';
 import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-
+import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
+
 import { UnhandledJavaScriptErrorReport } from './UnhandledJavaScriptErrorReport';
 
 describe('UnhandledJavaScriptErrorReport', () => {
   beforeEach(() => {
-    // Mock window.location for third-party detection
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: 'https://example.com'
-      },
-      writable: true,
-      configurable: true
-    });
+    windowLocationHelper.mockSameOrigin();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    windowLocationHelper.restoreLocation();
   });
 
   describe('create factory method', () => {

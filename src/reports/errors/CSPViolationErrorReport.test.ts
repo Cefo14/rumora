@@ -2,24 +2,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { CSPViolationErrorReportMothers } from '@/test-utils/mothers/CSPViolationErrorReportMothers';
 import { SecurityPolicyViolationEventMother } from '@/test-utils/mothers/SecurityPolicyViolationEventMother';
-
+import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
+
 import { CSPViolationErrorReport } from './CSPViolationErrorReport';
 
 describe('CSPViolationErrorReport', () => {
   beforeEach(() => {
-    // Mock window.location for third-party detection
-    Object.defineProperty(window, 'location', {
-      value: {
-        hostname: 'example.com'
-      },
-      writable: true,
-      configurable: true
-    });
+    windowLocationHelper.mockSameOrigin();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    windowLocationHelper.restoreLocation();
   });
 
   describe('create factory method', () => {

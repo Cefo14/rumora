@@ -1,14 +1,20 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { ResourceTimingCollectionMothers } from '@/test-utils/mothers/ResourceTimingCollectionMothers';
 import { ResourceTimingReportMothers } from '@/test-utils/mothers/ResourceTimingReportMothers';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
+import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
+
 import { ResourceTimingCollection } from './ResourceTimingCollection';
-import { setupSameOriginLocation } from '@/test-utils/windowLocationHelpers';
 
 describe('ResourceTimingCollection', () => {
-  setupSameOriginLocation();
+  beforeEach(() => {
+    windowLocationHelper.mockSameOrigin();
+  });
+  afterEach(() => {
+    windowLocationHelper.restoreLocation();
+  });
 
   describe('create factory method', () => {
     it('should create ResourceTimingCollection with provided data', () => {

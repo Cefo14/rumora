@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
-import { PERFORMANCE_TIMESTAMPS } from '../performanceHelpers';
+import { PERFORMANCE_TIMESTAMPS } from '../PerformanceAPIHelper';
 import { PerformanceNavigationTimingMother } from './PerformanceNavigationTimingMother';
 
 /**

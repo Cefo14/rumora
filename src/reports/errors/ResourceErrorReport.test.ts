@@ -2,25 +2,20 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { ResourceErrorReportMothers } from '@/test-utils/mothers/ResourceErrorReportMothers';
 import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-
+import { windowLocationHelper } from '@/test-utils/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
+
 import { ResourceErrorReport } from './ResourceErrorReport';
 
 describe('ResourceErrorReport', () => {
   beforeEach(() => {
-    // Mock window.location for third-party detection
-    Object.defineProperty(window, 'location', {
-      value: {
-        hostname: 'example.com'
-      },
-      writable: true,
-      configurable: true
-    });
+    windowLocationHelper.mockSameOrigin();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    windowLocationHelper.restoreLocation();
   });
+
 
   describe('create factory method', () => {
     describe('when data is valid', () => {
