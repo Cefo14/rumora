@@ -5,16 +5,10 @@ import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { TimeSegment } from '@/value-objects/TimeSegment';
 
 import { ResourceTimingReport } from './ResourceTimingReport';
-
-// Mock window.location for third-party detection tests
-Object.defineProperty(window, 'location', {
-  value: {
-    hostname: 'example.com'
-  },
-  writable: true
-});
+import { setupSameOriginLocation } from '@/test-utils/windowLocationHelpers';
 
 describe('ResourceTimingReport', () => {
+  setupSameOriginLocation();
   describe('create factory method', () => {
     it('should create ResourceTimingReport with provided data', () => {
       // Given
