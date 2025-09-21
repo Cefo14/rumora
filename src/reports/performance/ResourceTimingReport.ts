@@ -134,6 +134,8 @@ export class ResourceTimingReport implements Report {
     this.tlsHandshake = data.tlsHandshake;
     this.serverProcessing = data.serverProcessing;
     this.contentDownload = data.contentDownload;
+
+    Object.freeze(this);
   }
 
   /**
@@ -262,7 +264,7 @@ export class ResourceTimingReport implements Report {
    * @returns True if encoded size is smaller than decoded size
    */
   public get hasCompression(): boolean {
-    return this.encodedSize < this.decodedSize;
+    return this.encodedSize < this.decodedSize && this.encodedSize > 0;
   }
 
   /**
