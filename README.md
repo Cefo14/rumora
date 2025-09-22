@@ -13,7 +13,6 @@ Rumora is built on the principle that **performance monitoring should never come
 
 - **Privacy by Design**: No user behavior tracking, no session correlation, no personal data collection
 - **Technical Focus**: Measure application performance, not user interactions
-- **Compliance Ready**: GDPR/CCPA compliant out of the box - no consent banners needed
 - **Developer Experience**: Clean TypeScript APIs with comprehensive error handling
 - **Extensible Architecture**: Modular design allows for easy customization and extension
 - **Tree-shakeable**: Import only what you need for optimal bundle size
@@ -32,36 +31,96 @@ pnpm add rumora
 yarn add rumora
 ```
 
+## Requirements
+
+**Minimum Browser APIs Required:**
+- `PerformanceObserver` (for Web Vitals and timing metrics)
+- `addEventListener` (for error monitoring)
+- Modern JavaScript support (ES2018+)
+
+**Optional APIs (for enhanced features):**
+- `PerformanceNavigationTiming` (for network analysis)
+- `PerformanceResourceTiming` (for resource analysis)
+- `SecurityPolicyViolationEvent` (for CSP monitoring)
+
+**Development Requirements:**
+- Node.js 18+
+- TypeScript 5.0+
+
 ## Quick Start
+
+### Error Monitoring
+
+Start error monitoring immediately to catch early errors:
+
+```typescript
+import { 
+  UnhandledJavaScriptErrorObserver,
+  UnhandledPromiseRejectionObserver 
+} from 'rumora';
+
+// Start error monitoring immediately - critical to catch early errors
+const jsErrors = new UnhandledJavaScriptErrorObserver();
+jsErrors.subscribe((error, report) => {
+  if (error) {
+    console.warn('JS Error monitoring failed:', error.message);
+    return;
+  }
+  console.log(`JS Error: ${report.errorMessage} (${report.severity})`);
+});
+
+const promiseErrors = new UnhandledPromiseRejectionObserver();
+promiseErrors.subscribe((error, report) => {
+  if (error) {
+    console.warn('Promise rejection monitoring failed:', error.message);
+    return;
+  }
+  console.log(`Promise Rejection: ${report.reason} (${report.severity})`);
+});
+```
+
+### Performance Monitoring
+
+Start performance monitoring after DOM content loads (uses buffered=true to capture past events):
 
 ```typescript
 import { LCP, FCP, ResourceTiming } from 'rumora';
 
-// Monitor Core Web Vitals
-const lcp = new LCP();
-lcp.subscribe((error, report) => {
-  if (error) {
-    console.error('LCP Error:', error);
-  } else {
-    console.log('LCP Report:', report);
-    // Send to your analytics service
-  }
-});
+document.addEventListener('DOMContentLoaded', () => {
+  // Monitor Core Web Vitals
+  const lcp = new LCP();
+  lcp.subscribe((error, report) => {
+    if (error) {
+      console.warn('LCP monitoring failed:', error.message);
+      return;
+    }
+    
+    if (report) {
+      console.log(`LCP: ${report.value}ms (${report.rating})`);
+      sendMetric('lcp', report.toJSON());
+    }
+  });
 
-// Monitor resource loading performance
-const resourceTiming = new ResourceTiming();
-resourceTiming.subscribe((error, reports) => {
-  if (error) {
-    console.error('Resource Timing Error:', error);
-  } else {
-    console.log('Resource Performance:', reports);
-  }
-});
+  // Monitor resource performance
+  const resourceTiming = new ResourceTiming();
+  resourceTiming.subscribe((error, collection) => {
+    if (error) {
+      console.warn('Resource timing failed:', error.message);
+      return;
+    }
 
-// Clean up when done
-window.addEventListener('beforeunload', () => {
-  lcp.dispose();
-  resourceTiming.dispose();
+    if (collection && !collection.isEmpty) {
+      console.log(`Loaded ${collection.totalResources} resources`);
+      console.log(`Total: ${Math.round(collection.totalTransferSize / 1024)}KB`);
+    }
+  });
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    [lcp, resourceTiming, jsErrors, promiseErrors].forEach(observer => {
+      observer.dispose();
+    });
+  });
 });
 ```
 
@@ -72,7 +131,7 @@ Rumora focuses exclusively on **technical performance metrics** that help you op
 ### Web Vitals Monitoring
 - **Core Web Vitals**: LCP (Largest Contentful Paint), FID (First Input Delay), CLS (Cumulative Layout Shift)
 - **Additional Vitals**: FCP (First Contentful Paint), INP (Interaction to Next Paint)
-- Real-time performance scoring and thresholds
+- Event-driven performance scoring and thresholds
 
 ### Error Tracking
 - **JavaScript Errors**: Runtime errors, syntax errors, type errors with stack traces
@@ -97,6 +156,34 @@ Rumora deliberately avoids any functionality that could compromise user privacy:
 - **No Activity Monitoring**: No time spent on page or user engagement metrics
 - **No Cross-Session Tracking**: Each measurement is independent
 
+## Implementation Status
+
+**Core Web Vitals** ✅ **Production Ready**
+- LCP (Largest Contentful Paint) ✅
+- FID (First Input Delay) ✅  
+- CLS (Cumulative Layout Shift) ✅
+- FCP (First Contentful Paint) ✅
+- INP (Interaction to Next Paint) ✅
+
+**Error Monitoring** ✅ **Production Ready**
+- JavaScript Error Observer ✅
+- Promise Rejection Observer ✅  
+- Resource Error Observer ✅
+- CSP Violation Observer ✅
+
+**Performance Timing** ✅ **Production Ready**
+- Resource Timing Collection ✅
+- DOM Timing Observer ✅
+- Network Timing Observer ✅
+- Element Timing Observer ✅
+- Long Task Observer ✅
+
+**Planned Features** 📋
+- Memory Usage Observer
+- Connection Quality Observer  
+- User Timing Observer
+- Advanced sampling strategies
+
 ## API Reference
 
 ### Web Vitals
@@ -108,7 +195,7 @@ import { LCP, FCP, FID, CLS, INP } from 'rumora';
 const lcp = new LCP();
 lcp.subscribe((error, report) => {
   if (report) {
-    console.log(`LCP: ${report.value}ms`);
+    console.log(`LCP: ${report.value}ms (${report.rating})`);
   }
 });
 
@@ -116,7 +203,7 @@ lcp.subscribe((error, report) => {
 const fcp = new FCP();
 fcp.subscribe((error, report) => {
   if (report) {
-    console.log(`FCP: ${report.value}ms`);
+    console.log(`FCP: ${report.value}ms (${report.rating})`);
   }
 });
 ```
@@ -166,7 +253,7 @@ import {
 const jsErrors = new UnhandledJavaScriptErrorObserver();
 jsErrors.subscribe((error, report) => {
   if (error) {
-    console.error('Error:', error);
+    console.error('Observer error:', error);
     return;
   }
   console.log(`JS Error: ${report.errorMessage} (${report.severity})`);
@@ -176,7 +263,7 @@ jsErrors.subscribe((error, report) => {
 const promiseErrors = new UnhandledPromiseRejectionObserver();
 promiseErrors.subscribe((error, report) => {
   if (error) {
-    console.error('Error:', error);
+    console.error('Observer error:', error);
     return;
   }
   console.log(`Promise Rejection: ${report.reason} (${report.severity})`);
@@ -217,35 +304,64 @@ To monitor specific elements, add the `elementtiming` attribute:
 </section>
 ```
 
-## Completed Features
+## Initialization Patterns
 
-**Web Vitals**
-- ✅ LCP (Largest Contentful Paint)
-- ✅ FID (First Input Delay)  
-- ✅ CLS (Cumulative Layout Shift)
-- ✅ FCP (First Contentful Paint)
-- ✅ INP (Interaction to Next Paint)
+### Recommended Setup
 
-**Error Tracking**
-- ✅ JavaScript Error Observer
-- ✅ Promise Rejection Observer  
-- ✅ Resource Error Observer
-- ✅ CSP Violation Observer
+```typescript
+// Pattern 1: Error monitoring - start immediately
+function initErrorMonitoring() {
+  const observers = [];
+  
+  // Critical: start as early as possible to catch all errors
+  observers.push(new UnhandledJavaScriptErrorObserver());
+  observers.push(new UnhandledPromiseRejectionObserver());
+  observers.push(new ResourceErrorObserver());
+  observers.push(new CSPViolationObserver());
+  
+  return observers;
+}
 
-**Performance Timing**
-- ✅ Long Tasks Observer
-- ✅ Resource Timing Observer with network bottleneck analysis
-- ✅ DOM Timing Observer
-- ✅ Network Timing Observer
-- ✅ Element Timing Observer
+// Pattern 2: Performance monitoring - wait for DOM ready
+function initPerformanceMonitoring() {
+  const observers = [];
+  
+  // These use buffered=true to capture past events
+  observers.push(new LCP());
+  observers.push(new FCP());
+  observers.push(new CLS());
+  observers.push(new ResourceTiming());
+  observers.push(new ElementTiming());
+  
+  return observers;
+}
 
-### Planned Features
+// Usage
+const errorObservers = initErrorMonitoring();
 
-**Advanced Metrics**
-- 🔄 Memory Usage Observer
-- 🔄 Connection Quality Observer
-- 🔄 User Timing Observer
-- 🔄 Sampling/throttling para high-traffic sites
+document.addEventListener('DOMContentLoaded', () => {
+  const performanceObservers = initPerformanceMonitoring();
+  
+  window.addEventListener('beforeunload', () => {
+    [...errorObservers, ...performanceObservers].forEach(obs => obs.dispose());
+  });
+});
+```
+
+## Browser Compatibility
+
+| Feature | Chrome 60+ | Firefox 84+ | Safari 14+ | Edge 79+ |
+|---------|------------|-------------|------------|----------|
+| **Core Web Vitals** | ✅ LCP, FID, CLS | ✅ LCP, FID, CLS | ⚠️ LCP, CLS only | ✅ LCP, FID, CLS |
+| **Additional Vitals** | ✅ FCP, INP | ✅ FCP, ❌ INP | ✅ FCP, ❌ INP | ✅ FCP, INP |
+| **Error Tracking** | ✅ All features | ✅ All features | ✅ All features | ✅ All features |
+| **Resource Timing** | ✅ Full support | ✅ Full support | ✅ Full support | ✅ Full support |
+| **Element Timing** | ✅ 77+ | ❌ Not supported | ❌ Not supported | ✅ 79+ |
+| **Long Tasks** | ✅ 58+ | ❌ Not supported | ❌ Not supported | ✅ 79+ |
+
+*✅ Full Support | ⚠️ Partial Support | ❌ Not Supported*
+
+Unsupported features degrade gracefully without breaking your application.
 
 ## TypeScript Support
 
@@ -265,21 +381,44 @@ const handleLCP = (report: LCPReport) => {
 };
 ```
 
-## Browser Compatibility
+## Privacy Design
 
-Rumora uses modern browser APIs with graceful degradation:
+Rumora is designed with privacy-first principles that may help with regulatory compliance:
 
-| Feature | Chrome | Firefox | Safari | Edge |
-|---------|--------|---------|--------|------|
-| **Web Vitals** | ✅ | ✅ | ⚠️ | ✅ |
-| **Error Tracking** | ✅ | ✅ | ✅ | ✅ |
-| **Resource Timing** | ✅ | ✅ | ✅ | ✅ |
-| **Element Timing** | ✅ | ❌ | ❌ | ✅ |
-| **Long Tasks** | ✅ | ❌ | ❌ | ✅ |
+- **No Personal Data**: No collection of IP addresses, user agents, or device fingerprints
+- **No User Tracking**: No behavior tracking, session correlation, or cross-site tracking
+- **Technical Focus**: Measures application performance, not user interactions
+- **No Persistent Storage**: No cookies or local storage of user data
 
-*✅ Full Support | ⚠️ Partial Support | ❌ Not Supported*
+**Legal Note**: While Rumora is designed to minimize privacy concerns, organizations should consult with legal counsel to ensure compliance with applicable regulations in their jurisdiction.
 
-Unsupported features fail gracefully and emit appropriate error messages.
+## Troubleshooting
+
+**Common Issues:**
+
+**"Observer not supported" errors**
+```typescript
+// Check API availability before use
+if ('PerformanceObserver' in window && 'observe' in PerformanceObserver.prototype) {
+  // Safe to use observers
+} else {
+  // Fallback or skip monitoring
+}
+```
+
+**No reports received**
+- Ensure the monitored events actually occur (e.g., LCP requires content)
+- Check browser console for errors
+- Verify observer is disposed after use
+
+**TypeScript errors**
+- Ensure `"types": ["rumora"]` in your tsconfig.json
+- Update to TypeScript 5.0+ for best compatibility
+
+**Bundle size concerns**
+- Use named imports instead of default imports
+- Enable tree-shaking in your bundler
+- Import specific observers: `import { LCP } from 'rumora/web-vitals'`
 
 ## Architecture
 
@@ -291,40 +430,39 @@ Rumora is built on a clean, modular architecture:
 - **Memory Management**: Explicit cleanup with `dispose()` methods
 - **Tree-shaking**: Import only what you need for optimal bundle size
 
-## Privacy Compliance
-
-Rumora is designed to be compliant with privacy regulations:
-
-- **GDPR**: No personal data collection or processing
-- **CCPA**: No personal information collection or sale
-- **PECR**: Technical performance data doesn't require consent
-- **No Cookies**: No persistent storage of user data
-- **No Tracking**: No cross-session or cross-site tracking
-
-## Bundle Size
-
-Rumora supports tree-shaking, so you only pay for what you use:
-
-```typescript
-// Only LCP observer and its dependencies are included
-import { LCP } from 'rumora';
-
-// Multiple observers
-import { LCP, FCP, ResourceTiming } from 'rumora';
-```
-
 ## Contributing
 
-Rumora welcomes contributions that align with its privacy-first philosophy. Before contributing features that collect new types of data, please open an issue to discuss privacy implications.
+We welcome contributions that align with Rumora's privacy-first philosophy.
 
-### Development Setup
+**Before Contributing:**
+1. Open an issue to discuss new features, especially those collecting new data types
+2. Ensure changes maintain privacy guarantees
+3. Add comprehensive tests for new functionality
 
+**Development Setup:**
 ```bash
 git clone https://github.com/your-username/rumora.git
 cd rumora
 pnpm install
-pnpm dev
+
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Build the library
+pnpm build
+
+# Type checking
+pnpm type-check
 ```
+
+**Testing Philosophy:**
+- Given-When-Then test structure required
+- Use Object Mothers for test data
+- Mock Web APIs using provided helpers
+- Maintain high test coverage
 
 ## License
 
