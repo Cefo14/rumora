@@ -172,7 +172,7 @@ export class CSPViolationErrorReport implements ErrorReport {
       isInlineViolation: this.isInlineViolation,
       isEvalBlocked: this.isEvalBlocked,
       isThirdPartyViolation: this.isThirdPartyViolation,
-      isSpecialURI: this.isSpecialURI,
+      isSpecialURI: this.isSpecialURI
     };
   }
 }
