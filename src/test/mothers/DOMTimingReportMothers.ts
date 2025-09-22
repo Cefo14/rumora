@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
-import { PERFORMANCE_TIMESTAMPS } from '../helpers/PerformanceAPIHelper';
 import { PerformanceNavigationTimingMother } from './PerformanceNavigationTimingMother';
 
 /**
@@ -14,7 +13,7 @@ export class DOMTimingReportMothers {
   static fastPageLoad() {
     return {
       id: 'fast-dom-timing-001',
-      createdAt: PerformanceTime.fromAbsoluteTime(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN),
+      createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(0),
       interactiveTime: 800,   // 800ms to interactive
       processingTime: 200,    // 200ms processing
@@ -29,7 +28,7 @@ export class DOMTimingReportMothers {
   static slowPageLoad() {
     return {
       id: 'slow-dom-timing-002',
-      createdAt: PerformanceTime.fromAbsoluteTime(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN + 1000),
+      createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(100),
       interactiveTime: 3000,  // 3s to interactive
       processingTime: 1500,   // 1.5s processing
@@ -44,7 +43,7 @@ export class DOMTimingReportMothers {
   static minimalTiming() {
     return {
       id: 'minimal-dom-timing-003',
-      createdAt: PerformanceTime.fromAbsoluteTime(PERFORMANCE_TIMESTAMPS.TIME_ORIGIN),
+      createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(0),
       interactiveTime: 0,
       processingTime: 0,

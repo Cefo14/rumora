@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { NetworkTimingReportMothers } from '@/test-utils/mothers/NetworkTimingReportMothers';
+import { NetworkTimingReportMothers } from '@/test/mothers/NetworkTimingReportMothers';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { TimeSegment } from '@/value-objects/TimeSegment';

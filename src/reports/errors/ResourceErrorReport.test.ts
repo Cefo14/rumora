@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { ResourceErrorReportMothers } from '@/test-utils/mothers/ResourceErrorReportMothers';
-import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
+import { ResourceErrorReportMothers } from '@/test/mothers/ResourceErrorReportMothers';
+import { ErrorEventMother } from '@/test/mothers/ErrorEventMother';
+import { windowLocationHelper } from '@/test/helpers/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 import { ResourceErrorReport } from './ResourceErrorReport';
 
 describe('ResourceErrorReport', () => {
   beforeEach(() => {
-    windowLocationHelper.mockSameOrigin();
+    windowLocationHelper.mock();
   });
 
   afterEach(() => {
-    windowLocationHelper.restoreLocation();
+    windowLocationHelper.unmock();
   });
 
 

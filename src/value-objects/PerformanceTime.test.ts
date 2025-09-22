@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import { PerformanceTimeBuilder } from '@/test-utils/builders/PerformanceTimeBuilder';
-import { performanceAPIHelper } from '@/test-utils/helpers/PerformanceAPIHelper';
+import { PerformanceTimeBuilder } from '@/test/builders/PerformanceTimeBuilder';
+import { performanceAPIHelper } from '@/test/helpers/PerformanceAPIHelper';
 
 import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
 import { UnsupportedPerformanceAPIException } from '@/errors/UnsupportedExceptions';
@@ -10,11 +10,11 @@ import { PerformanceTime } from './PerformanceTime';
 
 describe('PerformanceTime', () => {
   beforeEach(() => {
-    performanceAPIHelper.mockPerformanceAPI();
+    performanceAPIHelper.mock();
   });
 
   afterEach(() => {
-    performanceAPIHelper.restorePerformanceAPI();
+    performanceAPIHelper.unmock();
   });
 
   describe('fromRelativeTime', () => {
@@ -28,7 +28,7 @@ describe('PerformanceTime', () => {
 
         // Then
         expect(performanceTime.relativeTime).toBe(validRelativeTime);
-        expect(performanceTime.absoluteTime).toBe(performanceAPIHelper.getExpectedAbsoluteTime(validRelativeTime));
+        expect(performanceTime.absoluteTime).toBe(performanceAPIHelper.toAbsoluteTime(validRelativeTime));
       });
 
       it('should create instance successfully when time is zero', () => {

@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { UnhandledJavaScriptErrorReportMothers } from '@/test-utils/mothers/UnhandledJavaScriptErrorReportMothers';
-import { ErrorEventMother } from '@/test-utils/mothers/ErrorEventMother';
-import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
+import { UnhandledJavaScriptErrorReportMothers } from '@/test/mothers/UnhandledJavaScriptErrorReportMothers';
+import { ErrorEventMother } from '@/test/mothers/ErrorEventMother';
+import { windowLocationHelper } from '@/test/helpers/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
 import { UnhandledJavaScriptErrorReport } from './UnhandledJavaScriptErrorReport';
 
 describe('UnhandledJavaScriptErrorReport', () => {
   beforeEach(() => {
-    windowLocationHelper.mockSameOrigin();
+    windowLocationHelper.mock();
   });
 
   afterEach(() => {
-    windowLocationHelper.restoreLocation();
+    windowLocationHelper.unmock();
   });
 
   describe('create factory method', () => {

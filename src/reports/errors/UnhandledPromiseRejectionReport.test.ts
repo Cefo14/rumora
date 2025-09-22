@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { UnhandledPromiseRejectionReportMothers } from '@/test-utils/mothers/UnhandledPromiseRejectionReportMothers';
-import { PromiseRejectionEventMother } from '@/test-utils/mothers/PromiseRejectionEventMother';
+import { UnhandledPromiseRejectionReportMothers } from '@/test/mothers/UnhandledPromiseRejectionReportMothers';
+import { PromiseRejectionEventMother } from '@/test/mothers/PromiseRejectionEventMother';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { UnhandledPromiseRejectionReport } from './UnhandledPromiseRejectionReport';

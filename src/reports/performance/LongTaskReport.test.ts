@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { LongTaskReportMothers } from '@/test-utils/mothers/LongTaskReportMothers';
+import { LongTaskReportMothers } from '@/test/mothers/LongTaskReportMothers';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { LongTaskReport } from './LongTaskReport';
 

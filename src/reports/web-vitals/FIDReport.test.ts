@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { FIDReportMothers } from '@/test-utils/mothers/FIDReportMothers';
-import { PerformanceEventTimingMother } from '@/test-utils/mothers/PerformanceEventTimingMother';
+import { FIDReportMothers } from '@/test/mothers/FIDReportMothers';
+import { PerformanceEventTimingMother } from '@/test/mothers/PerformanceEventTimingMother';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';

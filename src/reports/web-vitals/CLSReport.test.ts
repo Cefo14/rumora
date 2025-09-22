@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { CLSReportMothers } from '@/test-utils/mothers/CLSReportMothers';
-import { LayoutShiftEntryMother } from '@/test-utils/mothers/LayoutShiftEntryMother';
+import { CLSReportMothers } from '@/test/mothers/CLSReportMothers';
+import { LayoutShiftEntryMother } from '@/test/mothers/LayoutShiftEntryMother';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';

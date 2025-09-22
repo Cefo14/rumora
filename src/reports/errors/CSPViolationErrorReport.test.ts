@@ -1,19 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import { CSPViolationErrorReportMothers } from '@/test-utils/mothers/CSPViolationErrorReportMothers';
-import { SecurityPolicyViolationEventMother } from '@/test-utils/mothers/SecurityPolicyViolationEventMother';
-import { windowLocationHelper } from '@/test-utils/helpers/WindowLocationHelper';
+import { CSPViolationErrorReportMothers } from '@/test/mothers/CSPViolationErrorReportMothers';
+import { SecurityPolicyViolationEventMother } from '@/test/mothers/SecurityPolicyViolationEventMother';
+import { windowLocationHelper } from '@/test/helpers/WindowLocationHelper';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
+import { securityPolicyViolationEventHelper } from '@/test/helpers/SecurityPolicyViolationEventHelper';
 
 import { CSPViolationErrorReport } from './CSPViolationErrorReport';
 
 describe('CSPViolationErrorReport', () => {
   beforeEach(() => {
-    windowLocationHelper.mockSameOrigin();
+    windowLocationHelper.mock();
+    securityPolicyViolationEventHelper.mock();
   });
 
   afterEach(() => {
-    windowLocationHelper.restoreLocation();
+    windowLocationHelper.unmock();
+    securityPolicyViolationEventHelper.unmock();
   });
 
   describe('create factory method', () => {

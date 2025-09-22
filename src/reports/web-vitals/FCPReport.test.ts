@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { FCPReportMothers } from '@/test-utils/mothers/FCPReportMothers';
-import { PerformancePaintTimingMother } from '@/test-utils/mothers/PerformancePaintTimingMother';
+import { FCPReportMothers } from '@/test/mothers/FCPReportMothers';
+import { PerformancePaintTimingMother } from '@/test/mothers/PerformancePaintTimingMother';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';

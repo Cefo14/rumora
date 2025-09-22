@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { TimeSegmentBuilder } from '@/test-utils/builders/TimeSegmentBuilder';
-import { TimeSegmentMothers } from '@/test-utils/mothers/TimeSegmentMothers';
+import { TimeSegmentBuilder } from '@/test/builders/TimeSegmentBuilder';
+import { TimeSegmentMothers } from '@/test/mothers/TimeSegmentMothers';
 
 import { InvalidTimeSegmentException, InvalidEndTimeException } from '@/errors/TimeSegmentExceptions';
 

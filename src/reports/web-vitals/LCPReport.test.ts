@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { LCPReportMothers } from '@/test-utils/mothers/LCPReportMothers';
-import { LargestContentfulPaintMother } from '@/test-utils/mothers/LargestContentfulPaintMother';
+import { LCPReportMothers } from '@/test/mothers/LCPReportMothers';
+import { LargestContentfulPaintMother } from '@/test/mothers/LargestContentfulPaintMother';
 
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { RATINGS, WEB_VITALS } from '@/types/WebVitals';
