@@ -6,6 +6,9 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * Observer for capturing DOM timing metrics using PerformanceNavigationTiming.
  * Focuses on key DOM events such as DOMContentLoaded and load event timings,
  * which are critical for understanding page interactivity and usability.
+ * 
+ * **Single Event**: This observer automatically stops after emitting the first DOM timing report.
+ * Use dispose() only for cleanup if needed before the event occurs.
  */
 export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
   constructor() {
@@ -21,6 +24,7 @@ export class DOMTiming extends PerformanceMetricObserver<DOMTimingReport> {
         entry
       );
       this.notifySuccess(report);
+      // DOM Timing is a single-event metric - stop observing after first emission
       this.stop();
       break;
     }
