@@ -173,6 +173,14 @@ export class ResourceTimingCollection {
     return byDomain;
   }
 
+  /** Gets the last added resource in the collection
+   * 
+   * @returns Last ResourceTimingReport or null if collection is empty
+   */
+  public get lastResource(): ResourceTimingReport | null {
+    return this.resources.at(-1) || null;
+  }
+
 
   toString(): string {
     return `ResourceTimingCollection: ${this.totalResources} resources, ${Math.round(this.totalTransferSize / 1024)}KB total`;
@@ -225,6 +233,11 @@ export class ResourceTimingCollection {
        * The slowest ResourceTimingReport instance
        */
       slowestResource: this.slowestResource ?? null,
+
+      /**
+       * The most recently added ResourceTimingReport instance
+       */
+      lastResource: this.lastResource ?? null,
     };
   }
 }

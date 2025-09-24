@@ -9,8 +9,14 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * Monitors the loading performance of resources such as stylesheets, scripts,
  * images, and other assets. Provides detailed network timing information
  * including DNS lookup, TCP connection, request/response times, and transfer sizes.
+ * 
+ * **Cumulative Pattern**: Each emission contains the complete state of all
+ * resources loaded since observer initialization. Use dispose() to free memory
+ * when monitoring is complete.
  */
 export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingCollection> {
+  private reports: ResourceTimingReport[] = [];
+
   /**
    * Resource prefixes to ignore - browser internal resources and extensions.
    */
@@ -28,12 +34,16 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
     });
   }
 
+  public override dispose(): void {
+    super.dispose();
+    this.reports = [];
+  }
+
   /**
    * Processes resource timing entries and creates reports for valid resources.
    */
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceResourceTiming[];
-    const resources: ResourceTimingReport[] = [];
 
     for (const entry of entries) {
       if (this.isValidResource(entry)) {
@@ -41,13 +51,13 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
           generateId(),
           entry
         );
-        resources.push(report);
+        this.reports.push(report);
       }
     }
 
     const resourceTimingCollection = ResourceTimingCollection.fromResourceTimingReports(
       generateId(),
-      resources
+      this.reports
     );
     this.notifySuccess(resourceTimingCollection);
   }

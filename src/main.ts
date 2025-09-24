@@ -133,6 +133,18 @@ new ElementTiming()
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  new ResourceTiming()
+  .subscribe((error, report) => {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log('Resource Timing Report:', report);
+    }
+  });
+});
+
+
+window.addEventListener('load', () => {
   function forceLongTask() {
     const loop = () => {
       for (let i = 0; i < 10000; i++) {
@@ -149,15 +161,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   forceLongTask();
-});
-
-window.addEventListener('load', () => {
-  new ResourceTiming()
-  .subscribe((error, report) => {
-    if (error) {
-      console.error('Error:', error);
-    } else {
-      console.log('Resource Timing Report:', report);
-    }
-  });
 });

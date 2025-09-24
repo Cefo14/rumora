@@ -319,7 +319,8 @@ describe('ResourceTimingCollection', () => {
         resourcesByType: collection.resourcesByType,
         resourcesByDomain: collection.resourcesByDomain,
         thirdPartyResources: collection.thirdPartyResources,
-        slowestResource: collection.slowestResource
+        slowestResource: collection.slowestResource,
+        lastResource: collection.lastResource
       });
     });
 
@@ -336,8 +337,62 @@ describe('ResourceTimingCollection', () => {
       expect(jsonRepresentation.totalTransferSize).toBe(0);
       expect(jsonRepresentation.averageLoadTime).toBe(0);
       expect(jsonRepresentation.slowestResource).toBeNull();
+      expect(jsonRepresentation.lastResource).toBeNull();
       expect(jsonRepresentation.resources).toEqual([]);
       expect(jsonRepresentation.thirdPartyResources).toEqual([]);
+    });
+  });
+
+  describe('lastResource', () => {
+    it('should return the last resource in the collection', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.mixedTypes();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const lastResource = collection.lastResource;
+
+      // Then
+      expect(lastResource).not.toBeNull();
+      expect(lastResource).toBe(data.resources[data.resources.length - 1]);
+    });
+
+    it('should return null for empty collection', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.empty();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const lastResource = collection.lastResource;
+
+      // Then
+      expect(lastResource).toBeNull();
+    });
+
+    it('should return the only resource when collection has single item', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.singleResource();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const lastResource = collection.lastResource;
+
+      // Then
+      expect(lastResource).not.toBeNull();
+      expect(lastResource).toBe(data.resources[0]);
+    });
+
+    it('should be included in toJSON output correctly', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.mixedTypes();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const jsonRepresentation = collection.toJSON();
+
+      // Then
+      expect(jsonRepresentation.lastResource).toBe(collection.lastResource);
+      expect(jsonRepresentation.lastResource).toBe(data.resources[data.resources.length - 1]);
     });
   });
 
