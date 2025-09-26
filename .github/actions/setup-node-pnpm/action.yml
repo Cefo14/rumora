@@ -3,10 +3,6 @@ description: 'Set up Node.js and pnpm environment with caching support'
 author: 'Cefo14'
 
 inputs:
-  pnpm-version:
-    description: 'Version of pnpm to install'
-    required: false
-    default: '10'
   node-version-file:
     description: 'File containing the Node.js version'
     required: false
@@ -29,8 +25,6 @@ runs:
   steps:
     - name: Set up pnpm
       uses: pnpm/action-setup@v4
-      with:
-        version: ${{ inputs.pnpm-version }}
 
     - name: Set up Node.js
       id: node-setup
