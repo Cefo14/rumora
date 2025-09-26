@@ -4,35 +4,63 @@ import dts from 'vite-plugin-dts';
 
 const rootDir = resolve(__dirname, 'src');
 
-export default defineConfig({
-  build: {
-    lib: {
-      entry: resolve(rootDir, 'index.ts'),
-      name: 'Rumora',
-      formats: ['es', 'cjs'],
-      fileName: (format) => `rumora.${format}.js`
-    },
-    rollupOptions: {
-      external: ['@/test-utils'],
-      output: {
-        preserveModules: true,
-        preserveModulesRoot: 'src',
-        exports: 'named'
+export default defineConfig(({ mode }) => {
+  const isLibraryBuild = mode === 'lib';
+  
+  return {
+    build: isLibraryBuild ? {
+      lib: {
+        entry: resolve(rootDir, 'index.ts'),
+      },
+      rollupOptions: {
+        external: [
+          // Excluir test utilities
+          /^@\/test\//,
+          /.*\.test\.ts$/,
+          /.*\.spec\.ts$/
+        ],
+        output: [
+          {
+            format: 'es',
+            dir: 'dist',
+            preserveModules: true,
+            preserveModulesRoot: 'src',
+            exports: 'named',
+            entryFileNames: '[name].js'
+          },
+          {
+            format: 'cjs', 
+            dir: 'dist',
+            preserveModules: true,
+            preserveModulesRoot: 'src',
+            exports: 'named',
+            entryFileNames: '[name].cjs'
+          }
+        ]
+      },
+      sourcemap: true,
+      emptyOutDir: true,
+    } : {
+      // Demo build para GitHub Pages
+      outDir: 'dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        input: resolve(__dirname, 'index.html')
       }
     },
-    sourcemap: true,
-    outDir: 'dist',
-    emptyOutDir: false,
-  },
-  plugins: [
-    dts({
-      insertTypesEntry: true,
-      outDir: 'dist'
-    })
-  ],
-  resolve: {
-    alias: {
-      '@': rootDir
+    
+    plugins: isLibraryBuild ? [
+      dts({
+        insertTypesEntry: true,
+        outDir: 'dist',
+        exclude: ['src/test/**/*', '**/*.test.ts', '**/*.spec.ts']
+      })
+    ] : [],
+    
+    resolve: {
+      alias: {
+        '@': rootDir
+      }
     }
-  }
+  };
 });

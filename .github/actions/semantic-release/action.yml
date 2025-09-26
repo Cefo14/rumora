@@ -1,0 +1,88 @@
+name: 'Semantic Release'
+description: 'Run semantic release to analyze commits, version, and publish'
+author: 'Cefo14'
+
+inputs:
+  github-token:
+    description: 'GitHub token for creating releases'
+    required: true
+  npm-token:
+    description: 'NPM token for publishing packages'
+    required: true
+  install-deps:
+    description: 'Whether to install dependencies before running checks'
+    required: false
+    default: 'false'
+
+outputs:
+  new-release-published:
+    description: 'Whether a new release was published'
+    value: ${{ steps.semantic-release.outputs.new_release_published }}
+  new-release-version:
+    description: 'Version of the new release'
+    value: ${{ steps.semantic-release.outputs.new_release_version }}
+  new-release-notes:
+    description: 'Release notes for the new release'
+    value: ${{ steps.semantic-release.outputs.new_release_notes }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      if: inputs.install-deps == 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Check for releasable commits
+      id: check-commits
+      shell: bash
+      run: |
+        # Get the latest tag
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        
+        if [[ -z "$LATEST_TAG" ]]; then
+          echo "No previous releases found, this will be the first release"
+          echo "has-releasable-commits=true" >> $GITHUB_OUTPUT
+          echo "commits-info=Initial release" >> $GITHUB_OUTPUT
+        else
+          # Check for releasable commits since last tag
+          FEAT_COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --grep="^feat" | wc -l)
+          FIX_COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --grep="^fix" | wc -l)
+          PERF_COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --grep="^perf" | wc -l)
+          BREAKING_COMMITS=$(git log ${LATEST_TAG}..HEAD --oneline --grep="BREAKING CHANGE" | wc -l)
+          
+          TOTAL_RELEASABLE=$((FEAT_COMMITS + FIX_COMMITS + PERF_COMMITS + BREAKING_COMMITS))
+          
+          if [[ "$TOTAL_RELEASABLE" -gt "0" ]]; then
+            echo "has-releasable-commits=true" >> $GITHUB_OUTPUT
+            echo "commits-info=feat:$FEAT_COMMITS fix:$FIX_COMMITS perf:$PERF_COMMITS breaking:$BREAKING_COMMITS" >> $GITHUB_OUTPUT
+            echo "Found $TOTAL_RELEASABLE releasable commits since $LATEST_TAG"
+          else
+            echo "has-releasable-commits=false" >> $GITHUB_OUTPUT
+            echo "commits-info=No releasable commits found" >> $GITHUB_OUTPUT
+            echo "No releasable commits found since $LATEST_TAG"
+          fi
+        fi
+
+    - name: Run semantic release
+      id: semantic-release
+      if: steps.check-commits.outputs.has-releasable-commits == 'true'
+      uses: cycjimmy/semantic-release-action@v4
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        NPM_TOKEN: ${{ inputs.npm-token }}
+
+    - name: Display release summary
+      shell: bash
+      run: |
+        if [[ "${{ steps.check-commits.outputs.has-releasable-commits }}" == "true" ]]; then
+          if [[ "${{ steps.semantic-release.outputs.new_release_published }}" == "true" ]]; then
+            echo "🎉 New release published!"
+            echo "Version: ${{ steps.semantic-release.outputs.new_release_version }}"
+            echo "NPM: https://www.npmjs.com/package/rumora/v/${{ steps.semantic-release.outputs.new_release_version }}"
+          else
+            echo "❌ Semantic release failed to publish"
+          fi
+        else
+          echo "⏭️ No release needed - ${{ steps.check-commits.outputs.commits-info }}"
+        fi

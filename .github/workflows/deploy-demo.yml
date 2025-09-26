@@ -1,0 +1,68 @@
+name: Deploy Demo
+
+description: Deploy the demo application to GitHub Pages on successful validation
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy-demo:
+    name: Build and Deploy Demo
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run quality checks
+        id: qa
+        uses: ./.github/actions/quality
+
+      - name: Build demo
+        run: pnpm build:demo
+
+      - name: Verify demo build
+        run: |
+          echo "Verifying demo build..."
+          test -f dist/index.html && echo "✅ Demo index.html exists"
+          DEMO_SIZE=$(du -sh dist/ | cut -f1)
+          echo "📏 Demo size: $DEMO_SIZE"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload demo artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Create build summary
+        run: |
+          echo "## Demo Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality Checks | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Demo Build | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Demo Size | 📏 $DEMO_SIZE |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY

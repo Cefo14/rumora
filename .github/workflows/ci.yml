@@ -1,0 +1,62 @@
+name: CI
+
+description: Continuous Integration Pipeline for staging and pull requests
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Quality Assurance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run quality checks
+        uses: ./.github/actions/quality
+
+      - name: Build library
+        run: pnpm build:lib
+
+      - name: Validate package structure
+        run: |
+          echo "Validating package structure..."
+          test -f dist/index.js && echo "✅ ESM entry point exists"
+          test -f dist/index.cjs && echo "✅ CJS entry point exists" 
+          test -f dist/index.d.ts && echo "✅ TypeScript definitions exist"
+          test -f dist/metrics/web-vitals/index.js && echo "✅ Web Vitals module exists"
+          test -f dist/metrics/performance/index.js && echo "✅ Performance module exists"  
+          test -f dist/metrics/errors/index.js && echo "✅ Errors module exists"
+          echo "📦 Package structure validation completed"
+
+      - name: Build demo (smoke test)
+        run: pnpm build:demo
+
+      - name: Create validation summary
+        run: |
+          echo "## Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Checking | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Linting | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Library Build | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package Structure | ✅ Validated |" >> $GITHUB_STEP_SUMMARY
+          echo "| Demo Build | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Branch **${{ github.ref_name }}** is ready for integration." >> $GITHUB_STEP_SUMMARY

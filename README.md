@@ -441,7 +441,7 @@ We welcome contributions that align with Rumora's privacy-first philosophy.
 
 **Development Setup:**
 ```bash
-git clone https://github.com/your-username/rumora.git
+git clone https://github.com/cefo14/rumora.git
 cd rumora
 pnpm install
 
@@ -455,7 +455,7 @@ pnpm test:watch
 pnpm build
 
 # Type checking
-pnpm type-check
+pnpm typecheck
 ```
 
 **Testing Philosophy:**
@@ -472,7 +472,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 If you have any questions or need help, please:
 
-1. Check the [Issues](https://github.com/your-username/rumora/issues) for existing solutions
+1. Check the [Issues](https://github.com/cefo14/rumora/issues) for existing solutions
 2. Create a new issue if your problem isn't already addressed
 3. Contact the maintainer: <cefo14@protonmail.com>
 
