@@ -100,6 +100,40 @@ describe('ResourceTimingCollection', () => {
     });
   });
 
+  describe('resources property', () => {
+    it('should return a copy of resources, not the original array', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.mixedTypes();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const resources1 = collection.resources;
+      const resources2 = collection.resources;
+
+      // Then
+      expect(resources1).toEqual(resources2); // Same content
+      expect(resources1).not.toBe(resources2); // Different array instances
+    });
+
+    it('should be immutable - modifying returned array should not affect collection', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.mixedTypes();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const resources = collection.resources;
+
+      // Then
+      expect(Object.isFrozen(resources)).toBe(true);
+        expect(() => {
+          (resources as ResourceTimingReport[])
+            .push(
+              ResourceTimingReport.create(ResourceTimingReportMothers.fastScript())
+            );
+        }).toThrow();
+    });
+  });
+
   describe('size aggregation metrics', () => {
     it('should calculate total transfer size correctly', () => {
       // Given
@@ -340,6 +374,21 @@ describe('ResourceTimingCollection', () => {
       expect(jsonRepresentation.lastResource).toBeNull();
       expect(jsonRepresentation.resources).toEqual([]);
       expect(jsonRepresentation.thirdPartyResources).toEqual([]);
+    });
+
+    it('should use resources getter in toJSON output', () => {
+      // Given
+      const data = ResourceTimingCollectionMothers.mixedTypes();
+      const collection = ResourceTimingCollection.create(data);
+
+      // When
+      const jsonRepresentation = collection.toJSON();
+
+      // Then
+      expect(jsonRepresentation.resources).toEqual(collection.resources);
+      expect(jsonRepresentation.resources).toHaveLength(collection.totalResources);
+      // Verificar que es una copia, no la misma referencia
+      expect(jsonRepresentation.resources).not.toBe(collection.resources);
     });
   });
 
