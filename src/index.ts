@@ -1,40 +1,83 @@
-export { LCP } from './metrics/web-vitals/LCP';
-export { FCP } from './metrics/web-vitals/FCP';
-export { CLS } from './metrics/web-vitals/CLS';
-export { FID } from './metrics/web-vitals/FID';
-export { INP } from './metrics/web-vitals/INP';
+// Web Vitals
+export { LCP, observeLCP, resetLCP } from '@/metrics/web-vitals/LCP';
+export { FCP, observeFCP, resetFCP } from '@/metrics/web-vitals/FCP';
+export { CLS, observeCLS, resetCLS } from '@/metrics/web-vitals/CLS';
+export { FID, observeFID, resetFID } from '@/metrics/web-vitals/FID';
+export { INP, observeINP, resetINP } from '@/metrics/web-vitals/INP';
 
-export { ResourceTiming } from './metrics/performance/ResourceTiming';
-export { NetworkTiming } from './metrics/performance/NetworkTiming';
-export { DOMTiming } from './metrics/performance/DOMTiming';
-export { LongTask } from './metrics/performance/LongTask';
-export { ElementTiming } from './metrics/performance/ElementTiming';
+// Performance Metrics
+export { 
+  ResourceTiming, 
+  observeResourceTiming, 
+  resetResourceTiming 
+} from '@/metrics/performance/ResourceTiming';
+export { 
+  NetworkTiming, 
+  observeNetworkTiming, 
+  resetNetworkTiming 
+} from '@/metrics/performance/NetworkTiming';
+export { 
+  DOMTiming, 
+  observeDOMTiming, 
+  resetDOMTiming 
+} from '@/metrics/performance/DOMTiming';
+export { 
+  LongTask, 
+  observeLongTask, 
+  resetLongTask 
+} from '@/metrics/performance/LongTask';
+export { 
+  ElementTiming, 
+  observeElementTiming, 
+  resetElementTiming 
+} from '@/metrics/performance/ElementTiming';
 
-export { UnhandledJavaScriptErrorObserver } from './metrics/errors/UnhandledJavaScriptErrorObserver';
-export { UnhandledPromiseRejectionObserver } from './metrics/errors/UnhandledPromiseRejectionObserver';
-export { ResourceErrorObserver } from './metrics/errors/ResourceErrorObserver';
-export { CSPViolationObserver } from './metrics/errors/CSPViolationObserver';
+// Error Metrics
+export { 
+  UnhandledJavaScriptErrorObserver, 
+  observeUnhandledJavaScriptError,
+  resetUnhandledJavaScriptError
+} from '@/metrics/errors/UnhandledJavaScriptErrorObserver';
+export { 
+  UnhandledPromiseRejectionObserver, 
+  observeUnhandledPromiseRejection,
+  resetUnhandledPromiseRejection
+} from '@/metrics/errors/UnhandledPromiseRejectionObserver';
+export { 
+  ResourceErrorObserver, 
+  observeResourceError,
+  resetResourceError
+} from '@/metrics/errors/ResourceErrorObserver';
+export { 
+  CSPViolationObserver, 
+  observeCSPViolation,
+  resetCSPViolation
+} from '@/metrics/errors/CSPViolationObserver';
 
-export { RumoraException } from './errors/RumoraException';
+// Exceptions
+export { RumoraException } from '@/exceptions/RumoraException';
 export {
   PerformanceTimeException,
   InvalidPerformanceTimeException
-} from './errors/PerformanceTimeExceptions';
+} from '@/exceptions/PerformanceTimeExceptions';
 export {
   TimeSegmentException,
   InvalidTimeSegmentException,
   InvalidEndTimeException
-} from './errors/TimeSegmentExceptions';
+} from '@/exceptions/TimeSegmentExceptions';
 export {
   UnsupportedException,
   UnsupportedMetricException,
   UnsupportedPerformanceAPIException
-} from './errors/UnsupportedExceptions';
+} from '@/exceptions/UnsupportedExceptions';
 export {
   PerformanceObserverException,
   PerformanceHandlerException,
-} from './errors/PerformanceObserverExceptions';
+} from '@/exceptions/PerformanceObserverExceptions';
 export {
   EventObserverException,
   EventObserverHandlerException,
-} from './errors/EventObserverExceptions';
+} from '@/exceptions/EventObserverExceptions';
+
+// Reports
+export * from '@/reports';

@@ -4,28 +4,331 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Rumora</title>
-  <style>
-    body {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 100vh;
-    }
-  </style>
-  <script type="module" src="/src/main.ts"></script>
+  <!-- CSP disable eval method -->
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+  
+  <!-- Primary Meta Tags -->
+  <title>Rumora - Privacy-First Web Performance Monitoring</title>
+  <meta name="title" content="Rumora - Privacy-First Web Performance Monitoring">
+  <meta name="description" content="Monitor Core Web Vitals, track errors, and optimize performance without compromising user privacy. TypeScript-first library with tree-shaking support.">
+  <meta name="keywords" content="web performance, core web vitals, privacy-first, performance monitoring, LCP, FCP, CLS, FID, INP, typescript">
+  <meta name="author" content="Cefo14">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cefo14.github.io/rumora/">
+  <meta property="og:title" content="Rumora - Privacy-First Web Performance Monitoring">
+  <meta property="og:description" content="Monitor Core Web Vitals, track errors, and optimize performance without compromising user privacy.">
+  <meta property="og:site_name" content="Rumora">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://cefo14.github.io/rumora/">
+  <meta property="twitter:title" content="Rumora - Privacy-First Web Performance Monitoring">
+  <meta property="twitter:description" content="Monitor Core Web Vitals, track errors, and optimize performance without compromising user privacy.">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://cefo14.github.io/rumora/">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzMzNjZGRiIvPgo8cGF0aCBkPSJNOCAxMkgxNlYxNkg4VjEyWiIgZmlsbD0id2hpdGUiLz4KPHA+dGggZD0iTTggMjBIMjRWMjRIOFYyMFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xNiAxMkgyNFYxNkgxNlYxMloiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNyIvPgo8L3N2Zz4K">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Rumora",
+    "description": "Privacy-first web performance monitoring library that helps analyze and optimize web applications without compromising user privacy.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": ["Web Browser"],
+    "programmingLanguage": "TypeScript",
+    "author": {
+      "@type": "Person",
+      "name": "Cefo14"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "downloadUrl": "https://www.npmjs.com/package/rumora"
+  }
+  </script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    <h1>Rumora</h1>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center">
+        <h1 class="text-xl font-bold text-blue-600">Rumora</h1>
+        <span class="ml-2 text-sm text-gray-500">v0.1.0</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="https://github.com/cefo14/rumora" 
+           class="text-gray-600 hover:text-gray-900 transition-colors"
+           target="_blank" 
+           rel="noopener noreferrer">
+          GitHub
+        </a>
+        <a href="https://www.npmjs.com/package/rumora" 
+           class="text-gray-600 hover:text-gray-900 transition-colors"
+           target="_blank" 
+           rel="noopener noreferrer">
+          NPM
+        </a>
+      </div>
+    </nav>
   </header>
+
+  <!-- Main Content -->
   <main>
-    <p>Welcome to Rumora, your go-to solution for web performance monitoring.</p>
-    <p>Analyze and optimize your web applications with ease.</p>
-    <input type="text" placeholder="Type something..." />
-    <img src="https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg" alt="" elementtiming="hero" style="width: 300px; height: auto;" />
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Privacy-First Web Performance Monitoring
+          </h2>
+          <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Monitor Core Web Vitals, track errors, and optimize performance without compromising user privacy. 
+            Zero user tracking, maximum insights.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <button class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+              npm install rumora
+            </button>
+            <button class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+              View Documentation
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+          What Rumora Measures
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Web Vitals -->
+          <article class="bg-gray-50 rounded-lg p-6">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Core Web Vitals</h3>
+            <p class="text-gray-600">
+              Monitor LCP, FCP, FID, CLS, and INP metrics that directly impact user experience and SEO rankings.
+            </p>
+          </article>
+
+          <!-- Error Tracking -->
+          <article class="bg-gray-50 rounded-lg p-6">
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Error Monitoring</h3>
+            <p class="text-gray-600">
+              Track JavaScript errors, promise rejections, resource failures, and CSP violations with detailed context.
+            </p>
+          </article>
+
+          <!-- Performance Timing -->
+          <article class="bg-gray-50 rounded-lg p-6">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Resource Analysis</h3>
+            <p class="text-gray-600">
+              Analyze resource loading, element timing, long tasks, and network performance for optimization insights.
+            </p>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Demo -->
+    <section class="py-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">
+          Live Performance Metrics
+        </h2>
+        <p class="text-center text-gray-600 mb-8">
+          Real-time performance monitoring of this very page
+        </p>
+        
+        <!-- Core Web Vitals -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          
+          <!-- LCP Card -->
+          <div class="bg-white rounded-lg shadow-sm border p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-medium text-gray-700">LCP</h3>
+              <span id="lcp-rating" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Loading...
+              </span>
+            </div>
+            <div id="lcp-value" class="text-2xl font-bold text-gray-900">--</div>
+            <div class="text-xs text-gray-500 mt-1">Largest Contentful Paint</div>
+          </div>
+
+          <!-- FCP Card -->
+          <div class="bg-white rounded-lg shadow-sm border p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-medium text-gray-700">FCP</h3>
+              <span id="fcp-rating" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Loading...
+              </span>
+            </div>
+            <div id="fcp-value" class="text-2xl font-bold text-gray-900">--</div>
+            <div class="text-xs text-gray-500 mt-1">First Contentful Paint</div>
+          </div>
+
+          <!-- CLS Card -->
+          <div class="bg-white rounded-lg shadow-sm border p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-medium text-gray-700">CLS</h3>
+              <span id="cls-rating" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Loading...
+              </span>
+            </div>
+            <div id="cls-value" class="text-2xl font-bold text-gray-900">--</div>
+            <div class="text-xs text-gray-500 mt-1">Cumulative Layout Shift</div>
+            <button id="layout-shift-btn" class="mt-2 text-xs text-gray-500">Simulate Shift</button>
+          </div>
+
+          <!-- FID Card -->
+          <div class="bg-white rounded-lg shadow-sm border p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-medium text-gray-700">FID</h3>
+              <span id="fid-rating" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Waiting...
+              </span>
+            </div>
+            <div id="fid-value" class="text-2xl font-bold text-gray-900">--</div>
+            <div class="text-xs text-gray-500 mt-1">First Input Delay</div>
+          </div>
+
+          <!-- INP Card -->
+          <div class="bg-white rounded-lg shadow-sm border p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-medium text-gray-700">INP</h3>
+              <span id="inp-rating" class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Waiting...
+              </span>
+            </div>
+            <div id="inp-value" class="text-2xl font-bold text-gray-900">--</div>
+            <div class="text-xs text-gray-500 mt-1">Interaction to Next Paint</div>
+          </div>
+          
+        </div>
+
+        <!-- Performance Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          
+          <!-- Resource Timing -->
+          <div class="bg-white rounded-lg shadow-sm border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Resource Performance</h3>
+            <div class="space-y-3 mb-4">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Total Resources</span>
+                <span id="resource-count" class="font-medium">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Total Transfer Size</span>
+                <span id="resource-size" class="font-medium">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Average Load Time</span>
+                <span id="resource-time" class="font-medium">--</span>
+              </div>
+            </div>
+            
+            <!-- Resource List -->
+            <div class="border-t pt-4">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Resource Details</h4>
+              <ul id="resource-list" class="space-y-2 max-h-64 overflow-y-auto">
+                <li class="text-sm text-gray-500 text-center py-4">
+                  TODO List resources loaded on the page with timings
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Error Tracking -->
+          <div class="bg-white rounded-lg shadow-sm border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Error Monitoring</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">JavaScript Errors</span>
+                <span id="js-error-count" class="font-medium text-green-600">0</span>
+                <button id="js-error-btn" class="ml-2 text-xs text-gray-500">Generate</button>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Promise Rejections</span>
+                <span id="promise-error-count" class="font-medium text-green-600">0</span>
+                <button id="promise-error-btn" class="ml-2 text-xs text-gray-500">Generate</button>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Resource Errors</span>
+                <span id="resource-error-count" class="font-medium text-green-600">0</span>
+                <button id="resource-error-btn" class="ml-2 text-xs text-gray-500">Generate</button>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">CSP Violations</span>
+                <span id="csp-violation-count" class="font-medium text-green-600">0</span>
+                <button id="csp-violation-btn" class="ml-2 text-xs text-gray-500">Generate</button>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <!-- Live Activity Log -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Live Activity Log</h3>
+          <ul id="activity-log" class="bg-gray-50 rounded-lg p-4 h-48 overflow-y-auto font-mono text-sm">
+            <li class="text-gray-500">Initializing Rumora performance monitoring...</li>
+          </ul>
+        </div>
+        
+      </div>
+    </section>
+
   </main>
-  <footer>
-    <p>&copy; 2023 Rumora. All rights reserved.</p>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="text-center">
+        <p class="text-gray-600">
+          Built with privacy in mind • 
+          <a href="https://github.com/cefo14/rumora" class="text-blue-600 hover:text-blue-800">Open Source</a> • 
+          GPL-3.0 License
+        </p>
+        <p class="text-sm text-gray-400 mt-2">
+          &copy; 2024 Rumora. Made with ❤️ by Cefo14
+        </p>
+      </div>
+    </div>
   </footer>
+
+  <!-- Script -->
+  <script type="module" src="/src/demo/index.ts"></script>
+  
 </body>
 </html>
