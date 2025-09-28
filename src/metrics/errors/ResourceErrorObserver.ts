@@ -41,7 +41,7 @@ export class ResourceErrorObserver extends WindowEventObserver<'error', Resource
 
   protected override onEvent(event: ErrorEvent): void {
     // Only handle resource loading errors, not JS errors
-    if (!event.target || event.target === window) return;
+    if (event.target === window) return;
     const report = ResourceErrorReport.fromErrorEvent(
       generateId(),
       event
