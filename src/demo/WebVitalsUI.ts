@@ -54,20 +54,24 @@ observeFCP().onSuccess((report) => {
   logger.success(`[FCP] First Contentful Paint: ${report.value} ms`);
 });
 
-observeCLS().onSuccess((report) => {
+observeCLS().onSuccess((collection) => {
+  if (collection.isEmpty) return;
+
+  console.log('CLS Collection:', collection);
+
   const ratingElement = document.getElementById('cls-rating');
   const valueElement = document.getElementById('cls-value');
 
   if (ratingElement) {
-    ratingElement.textContent = report.rating;
-    ratingElement.className = ratingClassNames[report.rating];
+    ratingElement.textContent = collection.rating;
+    ratingElement.className = ratingClassNames[collection.rating];
   }
 
   if (valueElement) {
-    valueElement.textContent = report.value.toFixed(4);
+    valueElement.textContent = collection.cumulativeShiftScore.toFixed(4);
   }
 
-  logger.success(`[CLS] Cumulative Layout Shift: ${report.value.toFixed(4)}`);
+  logger.success(`[CLS] Cumulative Layout Shift: ${collection.cumulativeShiftScore.toFixed(4)}`);
 });
 
 observeFID().onSuccess((report) => {
@@ -101,10 +105,10 @@ observeINP().onSuccess((collection) => {
   }
 
   if (valueElement) {
-    valueElement.textContent = `${report.value.toFixed(4)} ms`;
+    valueElement.textContent = `${report.value.toFixed(2)} ms`;
   }
 
-  logger.success(`[INP] Interaction to Next Paint: ${report.value.toFixed(4)} ms`);
+  logger.success(`[INP] Interaction to Next Paint: ${report.value.toFixed(2)} ms`);
 });
 
 const simulateCLSButton = document.getElementById('layout-shift-btn');

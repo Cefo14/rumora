@@ -2,7 +2,7 @@ export interface PerformanceEventTimingEntry extends PerformanceEventTiming {
   interactionId?: number;
 }
 
-interface LayoutShiftAttributionEntry {
+export interface LayoutShiftAttributionEntry {
   readonly currentRect: DOMRectReadOnly;
   readonly previousRect: DOMRectReadOnly;
   readonly node: HTMLElement;

@@ -20,16 +20,24 @@ export interface WebVitalReportDTO {
   value: number;
 }
 
+export interface WebVitalRatingInfo {
+  readonly goodThreshold: number;
+  readonly poorThreshold: number;
+  readonly rating: WebVitalRating;
+  readonly isGood: boolean;
+  readonly isNeedsImprovement: boolean;
+  readonly isPoor: boolean;
+}
+
 /**
  * Abstract base class for all Web Vital performance reports.
  * 
  * Provides common functionality for measuring and categorizing web performance metrics
  * according to Google's Core Web Vitals standards. Each concrete implementation defines
  * specific thresholds and measurement logic for individual metrics (CLS, FCP, FID, INP, LCP).
- * 
- * @abstract
+ *
  */
-export abstract class WebVitalReport implements Report {
+export abstract class WebVitalReport implements Report, WebVitalRatingInfo {
   /** Unique identifier for this performance report */
   public readonly id: string;
   

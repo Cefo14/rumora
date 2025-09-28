@@ -1,3 +1,4 @@
+import { CLSCollection } from '@/reports/web-vitals/CLSCollection';
 import { CLSReport } from '@/reports/web-vitals/CLSReport';
 import { generateId } from '@/shared/generateId';
 import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
@@ -7,10 +8,19 @@ import type { LayoutShiftEntry } from '@/types/PerformanceEntryTypes';
  * Observer for capturing Cumulative Layout Shift (CLS) metrics using LayoutShiftEntry.
  * CLS measures the sum of all unexpected layout shifts that occur during the lifespan of a page.
  * This metric is crucial for assessing visual stability and user experience.
+ * 
+ * CLS is calculated as the sum of all individual layout shift scores throughout the page lifecycle.
+ * The observer maintains a collection of individual layout shifts and emits updates only when
+ * the cumulative score changes significantly to avoid excessive notifications.
+ * 
+ * Thresholds:
+ * - Good: < 0.1
+ * - Needs Improvement: 0.1 - 0.25
+ * - Poor: >= 0.25
  */
-export class CLS extends PerformanceMetricObserver<CLSReport> {
+export class CLS extends PerformanceMetricObserver<CLSCollection> {
   private static instance: CLS | null = null;
-  private cls = 0;
+  private reports: CLSReport[] = [];
 
   private constructor() {
     super('layout-shift');
@@ -40,15 +50,28 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     CLS.instance = null;
   }
 
+  public override dispose(): void {
+    super.dispose();
+    this.reports = [];
+  }
+
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as LayoutShiftEntry[];
+    const reportsSizeBefore = this.reports.length;
+    
     for (const entry of entries) {
+      // Skip layout shifts caused by user input (within 500ms)
       if (entry.hadRecentInput) continue;
-      this.cls += entry.value;
+      
       const report = CLSReport.fromLayoutShiftEntry(generateId(), entry);
-      const data = report;
-      this.notifySuccess(data);
+      this.reports.push(report);
     }
+
+    // If no new reports were added, do not notify
+    if (this.reports.length === reportsSizeBefore) return;
+
+    const clsCollection = CLSCollection.create(generateId(), this.reports);
+    this.notifySuccess(clsCollection);
   }
 }
 
