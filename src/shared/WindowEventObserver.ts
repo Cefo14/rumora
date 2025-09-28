@@ -1,8 +1,8 @@
 import { FallibleObserver } from '@/shared/FallibleObserver';
 import { isSSR } from '@/shared/isSSR';
-import { UnsupportedSSRException } from '@/errors/UnsupportedExceptions';
+import { UnsupportedSSRException } from '@/exceptions/UnsupportedExceptions';
 import type { Report } from '@/reports/Report';
-import { EventObserverHandlerException } from '@/errors/EventObserverExceptions';
+import { EventObserverHandlerException } from '@/exceptions/EventObserverExceptions';
 
 /**
   * Abstract observer for capturing window events.

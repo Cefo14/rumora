@@ -3,8 +3,8 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { PerformanceTimeBuilder } from '@/test/builders/PerformanceTimeBuilder';
 import { performanceAPIHelper } from '@/test/helpers/PerformanceAPIHelper';
 
-import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
-import { UnsupportedPerformanceAPIException } from '@/errors/UnsupportedExceptions';
+import { InvalidPerformanceTimeException } from '@/exceptions/PerformanceTimeExceptions';
+import { UnsupportedPerformanceAPIException } from '@/exceptions/UnsupportedExceptions';
 
 import { PerformanceTime } from './PerformanceTime';
 

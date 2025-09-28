@@ -1,8 +1,8 @@
 import { FallibleObserver } from '@/shared/FallibleObserver';
 import type { PerformanceObserverConfig } from '@/types/PerformanceObserverTypes';
 import { isSSR } from './isSSR';
-import { UnsupportedMetricException, UnsupportedSSRException } from '@/errors/UnsupportedExceptions';
-import { PerformanceHandlerException } from '@/errors/PerformanceObserverExceptions';
+import { UnsupportedMetricException, UnsupportedSSRException } from '@/exceptions/UnsupportedExceptions';
+import { PerformanceHandlerException } from '@/exceptions/PerformanceObserverExceptions';
 
 export abstract class PerformanceMetricObserver<T> extends FallibleObserver<T> {
   private performanceObserver: PerformanceObserver | null = null;

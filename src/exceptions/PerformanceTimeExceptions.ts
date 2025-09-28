@@ -1,4 +1,4 @@
-import { RumoraException } from '@/errors/RumoraException';
+import { RumoraException } from '@/exceptions/RumoraException';
 
 export class PerformanceTimeException extends RumoraException {}
 

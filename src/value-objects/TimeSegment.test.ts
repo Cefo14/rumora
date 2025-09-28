@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { TimeSegmentBuilder } from '@/test/builders/TimeSegmentBuilder';
 import { TimeSegmentMothers } from '@/test/mothers/TimeSegmentMothers';
 
-import { InvalidTimeSegmentException, InvalidEndTimeException } from '@/errors/TimeSegmentExceptions';
+import { InvalidTimeSegmentException, InvalidEndTimeException } from '@/exceptions/TimeSegmentExceptions';
 
 import { TimeSegment } from './TimeSegment';
 import { PerformanceTime } from './PerformanceTime';

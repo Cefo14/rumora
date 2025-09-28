@@ -1,6 +1,6 @@
-import { InvalidPerformanceTimeException } from '@/errors/PerformanceTimeExceptions';
+import { InvalidPerformanceTimeException } from '@/exceptions/PerformanceTimeExceptions';
 import type { ValueObject } from './ValueObject';
-import { UnsupportedPerformanceAPIException } from '@/errors/UnsupportedExceptions';
+import { UnsupportedPerformanceAPIException } from '@/exceptions/UnsupportedExceptions';
 
 const isValidPerformanceTime = (time: number) => {
   return Number.isFinite(time) && time >= 0;
