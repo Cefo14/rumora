@@ -1,3 +1,4 @@
+import { LCPCollection } from '@/reports/web-vitals/LCPCollection';
 import { LCPReport } from '@/reports/web-vitals/LCPReport';
 import { generateId } from '@/shared/generateId';
 import {PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
@@ -7,8 +8,9 @@ import {PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * LCP measures the time it takes for the largest content element in the viewport to become visible,
  * providing insight into the perceived load speed of a webpage.
  */
-export class LCP extends PerformanceMetricObserver<LCPReport> {
+export class LCP extends PerformanceMetricObserver<LCPCollection> {
   private static instance: LCP | null = null;
+  private reports: LCPReport[] = [];
 
   private constructor() {
     super('largest-contentful-paint');
@@ -38,14 +40,26 @@ export class LCP extends PerformanceMetricObserver<LCPReport> {
     LCP.instance = null;
   }
 
+  public override dispose(): void {
+    super.dispose();
+    this.reports = [];
+  }
+
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as LargestContentfulPaint[];
-
-    if (entries.length > 0) {
-      const lastEntry = entries[entries.length - 1];
-      const report = LCPReport.fromLargestContentfulPaint(generateId(), lastEntry);
-      this.notifySuccess(report);
+    for (const entry of entries) {
+      const report = LCPReport.fromLargestContentfulPaint(
+        generateId(),
+        entry
+      );
+      this.reports.push(report);
     }
+
+    const lcpCollection = LCPCollection.create(
+      generateId(),
+      this.reports
+    );
+    this.notifySuccess(lcpCollection);
   }
 }
 

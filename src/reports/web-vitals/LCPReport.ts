@@ -2,6 +2,10 @@ import type { WebVitalReportDTO } from '@/reports/web-vitals/WebVitalReport';
 import { WebVitalReport } from '@/reports/web-vitals/WebVitalReport';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 
+export interface LCPReportData extends WebVitalReportDTO {
+  element: Element | null;
+}
+
 /**
  * Largest Contentful Paint (LCP) report for measuring loading performance.
  * 
@@ -19,22 +23,38 @@ export class LCPReport extends WebVitalReport {
   public readonly goodThreshold = 2500;
   public readonly poorThreshold = 4000;
 
-  private constructor(data: WebVitalReportDTO) {
+  public readonly element: Element | null;
+
+  private constructor(data: LCPReportData) {
     super(data);
+    this.element = data.element;
     Object.freeze(this);
   }
 
-  public static create(data: WebVitalReportDTO): LCPReport {
+  public static create(data: LCPReportData): LCPReport {
     return new LCPReport(data);
   }
 
   public static fromLargestContentfulPaint(id: string, entry: LargestContentfulPaint): LCPReport {
-    const data: WebVitalReportDTO = {
+    const data: LCPReportData = {
       id,
       createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
-      value: entry.startTime
+      value: entry.startTime,
+      element: entry.element,
     };
     return new LCPReport(data);
+  }
+
+  public override toJSON() {
+    return {
+      ...super.toJSON(),
+      /**
+       * The largest contentful element that was painted, if available
+       * This is the actual DOM element that triggered the LCP measurement
+       * @type {Element | null}
+       */
+      element: this.element,
+    };
   }
 }

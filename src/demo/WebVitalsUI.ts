@@ -17,7 +17,10 @@ const ratingClassNames: Record<WebVitalRating, string> = {
   POOR: 'text-red-600 font-semibold',
 };
 
-observeLCP().onSuccess((report) => {
+observeLCP().onSuccess((collection) => {
+  const report = collection.lastReport;
+  if (!report) return;
+
   const ratingElement = document.getElementById('lcp-rating');
   const valueElement = document.getElementById('lcp-value');
 

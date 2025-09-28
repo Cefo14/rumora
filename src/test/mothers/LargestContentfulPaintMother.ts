@@ -35,4 +35,36 @@ export class LargestContentfulPaintMother {
       ...overrides
     };
   }
+
+  /**
+   * LCP entry with a mock image element
+   */
+  static withImageElement(): LargestContentfulPaint {
+    const mockElement = {
+      tagName: 'IMG',
+      src: 'https://example.com/hero-image.jpg',
+      alt: 'Hero image',
+      clientWidth: 800,
+      clientHeight: 450
+    } as unknown as Element;
+
+    return LargestContentfulPaintMother.withCustomValues({
+      element: mockElement,
+      size: 800 * 450, // width * height
+      url: 'https://example.com/hero-image.jpg',
+      renderTime: 1800,
+      loadTime: 1850
+    });
+  }
+
+  /**
+   * LCP entry without element (null element)
+   */
+  static withoutElement(): LargestContentfulPaint {
+    return LargestContentfulPaintMother.withCustomValues({
+      element: null,
+      url: '',
+      renderTime: 2500
+    });
+  }
 }

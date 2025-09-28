@@ -16,7 +16,8 @@ describe('LCPReport', () => {
         const value = 2000;
         const occurredAt = PerformanceTime.fromRelativeTime(100);
         const createdAt = PerformanceTime.fromRelativeTime(200);
-        const data = { id, value, occurredAt, createdAt };
+        const element = null;
+        const data = { id, value, occurredAt, createdAt, element };
 
         // When
         const report = LCPReport.create(data);
@@ -24,6 +25,7 @@ describe('LCPReport', () => {
         // Then
         expect(report.id).toBe(id);
         expect(report.value).toBe(value);
+        expect(report.element).toBe(element);
         expect(report.name).toBe(WEB_VITALS.LARGEST_CONTENTFUL_PAINT);
         expect(report.goodThreshold).toBe(2500);
         expect(report.poorThreshold).toBe(4000);
@@ -60,8 +62,34 @@ describe('LCPReport', () => {
         // Then
         expect(report.id).toBe(id);
         expect(report.value).toBe(startTime);
+        expect(report.element).toBe(lcpEntry.element);
         expect(report.occurredAt.relativeTime).toBe(startTime);
         expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
+      });
+
+      it('should preserve element reference from LCP entry', () => {
+        // Given
+        const id = 'lcp-with-element';
+        const lcpEntryWithElement = LargestContentfulPaintMother.withImageElement();
+        
+        // When
+        const report = LCPReport.fromLargestContentfulPaint(id, lcpEntryWithElement);
+
+        // Then
+        expect(report.element).toBe(lcpEntryWithElement.element);
+        expect(report.element).not.toBeNull();
+      });
+
+      it('should handle null element correctly', () => {
+        // Given
+        const id = 'lcp-without-element';
+        const lcpEntryWithoutElement = LargestContentfulPaintMother.withoutElement();
+        
+        // When
+        const report = LCPReport.fromLargestContentfulPaint(id, lcpEntryWithoutElement);
+
+        // Then
+        expect(report.element).toBeNull();
       });
     });
   });
@@ -114,10 +142,24 @@ describe('LCPReport', () => {
         occurredAt: report.occurredAt.absoluteTime,
         rating: RATINGS.NEEDS_IMPROVEMENT,
         goodThreshold: 2500,
-        poorThreshold: 4000
+        poorThreshold: 4000,
+        element: null
       });
       expect(typeof result.createdAt).toBe('number');
       expect(result.createdAt).toBeGreaterThan(performance.timeOrigin);
+    });
+
+    it('should include element in JSON serialization when element is present', () => {
+      // Given
+      const mockElement = { tagName: 'IMG', src: 'test.jpg' } as unknown as Element;
+      const report = LCPReportMothers.withElement(mockElement);
+
+      // When
+      const result = report.toJSON();
+
+      // Then
+      expect(result.element).toBe(mockElement);
+      expect(result.element).not.toBeNull();
     });
   });
 

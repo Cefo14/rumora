@@ -1,6 +1,6 @@
 import type { ResourceTimingReport } from '@/reports/performance/ResourceTimingReport';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
-import { type ReportCollectionData, ReportCollection } from '../ReportCollection';
+import { type ReportCollectionData, ReportCollection } from '@/reports/ReportCollection';
 
 type ResourceTimingCollectionData = ReportCollectionData<ResourceTimingReport>;
 
