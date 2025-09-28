@@ -41,6 +41,8 @@ export class UnhandledJavaScriptErrorObserver extends WindowEventObserver<'error
   }
 
   protected onEvent(event: ErrorEvent): void {
+    // Only handle unhandled JS errors, not resource loading errors
+    if (event.target) return;
     const report = UnhandledJavaScriptErrorReport.fromErrorEvent(
       generateId(),
       event
