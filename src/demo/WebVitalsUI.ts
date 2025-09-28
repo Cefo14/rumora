@@ -21,6 +21,8 @@ observeLCP().onSuccess((collection) => {
   const report = collection.lastReport;
   if (!report) return;
 
+  console.log('LCP Collection:', collection);
+
   const ratingElement = document.getElementById('lcp-rating');
   const valueElement = document.getElementById('lcp-value');
 
@@ -84,7 +86,12 @@ observeFID().onSuccess((report) => {
   logger.success(`[FID] First Input Delay: ${report.value.toFixed(4)} ms`);
 });
 
-observeINP().onSuccess((report) => {
+observeINP().onSuccess((collection) => {
+  const report = collection.worstReport;
+  if (!report) return;
+
+  console.log('INP Collection:', collection);
+
   const ratingElement = document.getElementById('inp-rating');
   const valueElement = document.getElementById('inp-value');
 
