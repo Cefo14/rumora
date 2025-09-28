@@ -27,7 +27,7 @@ describe('ResourceTimingCollection', () => {
       // Then
       expect(collection.id).toBe(data.id);
       expect(collection.createdAt).toBe(data.createdAt);
-      expect(collection.totalResources).toBe(4);
+      expect(collection.totalReports).toBe(4);
     });
 
     it('should freeze the created collection instance', () => {
@@ -59,7 +59,7 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(collection.id).toBe(id);
-      expect(collection.totalResources).toBe(2);
+      expect(collection.totalReports).toBe(2);
     });
 
     it('should handle empty array correctly', () => {
@@ -72,18 +72,18 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(collection.isEmpty).toBe(true);
-      expect(collection.totalResources).toBe(0);
+      expect(collection.totalReports).toBe(0);
     });
   });
 
   describe('basic metrics', () => {
-    it('should return correct total resources count', () => {
+    it('should return correct total reports count', () => {
       // Given
       const data = ResourceTimingCollectionMothers.mixedTypes();
       const collection = ResourceTimingCollection.create(data);
 
       // When
-      const total = collection.totalResources;
+      const total = collection.totalReports;
 
       // Then
       expect(total).toBe(4);
@@ -100,19 +100,19 @@ describe('ResourceTimingCollection', () => {
     });
   });
 
-  describe('resources property', () => {
-    it('should return a copy of resources, not the original array', () => {
+  describe('reports property', () => {
+    it('should return a copy of reports, not the original array', () => {
       // Given
       const data = ResourceTimingCollectionMothers.mixedTypes();
       const collection = ResourceTimingCollection.create(data);
 
       // When
-      const resources1 = collection.resources;
-      const resources2 = collection.resources;
+      const reports1 = collection.reports;
+      const reports2 = collection.reports;
 
       // Then
-      expect(resources1).toEqual(resources2); // Same content
-      expect(resources1).not.toBe(resources2); // Different array instances
+      expect(reports1).toEqual(reports2); // Same content
+      expect(reports1).not.toBe(reports2); // Different array instances
     });
 
     it('should be immutable - modifying returned array should not affect collection', () => {
@@ -121,12 +121,12 @@ describe('ResourceTimingCollection', () => {
       const collection = ResourceTimingCollection.create(data);
 
       // When
-      const resources = collection.resources;
+      const reports = collection.reports;
 
       // Then
-      expect(Object.isFrozen(resources)).toBe(true);
+      expect(Object.isFrozen(reports)).toBe(true);
         expect(() => {
-          (resources as ResourceTimingReport[])
+          (reports as ResourceTimingReport[])
             .push(
               ResourceTimingReport.create(ResourceTimingReportMothers.fastScript())
             );
@@ -341,7 +341,7 @@ describe('ResourceTimingCollection', () => {
       // Then
       expect(jsonRepresentation).toEqual({
         // Basic aggregation metrics
-        totalResources: 4,
+        totalReports: 4,
         totalTransferSize: 198000,
         totalDecodedSize: 219000, // 35000 + 12000 + 150000 + 22000
         totalEncodedSize: 158000,  // 35000 + 6000 + 95000 + 22000
@@ -349,7 +349,7 @@ describe('ResourceTimingCollection', () => {
         averageLoadTime: 508,
 
         // Collections and groupings  
-        resources: data.resources,
+        reports: data.reports,
         resourcesByType: collection.resourcesByType,
         resourcesByDomain: collection.resourcesByDomain,
         thirdPartyResources: collection.thirdPartyResources,
@@ -367,12 +367,12 @@ describe('ResourceTimingCollection', () => {
       const jsonRepresentation = collection.toJSON();
 
       // Then
-      expect(jsonRepresentation.totalResources).toBe(0);
+      expect(jsonRepresentation.totalReports).toBe(0);
       expect(jsonRepresentation.totalTransferSize).toBe(0);
       expect(jsonRepresentation.averageLoadTime).toBe(0);
       expect(jsonRepresentation.slowestResource).toBeNull();
       expect(jsonRepresentation.lastResource).toBeNull();
-      expect(jsonRepresentation.resources).toEqual([]);
+      expect(jsonRepresentation.reports).toEqual([]);
       expect(jsonRepresentation.thirdPartyResources).toEqual([]);
     });
 
@@ -385,10 +385,10 @@ describe('ResourceTimingCollection', () => {
       const jsonRepresentation = collection.toJSON();
 
       // Then
-      expect(jsonRepresentation.resources).toEqual(collection.resources);
-      expect(jsonRepresentation.resources).toHaveLength(collection.totalResources);
+      expect(jsonRepresentation.reports).toEqual(collection.reports);
+      expect(jsonRepresentation.reports).toHaveLength(collection.totalReports);
       // Verificar que es una copia, no la misma referencia
-      expect(jsonRepresentation.resources).not.toBe(collection.resources);
+      expect(jsonRepresentation.reports).not.toBe(collection.reports);
     });
   });
 
@@ -403,7 +403,7 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(lastResource).not.toBeNull();
-      expect(lastResource).toBe(data.resources[data.resources.length - 1]);
+      expect(lastResource).toBe(data.reports[data.reports.length - 1]);
     });
 
     it('should return null for empty collection', () => {
@@ -428,7 +428,7 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(lastResource).not.toBeNull();
-      expect(lastResource).toBe(data.resources[0]);
+      expect(lastResource).toBe(data.reports[0]);
     });
 
     it('should be included in toJSON output correctly', () => {
@@ -441,7 +441,7 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(jsonRepresentation.lastResource).toBe(collection.lastResource);
-      expect(jsonRepresentation.lastResource).toBe(data.resources[data.resources.length - 1]);
+      expect(jsonRepresentation.lastResource).toBe(data.reports[data.reports.length - 1]);
     });
   });
 
@@ -452,7 +452,7 @@ describe('ResourceTimingCollection', () => {
       const collection = ResourceTimingCollection.create(data);
 
       // When & Then
-      expect(collection.totalResources).toBe(9); // 3 scripts + 2 css + 4 images
+      expect(collection.totalReports).toBe(9); // 3 scripts + 2 css + 4 images
       expect(collection.resourcesByType.script).toHaveLength(3);
       expect(collection.resourcesByType.link).toHaveLength(2);
       expect(collection.resourcesByType.img).toHaveLength(4);
@@ -465,8 +465,8 @@ describe('ResourceTimingCollection', () => {
       const collection = ResourceTimingCollection.create(data);
 
       // When
-      const total1 = collection.totalResources;
-      const total2 = collection.totalResources;
+      const total1 = collection.totalReports;
+      const total2 = collection.totalReports;
       const byType1 = collection.resourcesByType;
       const byType2 = collection.resourcesByType;
 
@@ -482,7 +482,7 @@ describe('ResourceTimingCollection', () => {
       const data = {
         id: 'cached-only',
         createdAt: PerformanceTime.fromAbsoluteTime(performance.timeOrigin),
-        resources: [cachedResource]
+        reports: [cachedResource]
       };
       const collection = ResourceTimingCollection.create(data);
 
