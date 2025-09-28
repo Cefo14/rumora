@@ -11,9 +11,35 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * Use dispose() only for cleanup if needed before the event occurs.
  */
 export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport> {
- constructor() {
-   super('navigation');
- }
+  private static instance: NetworkTiming | null = null;
+
+  private constructor() {
+    super('navigation');
+  }
+
+  /**
+   * Get the singleton instance of the Network Timing observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeNetworkTiming() factory function instead.
+   *
+   * @returns Singleton instance of the Network Timing observer.
+   */
+  public static getInstance(): NetworkTiming {
+    if (!NetworkTiming.instance) {
+      NetworkTiming.instance = new NetworkTiming();
+    }
+    return NetworkTiming.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the Network Timing observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    NetworkTiming.getInstance()?.dispose();
+    NetworkTiming.instance = null;
+  }
 
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
     const entries = entryList.getEntries() as PerformanceNavigationTiming[];
@@ -30,3 +56,14 @@ export class NetworkTiming extends PerformanceMetricObserver<NetworkTimingReport
     }
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the Network Timing observer.
+ */
+export const observeNetworkTiming = () => NetworkTiming.getInstance();
+
+/**
+ * Reset the singleton instance of the Network Timing observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetNetworkTiming = () => NetworkTiming.resetInstance();

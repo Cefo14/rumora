@@ -1,32 +1,44 @@
-export type FallibleObserverCallback<T> = (error: Error | null, value: T | null) => void;
-
+type SuccessCallback<T> = (value: T) => void;
+type ErrorCallback = (error: Error) => void;
 export abstract class FallibleObserver<T> {
-  private subscribers = new Set<FallibleObserverCallback<T>>();
+  private successSubscribers = new Set<SuccessCallback<T>>();
+  private errorSubscribers = new Set<ErrorCallback>();
 
-  public subscribe(callback: FallibleObserverCallback<T>): this {
-    this.subscribers.add(callback);
+  public onSuccess(callback: SuccessCallback<T>): this {
+    this.successSubscribers.add(callback);
     this.onSubscribe();
     return this;
   }
 
-  public unsubscribe(callback: FallibleObserverCallback<T>): void {
-    this.subscribers.delete(callback);
+  public onError(callback: ErrorCallback): this {
+    this.errorSubscribers.add(callback);
+    this.onSubscribe();
+    return this;
+  }
+
+  public removeSuccessCallback(callback: SuccessCallback<T>): void {
+    this.successSubscribers.delete(callback);
+  }
+
+  public removeErrorCallback(callback: ErrorCallback): void {
+    this.errorSubscribers.delete(callback);
   }
 
   protected notifyError(error: Error): void {
-    for (const subscriber of this.subscribers) {
-      subscriber(error, null);
+    for (const subscriber of this.errorSubscribers) {
+      subscriber(error);
     }
   }
 
   protected notifySuccess(value: T): void {
-    for (const subscriber of this.subscribers) {
-      subscriber(null, value);
+    for (const subscriber of this.successSubscribers) {
+      subscriber(value);
     }
   }
 
   protected clearSubscribers(): void {
-    this.subscribers.clear();
+    this.successSubscribers.clear();
+    this.errorSubscribers.clear();
   }
 
   protected onSubscribe(): void {

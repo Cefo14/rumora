@@ -14,11 +14,37 @@ import type { PerformanceElementTiming } from '@/types/PerformanceEntryTypes';
  * Example: <img src="hero.jpg" elementtiming="hero-image" />
  */
 export class ElementTiming extends PerformanceMetricObserver<ElementTimingReport> {
-  constructor() {
+  private static instance: ElementTiming | null = null;
+
+  private constructor() {
     super('element', {
       type: 'element',
       buffered: true
     });
+  }
+
+  /**
+   * Get the singleton instance of the Element Timing observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeElementTiming() factory function instead.
+   *
+   * @returns Singleton instance of the Element Timing observer.
+   */
+  public static getInstance(): ElementTiming {
+    if (!ElementTiming.instance) {
+      ElementTiming.instance = new ElementTiming();
+    }
+    return ElementTiming.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the Element Timing observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    ElementTiming.getInstance()?.dispose();
+    ElementTiming.instance = null;
   }
 
   /**
@@ -52,3 +78,14 @@ export class ElementTiming extends PerformanceMetricObserver<ElementTimingReport
     return true;
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the Element Timing observer.
+ */
+export const observeElementTiming = () => ElementTiming.getInstance();
+
+/**
+ * Reset the singleton instance of the Element Timing observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetElementTiming = () => ElementTiming.resetInstance();

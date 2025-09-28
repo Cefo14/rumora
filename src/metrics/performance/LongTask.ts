@@ -9,8 +9,34 @@ import type { PerformanceLongTaskTimingEntry } from '@/types/PerformanceEntryTyp
  * potentially causing poor user experience by delaying user interactions.
  */
 export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
-  constructor() {
+  private static instance: LongTask | null = null;
+
+  private constructor() {
     super('longtask');
+  }
+
+  /**
+   * Get the singleton instance of the Long Task observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeLongTask() factory function instead.
+   *
+   * @returns Singleton instance of the Long Task observer.
+   */
+  public static getInstance(): LongTask {
+    if (!LongTask.instance) {
+      LongTask.instance = new LongTask();
+    }
+    return LongTask.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the Long Task observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    LongTask.getInstance()?.dispose();
+    LongTask.instance = null;
   }
 
   /**
@@ -34,3 +60,14 @@ export class LongTask extends PerformanceMetricObserver<LongTaskReport> {
     }
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the Long Task observer.
+ */
+export const observeLongTask = () => LongTask.getInstance();
+
+/**
+ * Reset the singleton instance of the Long Task observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetLongTask = () => LongTask.resetInstance();

@@ -11,8 +11,34 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * Use dispose() only for cleanup if needed before the event occurs.
  */
 export class FCP extends PerformanceMetricObserver<FCPReport> {
-  constructor() {
+  private static instance: FCP | null = null;
+
+  private constructor() {
     super('paint');
+  }
+
+  /**
+   * Get the singleton instance of the FCP observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeFCP() factory function instead.
+   * 
+   * @returns Singleton instance of the FCP observer.
+   */
+  public static getInstance(): FCP {
+    if (!FCP.instance) {
+      FCP.instance = new FCP();
+    }
+    return FCP.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the FCP observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    FCP.getInstance()?.dispose();
+    FCP.instance = null;
   }
 
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
@@ -31,3 +57,15 @@ export class FCP extends PerformanceMetricObserver<FCPReport> {
     }
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the FCP observer.
+ * @returns Singleton instance of the FCP observer.
+ */
+export const observeFCP = () => FCP.getInstance();
+
+/** 
+ * Reset the singleton instance of the FCP observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetFCP = () => FCP.resetInstance();

@@ -8,8 +8,34 @@ import { WindowEventObserver } from '@/shared/WindowEventObserver';
  * when such violations occur, providing insights into potential security issues.
  */
 export class CSPViolationObserver extends WindowEventObserver<'securitypolicyviolation', CSPViolationErrorReport> {
-  constructor() {
+  private static instance: CSPViolationObserver | null = null;
+
+  private constructor() {
     super('securitypolicyviolation');
+  }
+
+  /**
+   * Get the singleton instance of the CSP Violation observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeCSPViolation() factory function instead.
+   *
+   * @returns Singleton instance of the CSP Violation observer.
+   */
+  public static getInstance(): CSPViolationObserver {
+    if (!CSPViolationObserver.instance) {
+      CSPViolationObserver.instance = new CSPViolationObserver();
+    }
+    return CSPViolationObserver.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the CSP Violation observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    CSPViolationObserver.getInstance()?.dispose();
+    CSPViolationObserver.instance = null;
   }
 
   protected override onEvent(event: SecurityPolicyViolationEvent): void {
@@ -20,3 +46,15 @@ export class CSPViolationObserver extends WindowEventObserver<'securitypolicyvio
     this.notifySuccess(report);
   };
 }
+
+/**
+ * Get the singleton instance of the CSP Violation observer.
+ * @returns Singleton instance of the CSP Violation observer.
+ */
+export const observeCSPViolation = () => CSPViolationObserver.getInstance();
+
+/**
+ * Reset the singleton instance of the CSP Violation observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetCSPViolation = () => CSPViolationObserver.resetInstance();

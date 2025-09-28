@@ -1,5 +1,25 @@
-export { CLS } from './CLS';
-export { FCP } from './FCP';
-export { FID } from './FID';
-export { INP } from './INP';
-export { LCP } from './LCP';
+export {
+  CLS,
+  observeCLS,
+  resetCLS,
+} from './CLS';
+export {
+  FCP,
+  observeFCP,
+  resetFCP,
+} from './FCP';
+export {
+  FID,
+  observeFID,
+  resetFID,
+} from './FID';
+export {
+  INP,
+  observeINP,
+  resetINP,
+} from './INP';
+export {
+  LCP,
+  observeLCP,
+  resetLCP,
+} from './LCP';

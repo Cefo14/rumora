@@ -9,13 +9,39 @@ import type { PerformanceEventTimingEntry } from '@/types/PerformanceEntryTypes'
  * providing insights into how quickly the page responds to user inputs.
  */
 export class INP extends PerformanceMetricObserver<INPReport> {
-  constructor() {
+  private static instance: INP | null = null;
+
+  private constructor() {
     super(
       'event',
       {
         durationThreshold: 16,
       }
     );
+  }
+
+  /**
+   * Get the singleton instance of the INP observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeINP() factory function instead.
+   *
+   * @returns Singleton instance of the INP observer.
+   */
+  public static getInstance(): INP {
+    if (!INP.instance) {
+      INP.instance = new INP();
+    }
+    return INP.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the INP observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    INP.getInstance()?.dispose();
+    INP.instance = null;
   }
 
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
@@ -31,3 +57,15 @@ export class INP extends PerformanceMetricObserver<INPReport> {
     }
   }
 }
+
+/**
+ * Get the singleton instance of the INP observer.
+ * @returns Singleton instance of the INP observer.
+ */
+export const observeINP = () => INP.getInstance();
+
+/**
+ * Reset the singleton instance of the INP observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetINP = () => INP.resetInstance();

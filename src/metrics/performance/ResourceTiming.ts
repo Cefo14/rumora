@@ -15,6 +15,7 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * when monitoring is complete.
  */
 export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingCollection> {
+  private static instance: ResourceTiming | null = null;
   private reports: ResourceTimingReport[] = [];
 
   /**
@@ -27,11 +28,35 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
     'moz-extension:'
   ] as const;
 
-  constructor() {
+  private constructor() {
     super('resource', {
       type: 'resource',
       buffered: true
     });
+  }
+
+  /**
+   * Get the singleton instance of the Resource Timing observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeResourceTiming() factory function instead.
+   *
+   * @returns Singleton instance of the Resource Timing observer.
+   */
+  public static getInstance(): ResourceTiming {
+    if (!ResourceTiming.instance) {
+      ResourceTiming.instance = new ResourceTiming();
+    }
+    return ResourceTiming.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the Resource Timing observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    ResourceTiming.getInstance()?.dispose();
+    ResourceTiming.instance = null;
   }
 
   public override dispose(): void {
@@ -86,3 +111,14 @@ export class ResourceTiming extends PerformanceMetricObserver<ResourceTimingColl
     return true;
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the Resource Timing observer.
+ */
+export const observeResourceTiming = () => ResourceTiming.getInstance();
+
+/**
+ * Reset the singleton instance of the Resource Timing observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetResourceTiming = () => ResourceTiming.resetInstance();

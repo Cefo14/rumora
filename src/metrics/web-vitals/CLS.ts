@@ -9,10 +9,35 @@ import type { LayoutShiftEntry } from '@/types/PerformanceEntryTypes';
  * This metric is crucial for assessing visual stability and user experience.
  */
 export class CLS extends PerformanceMetricObserver<CLSReport> {
+  private static instance: CLS | null = null;
   private cls = 0;
 
-  constructor() {
+  private constructor() {
     super('layout-shift');
+  }
+
+  /**
+   * Get the singleton instance of the CLS observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeCLS() factory function instead.
+   *
+   * @returns Singleton instance of the CLS observer.
+   */
+  public static getInstance(): CLS {
+    if (!CLS.instance) {
+      CLS.instance = new CLS();
+    }
+    return CLS.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the CLS observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    CLS.getInstance()?.dispose();
+    CLS.instance = null;
   }
 
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
@@ -26,3 +51,14 @@ export class CLS extends PerformanceMetricObserver<CLSReport> {
     }
   }
 }
+
+/**
+ * Factory function to get the singleton instance of the CLS observer.
+ */
+export const observeCLS = () => CLS.getInstance();
+
+/**
+ * Reset the singleton instance of the CLS observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetCLS = () => CLS.resetInstance();

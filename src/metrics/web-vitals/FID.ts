@@ -12,8 +12,34 @@ import { PerformanceMetricObserver } from '@/shared/PerformanceMetricObserver';
  * Use dispose() only for cleanup if needed before the event occurs.
  */
 export class FID extends PerformanceMetricObserver<FIDReport> {
-  constructor() {
+  private static instance: FID | null = null;
+
+  private constructor() {
     super('first-input');
+  }
+
+  /**
+   * Get the singleton instance of the FID observer.
+   * If the instance does not exist, it creates a new one.
+   * 
+   * **Note:** Use observeFID() factory function instead.
+   *
+   * @returns Singleton instance of the FID observer.
+   */
+  public static getInstance(): FID {
+    if (!FID.instance) {
+      FID.instance = new FID();
+    }
+    return FID.instance;
+  }
+
+  /**
+   * Reset the singleton instance of the FID observer.
+   * This is useful for testing or re-initialization purposes.
+   */
+  public static resetInstance(): void {
+    FID.getInstance()?.dispose();
+    FID.instance = null;
   }
 
   protected override onPerformanceObserver(entryList: PerformanceObserverEntryList): void {
@@ -30,3 +56,15 @@ export class FID extends PerformanceMetricObserver<FIDReport> {
     }
   }
 }
+
+/**
+ * Get the singleton instance of the FID observer.
+ * @returns Singleton instance of the FID observer.
+ */
+export const observeFID = () => FID.getInstance();
+
+/**
+ * Reset the singleton instance of the FID observer.
+ * This is useful for testing or re-initialization purposes.
+ */
+export const resetFID = () => FID.resetInstance();
