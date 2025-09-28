@@ -45,11 +45,16 @@ describe('FIDReport', () => {
 
   describe('fromPerformanceEventTiming factory method', () => {
     describe('when PerformanceEventTiming entry is valid', () => {
-      it('should create report using entry startTime as value and occurredAt', () => {
+      it('should create report calculating FID as processingStart minus startTime', () => {
         // Given
         const id = 'fid-from-entry-123';
         const startTime = 150;
-        const eventEntry = PerformanceEventTimingMother.withCustomValues({ startTime });
+        const processingStart = 180;
+        const expectedFID = processingStart - startTime; // 30ms
+        const eventEntry = PerformanceEventTimingMother.withCustomValues({ 
+          startTime, 
+          processingStart 
+        });
         vi.spyOn(PerformanceTime, 'now').mockReturnValue(
           PerformanceTime.fromRelativeTime(performance.timeOrigin)
         );
@@ -59,7 +64,7 @@ describe('FIDReport', () => {
 
         // Then
         expect(report.id).toBe(id);
-        expect(report.value).toBe(startTime);
+        expect(report.value).toBe(expectedFID);
         expect(report.occurredAt.relativeTime).toBe(startTime);
         expect(report.createdAt.relativeTime).toBe(performance.timeOrigin);
       });
@@ -138,8 +143,19 @@ describe('FIDReport', () => {
   describe('FID-specific scenarios from Performance API', () => {
     it('should create report from various first input timing scenarios correctly', () => {
       // Given
-      const fastFirstInput = PerformanceEventTimingMother.withCustomValues({ startTime: 50 });
-      const slowFirstInput = PerformanceEventTimingMother.withCustomValues({ startTime: 400 });
+      const fastStartTime = 50;
+      const fastProcessingStart = 65; // 15ms FID
+      const slowStartTime = 400;
+      const slowProcessingStart = 520; // 120ms FID
+      
+      const fastFirstInput = PerformanceEventTimingMother.withCustomValues({ 
+        startTime: fastStartTime, 
+        processingStart: fastProcessingStart 
+      });
+      const slowFirstInput = PerformanceEventTimingMother.withCustomValues({ 
+        startTime: slowStartTime, 
+        processingStart: slowProcessingStart 
+      });
 
       // When
       const fastReport = FIDReport.fromPerformanceEventTiming('fast', fastFirstInput);
@@ -147,9 +163,9 @@ describe('FIDReport', () => {
 
       // Then
       expect(fastReport.rating).toBe(RATINGS.GOOD);
-      expect(slowReport.rating).toBe(RATINGS.POOR);
-      expect(fastReport.value).toBe(50);
-      expect(slowReport.value).toBe(400);
+      expect(slowReport.rating).toBe(RATINGS.NEEDS_IMPROVEMENT);
+      expect(fastReport.value).toBe(15); // processingStart - startTime
+      expect(slowReport.value).toBe(120); // processingStart - startTime
     });
   });
 });

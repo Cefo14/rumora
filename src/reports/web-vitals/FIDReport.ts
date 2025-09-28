@@ -33,7 +33,7 @@ export class FIDReport extends WebVitalReport {
       id,
       createdAt: PerformanceTime.now(),
       occurredAt: PerformanceTime.fromRelativeTime(entry.startTime),
-      value: entry.startTime
+      value: entry.processingStart - entry.startTime,
     };
     return new FIDReport(data);
   }
