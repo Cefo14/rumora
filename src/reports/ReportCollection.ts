@@ -18,29 +18,24 @@ export interface ReportCollectionData<T extends Report = Report> {
 export abstract class ReportCollection<T extends Report> {
   public readonly id: string;
   public readonly createdAt: PerformanceTime;
-  protected readonly _reports: T[];
+  public readonly reports: readonly T[];
 
   constructor(data: ReportCollectionData<T>) {
     this.id = data.id;
     this.createdAt = data.createdAt;
-    this._reports = data.reports;
-  }
-
-  public get reports(): readonly T[] {
-    const reports = Array.from(this._reports);
-    return Object.freeze(reports);
+    this.reports = Object.freeze(Array.from(data.reports));
   }
 
   public get firstReport(): T | null {
-    return this._reports.at(0) ?? null;
+    return this.reports.at(0) ?? null;
   }
 
   public get lastReport(): T | null {
-    return this._reports.at(-1) ?? null;
+    return this.reports.at(-1) ?? null;
   }
 
   public get totalReports(): number {
-    return this._reports.length;
+    return this.reports.length;
   }
 
   public get isEmpty(): boolean {

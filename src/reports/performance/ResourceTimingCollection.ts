@@ -44,7 +44,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    * @returns Total bytes transferred across all resources
    */
   public get totalTransferSize(): number {
-    return this._reports
+    return this.reports
       .reduce((total, resource) => total + resource.transferSize, 0);
   }
 
@@ -54,7 +54,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    * @returns Total uncompressed bytes across all resources
    */
   public get totalDecodedSize(): number {
-    return this._reports
+    return this.reports
       .reduce((total, resource) => total + resource.decodedSize, 0);
   }
 
@@ -64,7 +64,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    * @returns Total compressed bytes across all resources
    */
   public get totalEncodedSize(): number {
-    return this._reports
+    return this.reports
       .reduce((total, resource) => total + resource.encodedSize, 0);
   }
 
@@ -76,7 +76,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
   public get slowestResource(): ResourceTimingReport | null {
     if (this.isEmpty) return null;
 
-    return this._reports
+    return this.reports
       .reduce((slowest, current) =>
         current.duration > slowest.duration ? current : slowest
       );
@@ -88,7 +88,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    * @returns Array of third-party ResourceTimingReport instances
    */
   public get thirdPartyResources(): ResourceTimingReport[] {
-    return this._reports.filter(resource => resource.isThirdParty);
+    return this.reports.filter(resource => resource.isThirdParty);
   }
 
   /**
@@ -98,7 +98,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    */
   public get resourcesByType (): Record<string, ResourceTimingReport[]> {
     const byType: Record<string, ResourceTimingReport[]> = {};
-    this._reports.forEach(resource => {
+    this.reports.forEach(resource => {
       if (!byType[resource.type]) {
         byType[resource.type] = [];
       }
@@ -114,7 +114,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    */
   public get averageLoadTime(): number {
     return this.isEmpty ? 0 : 
-      Math.round(this._reports.reduce((sum, r) => sum + r.duration, 0) / this.totalReports);
+      Math.round(this.reports.reduce((sum, r) => sum + r.duration, 0) / this.totalReports);
   }
 
   /**
@@ -133,7 +133,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    */
   public get resourcesByDomain(): Record<string, ResourceTimingReport[]> {
     const byDomain: Record<string, ResourceTimingReport[]> = {};
-    this._reports.forEach(resource => {
+    this.reports.forEach(resource => {
       const domain = resource.domain;
       if (!byDomain[domain]) {
         byDomain[domain] = [];
@@ -148,7 +148,7 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
    * @returns Last ResourceTimingReport or null if collection is empty
    */
   public get lastResource(): ResourceTimingReport | null {
-    return this._reports.at(-1) || null;
+    return this.reports.at(-1) || null;
   }
 
 

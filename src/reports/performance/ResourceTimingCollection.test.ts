@@ -101,20 +101,6 @@ describe('ResourceTimingCollection', () => {
   });
 
   describe('reports property', () => {
-    it('should return a copy of reports, not the original array', () => {
-      // Given
-      const data = ResourceTimingCollectionMothers.mixedTypes();
-      const collection = ResourceTimingCollection.create(data);
-
-      // When
-      const reports1 = collection.reports;
-      const reports2 = collection.reports;
-
-      // Then
-      expect(reports1).toEqual(reports2); // Same content
-      expect(reports1).not.toBe(reports2); // Different array instances
-    });
-
     it('should be immutable - modifying returned array should not affect collection', () => {
       // Given
       const data = ResourceTimingCollectionMothers.mixedTypes();
@@ -376,7 +362,7 @@ describe('ResourceTimingCollection', () => {
       expect(jsonRepresentation.thirdPartyResources).toEqual([]);
     });
 
-    it('should use resources getter in toJSON output', () => {
+    it('should use reports property in toJSON output', () => {
       // Given
       const data = ResourceTimingCollectionMothers.mixedTypes();
       const collection = ResourceTimingCollection.create(data);
@@ -387,8 +373,6 @@ describe('ResourceTimingCollection', () => {
       // Then
       expect(jsonRepresentation.reports).toEqual(collection.reports);
       expect(jsonRepresentation.reports).toHaveLength(collection.totalReports);
-      // Verificar que es una copia, no la misma referencia
-      expect(jsonRepresentation.reports).not.toBe(collection.reports);
     });
   });
 
