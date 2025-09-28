@@ -18,7 +18,6 @@ export class LCPCollection extends ReportCollection<LCPReport> {
     });
   }
 
-
   toString(): string {
     return `LCPCollection: { id: ${this.id}, createdAt: ${this.createdAt.absoluteTime}, totalReports: ${this.totalReports} }`;
   }

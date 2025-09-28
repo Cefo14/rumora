@@ -91,7 +91,7 @@ observeFID().onSuccess((report) => {
 });
 
 observeINP().onSuccess((collection) => {
-  const report = collection.worstReport;
+  const report = collection.percentile98 ;
   if (!report) return;
 
   console.log('INP Collection:', collection);
