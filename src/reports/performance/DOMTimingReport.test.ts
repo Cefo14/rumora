@@ -18,9 +18,11 @@ describe('DOMTimingReport', () => {
       expect(report.id).toBe(data.id);
       expect(report.createdAt).toBe(data.createdAt);
       expect(report.occurredAt).toBe(data.occurredAt);
-      expect(report.interactiveTime).toBe(800);
-      expect(report.processingTime).toBe(200);
-      expect(report.contentLoadedDuration).toBe(50);
+      expect(report.timeToInteractive).toBe(800);
+      expect(report.timeToContentLoaded).toBe(900);
+      expect(report.timeToDOMComplete).toBe(1000);
+      expect(report.timeToFullLoad).toBe(1030);
+      expect(report.domContentLoadedDuration).toBe(50);
       expect(report.loadEventDuration).toBe(30);
     });
 
@@ -50,9 +52,11 @@ describe('DOMTimingReport', () => {
 
       // Then
       expect(report.id).toBe(id);
-      expect(report.interactiveTime).toBe(800);  // domInteractive - startTime
-      expect(report.processingTime).toBe(200);   // domComplete - domInteractive
-      expect(report.contentLoadedDuration).toBe(50); // domContentLoadedEventEnd - Start
+      expect(report.timeToInteractive).toBe(800);  // domInteractive - fetchStart
+      expect(report.timeToContentLoaded).toBe(900); // domContentLoadedEventEnd - fetchStart  
+      expect(report.timeToDOMComplete).toBe(1000);   // domComplete - fetchStart
+      expect(report.timeToFullLoad).toBe(1030);      // loadEventEnd - fetchStart
+      expect(report.domContentLoadedDuration).toBe(50); // domContentLoadedEventEnd - Start
       expect(report.loadEventDuration).toBe(30);     // loadEventEnd - loadEventStart
     });
 
@@ -65,48 +69,50 @@ describe('DOMTimingReport', () => {
       const report = DOMTimingReport.fromPerformanceEntry(id, entry);
 
       // Then
-      expect(report.interactiveTime).toBe(0);
-      expect(report.processingTime).toBe(0);
-      expect(report.contentLoadedDuration).toBe(0);
+      expect(report.timeToInteractive).toBe(0);
+      expect(report.timeToContentLoaded).toBe(0);
+      expect(report.timeToDOMComplete).toBe(0);
+      expect(report.timeToFullLoad).toBe(1);
+      expect(report.domContentLoadedDuration).toBe(0);
       expect(report.loadEventDuration).toBe(1);
     });
   });
 
   describe('calculated getters', () => {
-    it('should calculate eventListenerTime as sum of contentLoaded and load durations', () => {
+    it('should calculate totalEventHandlerTime as sum of domContentLoaded and load durations', () => {
       // Given
       const data = DOMTimingReportMothers.fastPageLoad();
       const report = DOMTimingReport.create(data);
 
       // When
-      const eventListenerTime = report.eventListenerTime;
+      const totalEventHandlerTime = report.totalEventHandlerTime;
 
       // Then
-      expect(eventListenerTime).toBe(80); // 50 + 30
+      expect(totalEventHandlerTime).toBe(80); // 50 + 30
     });
 
-    it('should calculate totalProcessingTime as processing plus load event duration', () => {
+    it('should calculate domParsingTime as timeToDOMComplete minus timeToInteractive', () => {
       // Given
       const data = DOMTimingReportMothers.slowPageLoad();
       const report = DOMTimingReport.create(data);
 
       // When
-      const totalProcessingTime = report.totalProcessingTime;
+      const domParsingTime = report.domParsingTime;
 
       // Then
-      expect(totalProcessingTime).toBe(1650); // 1500 + 150
+      expect(domParsingTime).toBe(1500); // 4500 - 3000
     });
 
-    it('should calculate totalPageLoadTime as complete page load from navigation start', () => {
+    it('should calculate resourceLoadTime as timeToFullLoad minus timeToDOMComplete', () => {
       // Given
       const data = DOMTimingReportMothers.fastPageLoad();
       const report = DOMTimingReport.create(data);
 
       // When
-      const totalPageLoadTime = report.totalPageLoadTime;
+      const resourceLoadTime = report.resourceLoadTime;
 
       // Then
-      expect(totalPageLoadTime).toBe(1030); // 800 + (200 + 30)
+      expect(resourceLoadTime).toBe(30); // 1030 - 1000
     });
   });
 
@@ -121,7 +127,7 @@ describe('DOMTimingReport', () => {
 
       // Then
       expect(stringRepresentation).toBe(
-        'DOM Timing: 1030ms (Interactive: 800ms, Events: 80ms)'
+        'DOMTiming: 1030ms total (Interactive: 800ms, DOMContentLoaded: 900ms)'
       );
     });
   });
@@ -137,16 +143,27 @@ describe('DOMTimingReport', () => {
 
       // Then
       expect(jsonRepresentation).toEqual({
+        // Metadata
         id: 'slow-dom-timing-002',
         createdAt: data.createdAt.absoluteTime,
         occurredAt: data.occurredAt.absoluteTime,
-        interactiveTime: data.interactiveTime,
-        processingTime: data.processingTime,
-        contentLoadedDuration: data.contentLoadedDuration,
+        
+        // Core milestones
+        timeToInteractive: data.timeToInteractive,
+        timeToContentLoaded: data.timeToContentLoaded,
+        timeToDOMComplete: data.timeToDOMComplete,
+        timeToFullLoad: data.timeToFullLoad,
+        
+        // Event execution
+        domContentLoadedDuration: data.domContentLoadedDuration,
         loadEventDuration: data.loadEventDuration,
-        eventListenerTime: data.contentLoadedDuration + data.loadEventDuration, // 200 + 150
-        totalProcessingTime: data.processingTime + data.loadEventDuration, // 1500 + 150
-        totalPageLoadTime: data.interactiveTime + data.processingTime + data.loadEventDuration // 3000 + 1500 + 150
+        totalEventHandlerTime: data.domContentLoadedDuration + data.loadEventDuration, // 200 + 150
+        
+        // Derived metrics
+        domParsingTime: data.timeToDOMComplete - data.timeToInteractive, // 4500 - 3000 = 1500
+        resourceLoadTime: data.timeToFullLoad - data.timeToDOMComplete, // 4650 - 4500 = 150
+        hasSlowEventHandlers: true, // 350ms > 50ms
+        slowestPhase: 'interactive' // 3000ms is the largest phase
       });
     });
   });
@@ -158,10 +175,10 @@ describe('DOMTimingReport', () => {
       const report = DOMTimingReport.create(data);
 
       // When & Then
-      expect(report.eventListenerTime).toBe(1);     // 0 + 1
-      expect(report.totalProcessingTime).toBe(1);   // 0 + 1
-      expect(report.totalPageLoadTime).toBe(1);     // 0 + 1
-      expect(report.toString()).toBe('DOM Timing: 1ms (Interactive: 0ms, Events: 1ms)');
+      expect(report.totalEventHandlerTime).toBe(1);     // 0 + 1
+      expect(report.domParsingTime).toBe(0);   // 0 - 0
+      expect(report.resourceLoadTime).toBe(1);     // 1 - 0
+      expect(report.toString()).toBe('DOMTiming: 1ms total (Interactive: 0ms, DOMContentLoaded: 0ms)');
     });
 
     it('should maintain immutability when accessing calculated properties', () => {
@@ -170,8 +187,8 @@ describe('DOMTimingReport', () => {
       const report = DOMTimingReport.create(data);
 
       // When
-      const eventTime1 = report.eventListenerTime;
-      const eventTime2 = report.eventListenerTime;
+      const eventTime1 = report.totalEventHandlerTime;
+      const eventTime2 = report.totalEventHandlerTime;
 
       // Then
       expect(eventTime1).toBe(eventTime2);
