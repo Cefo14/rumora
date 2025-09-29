@@ -234,7 +234,6 @@ describe('ResourceTimingReport', () => {
 
         // Overall timing
         duration: data.duration,
-        startTime: data.startTime.absoluteTime,
         endTime: data.startTime.add(data.duration).absoluteTime,
 
         // Resource size and compression
@@ -247,6 +246,7 @@ describe('ResourceTimingReport', () => {
         // Analysis
         isThirdParty: true,
         primaryBottleneck: 'download',
+        hasDetailedTiming: true,
 
         // Detailed network timing segments
         dnsLookup: data.dnsLookup.toJSON(),

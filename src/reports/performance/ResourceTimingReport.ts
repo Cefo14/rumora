@@ -2,7 +2,6 @@ import type { Report } from '@/reports/Report';
 import { PerformanceTime } from '@/value-objects/PerformanceTime';
 import { TimeSegment } from '@/value-objects/TimeSegment';
 
-
 /**
  * Grouped network timing segments for easier analysis
  */
@@ -31,11 +30,8 @@ interface ResourceTimingData {
   /** Type of resource initiator (script, stylesheet, img, etc.) */
   type: string;
   
-  // Essential timing
   /** Total load duration in milliseconds */
   duration: number;
-  /** Start time of the resource load */
-  startTime: PerformanceTime;
   
   // Size information
   /** Transfer size in bytes (over the wire) */
@@ -63,7 +59,6 @@ interface ResourceTimingData {
  * Resource timing provides detailed network timing information for loading
  * resources such as stylesheets, scripts, images, and fonts. This report
  * organizes timing data into logical segments for easier bottleneck identification.
- * ```
  */
 export class ResourceTimingReport implements Report {
   /** Unique identifier for the report */
@@ -83,9 +78,6 @@ export class ResourceTimingReport implements Report {
   
   /** Total load duration in milliseconds */
   public readonly duration: number;
-  
-  /** Start time of the resource load */
-  public readonly startTime: PerformanceTime;
   
   /** Transfer size in bytes (actual bytes over network) */
   public readonly transferSize: number;
@@ -111,12 +103,8 @@ export class ResourceTimingReport implements Report {
   /** Content download time */
   private readonly contentDownload: TimeSegment;
 
-
   /**
    * Creates a new ResourceTimingReport instance.
-   * 
-   * @param data - Resource timing data
-   * @private
    */
   private constructor(data: ResourceTimingData) {
     this.id = data.id;
@@ -125,7 +113,6 @@ export class ResourceTimingReport implements Report {
     this.name = data.name;
     this.type = data.type;
     this.duration = data.duration;
-    this.startTime = data.startTime;
     this.transferSize = data.transferSize;
     this.encodedSize = data.encodedSize;
     this.decodedSize = data.decodedSize;
@@ -140,9 +127,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Creates a ResourceTimingReport from provided data.
-   * 
-   * @param data - Resource timing data
-   * @returns New ResourceTimingReport instance
    */
   public static create(data: ResourceTimingData): ResourceTimingReport {
     return new ResourceTimingReport(data);
@@ -150,18 +134,12 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Creates a ResourceTimingReport from a PerformanceResourceTiming entry.
-   * 
-   * @param id - Unique identifier for the report
-   * @param entry - PerformanceResourceTiming entry from Resource Timing API
-   * @returns New ResourceTimingReport instance with calculated network segments
    */
   public static fromPerformanceResourceTiming(
     id: string,
     entry: PerformanceResourceTiming
   ): ResourceTimingReport {
-    // Calculate network timing segments
     const networkSegments = this.calculateNetworkSegments(entry);
-
     return new ResourceTimingReport({
       id,
       createdAt: PerformanceTime.now(),
@@ -169,7 +147,6 @@ export class ResourceTimingReport implements Report {
       name: entry.name,
       type: entry.initiatorType,
       duration: entry.duration,
-      startTime: PerformanceTime.fromRelativeTime(entry.fetchStart),
       transferSize: entry.transferSize || 0,
       encodedSize: entry.encodedBodySize || 0,
       decodedSize: entry.decodedBodySize || 0,
@@ -183,11 +160,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Calculates network timing segments from PerformanceResourceTiming entry.
-   * 
-   * @param entry - Performance resource timing entry
-   * @param fromRelativeTime - Helper function to create PerformanceTime
-   * @returns Calculated network segments
-   * @private
    */
   private static calculateNetworkSegments(
     entry: PerformanceResourceTiming,
@@ -206,11 +178,11 @@ export class ResourceTimingReport implements Report {
 
     // TLS Handshake: SSL/TLS negotiation (only for HTTPS)
     let tlsHandshake: TimeSegment | undefined;
-      if (entry.secureConnectionStart > 0) {
-        tlsHandshake = TimeSegment.fromTiming(
-          entry.secureConnectionStart,
-          entry.connectEnd
-        );
+    if (entry.secureConnectionStart > 0) {
+      tlsHandshake = TimeSegment.fromTiming(
+        entry.secureConnectionStart,
+        entry.connectEnd
+      );
     }
 
     // Server Processing: time from request sent to first response byte
@@ -236,17 +208,13 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Gets the end time of the resource loading.
-   * 
-   * @returns End time calculated from start time and duration
    */
   public get endTime(): PerformanceTime {
-    return this.startTime.add(this.duration);
+    return this.occurredAt.add(this.duration);
   }
 
   /**
    * Determines if this resource is from a third-party domain.
-   * 
-   * @returns True if resource is loaded from a different origin
    */
   public get isThirdParty(): boolean {
     try {
@@ -260,8 +228,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Checks if the resource has compression applied.
-   * 
-   * @returns True if encoded size is smaller than decoded size
    */
   public get hasCompression(): boolean {
     return this.encodedSize < this.decodedSize && this.encodedSize > 0;
@@ -269,8 +235,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Calculates compression ratio of the resource.
-   * 
-   * @returns Compression ratio (0-1), where higher values mean better compression
    */
   public get compressionRatio(): number {
     if (this.decodedSize === 0) return 0;
@@ -279,8 +243,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Identifies the primary network bottleneck.
-   * 
-   * @returns The network segment with the longest duration
    */
   public get primaryBottleneck(): 'dns' | 'tcp' | 'tls' | 'server' | 'download' | 'none' {
     let maxDuration = 0;
@@ -316,8 +278,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Checks if the resource has detailed timing information available.
-   * 
-   * @returns True if network segments have timing data
    */
   public get hasDetailedTiming(): boolean {
     return this.serverProcessing.duration > 0 ||
@@ -326,8 +286,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Gets the resource domain for analysis.
-   * 
-   * @returns Domain of the resource URL
    */
   public get domain(): string {
     try {
@@ -339,8 +297,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Creates a human-readable string representation of the resource timing report.
-   * 
-   * @returns String representation with key performance insights
    */
   public toString(): string {
     const bottleneck = this.primaryBottleneck !== 'none' ? ` (bottleneck: ${this.primaryBottleneck})` : '';
@@ -349,8 +305,6 @@ export class ResourceTimingReport implements Report {
 
   /**
    * Converts the report to a JSON object suitable for serialization.
-   * 
-   * @returns JSON representation with network segment analysis
    */
   public toJSON() {
     return {
@@ -366,7 +320,6 @@ export class ResourceTimingReport implements Report {
       
       // Overall timing
       duration: this.duration,
-      startTime: this.startTime.absoluteTime,
       endTime: this.endTime.absoluteTime,
 
       // Resource size and compression analysis
@@ -378,6 +331,7 @@ export class ResourceTimingReport implements Report {
 
       isThirdParty: this.isThirdParty,
       primaryBottleneck: this.primaryBottleneck,
+      hasDetailedTiming: this.hasDetailedTiming,
 
       // Detailed network timing segments
       dnsLookup: this.dnsLookup.toJSON(),

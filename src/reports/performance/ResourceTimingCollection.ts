@@ -11,7 +11,6 @@ type ResourceTimingCollectionData = ReportCollectionData<ResourceTimingReport>;
  * aggregated insights and statistics. It's designed to be used by the
  * ResourceTiming observer to maintain state and provide useful analytics
  * about resource loading performance.
- * 
  */
 export class ResourceTimingCollection extends ReportCollection<ResourceTimingReport> {
   /**
@@ -37,11 +36,8 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
     });
   }
 
-
   /**
    * Gets total transfer size of all resources (bytes over the wire)
-   * 
-   * @returns Total bytes transferred across all resources
    */
   public get totalTransferSize(): number {
     return this.reports
@@ -50,8 +46,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets total decoded size of all resources (uncompressed)
-   * 
-   * @returns Total uncompressed bytes across all resources
    */
   public get totalDecodedSize(): number {
     return this.reports
@@ -60,8 +54,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets total encoded size of all resources (compressed)
-   * 
-   * @returns Total compressed bytes across all resources
    */
   public get totalEncodedSize(): number {
     return this.reports
@@ -70,8 +62,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets the slowest loading resource
-   * 
-   * @returns Slowest resource or null if collection is empty
    */
   public get slowestResource(): ResourceTimingReport | null {
     if (this.isEmpty) return null;
@@ -84,8 +74,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets all third-party resources in the collection
-   * 
-   * @returns Array of third-party ResourceTimingReport instances
    */
   public get thirdPartyResources(): ResourceTimingReport[] {
     return this.reports.filter(resource => resource.isThirdParty);
@@ -93,10 +81,8 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Groups resources by their type (e.g., script, image, css).
-   * 
-   * @returns Record mapping resource types to arrays of ResourceTimingReport
    */
-  public get resourcesByType (): Record<string, ResourceTimingReport[]> {
+  public get resourcesByType(): Record<string, ResourceTimingReport[]> {
     const byType: Record<string, ResourceTimingReport[]> = {};
     this.reports.forEach(resource => {
       if (!byType[resource.type]) {
@@ -109,8 +95,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets the average load time across all resources
-   * 
-   * @returns Average load time in milliseconds, or 0 if collection is empty
    */
   public get averageLoadTime(): number {
     return this.isEmpty ? 0 : 
@@ -119,8 +103,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Gets total compression savings across all resources
-   * 
-   * @returns Total bytes saved due to compression
    */
   public get compressionSavings(): number {
     return this.totalDecodedSize - this.totalEncodedSize;
@@ -128,8 +110,6 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   /**
    * Groups resources by their domain.
-   * 
-   * @returns Record mapping domains to arrays of ResourceTimingReport
    */
   public get resourcesByDomain(): Record<string, ResourceTimingReport[]> {
     const byDomain: Record<string, ResourceTimingReport[]> = {};
@@ -143,14 +123,13 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
     return byDomain;
   }
 
-  /** Gets the last added resource in the collection
-   * 
-   * @returns Last ResourceTimingReport or null if collection is empty
+  /**
+   * Gets the last added resource in the collection.
+   * Alias for lastReport from base class for semantic clarity.
    */
   public get lastResource(): ResourceTimingReport | null {
-    return this.reports.at(-1) || null;
+    return this.lastReport;
   }
-
 
   toString(): string {
     return `ResourceTimingCollection: ${this.totalReports} resources, ${Math.round(this.totalTransferSize / 1024)}KB total`;
@@ -158,56 +137,25 @@ export class ResourceTimingCollection extends ReportCollection<ResourceTimingRep
 
   toJSON() {
     return {
-      /**
-       * Total number of resources in the collection
-       */
+      // Collection metadata
+      id: this.id,
+      createdAt: this.createdAt.absoluteTime,
+      
+      // Summary statistics
       totalReports: this.totalReports,
-      /**
-       * Total bytes transferred across all resources
-       */
       totalTransferSize: this.totalTransferSize,
-      /**
-       * Total uncompressed bytes across all resources
-       */
       totalDecodedSize: this.totalDecodedSize,
-      /**
-       * Total compressed bytes across all resources
-       */
       totalEncodedSize: this.totalEncodedSize,
-      /**
-       * Total bytes saved due to compression
-       */
       compressionSavings: this.compressionSavings,
-      /**
-       * Average load time across all resources
-       */
       averageLoadTime: this.averageLoadTime,
       
-      /**
-       * Array of all ResourceTimingReport instances in the collection
-       */
+      // Detailed analysis
       reports: this.reports,
-      /**
-       * Map of resource types to arrays of ResourceTimingReport instances
-       */
       resourcesByType: this.resourcesByType,
-      /**
-       * Map of resource domains to arrays of ResourceTimingReport instances
-       */
       resourcesByDomain: this.resourcesByDomain,
-      /**
-       * Array of third-party ResourceTimingReport instances
-       */
       thirdPartyResources: this.thirdPartyResources,
-      /**
-       * The slowest ResourceTimingReport instance
-       */
-      slowestResource: this.slowestResource ?? null,
-
-      /**
-       * The most recently added ResourceTimingReport instance
-       */
-      lastResource: this.lastResource ?? null,
+      slowestResource: this.slowestResource,
+      lastResource: this.lastResource,
     };
   }
 }

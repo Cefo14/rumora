@@ -326,6 +326,10 @@ describe('ResourceTimingCollection', () => {
 
       // Then
       expect(jsonRepresentation).toEqual({
+        // Collection metadata
+        id: data.id,
+        createdAt: data.createdAt.absoluteTime,
+        
         // Basic aggregation metrics
         totalReports: 4,
         totalTransferSize: 198000,
