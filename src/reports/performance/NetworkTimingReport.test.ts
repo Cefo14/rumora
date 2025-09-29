@@ -53,9 +53,9 @@ describe('NetworkTimingReport', () => {
       expect(report.transferSize).toBe(15000);
       expect(report.encodedSize).toBe(12000);
       expect(report.decodedSize).toBe(12000);
-      expect(report.dnsLookupTime).toBe(10);  // domainLookupEnd - domainLookupStart
-      expect(report.tcpConnectTime).toBe(40); // connectEnd - connectStart
-      expect(report.tlsHandshakeTime).toBe(35); // connectEnd - secureConnectionStart
+      expect(report.dnsLookup.duration).toBe(10);  // domainLookupEnd - domainLookupStart
+      expect(report.tcpConnect.duration).toBe(40); // connectEnd - connectStart
+      expect(report.tlsHandshake?.duration).toBe(35); // connectEnd - secureConnectionStart
     });
 
     it('should handle entries without TLS handshake correctly', () => {
@@ -67,7 +67,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.fromPerformanceEntry(id, entry);
 
       // Then
-      expect(report.tlsHandshakeTime).toBe(0);
+      expect(report.tlsHandshake?.duration || 0).toBe(0);
     });
   });
 
@@ -78,7 +78,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const dnsTime = report.dnsLookupTime;
+      const dnsTime = report.dnsLookup.duration;
 
       // Then
       expect(dnsTime).toBe(500); // Primary bottleneck in this scenario
@@ -90,7 +90,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const tcpTime = report.tcpConnectTime;
+      const tcpTime = report.tcpConnect.duration;
 
       // Then
       expect(tcpTime).toBe(200); // 400 - 200
@@ -102,7 +102,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const tlsTime = report.tlsHandshakeTime;
+      const tlsTime = report.tlsHandshake?.duration || 0;
 
       // Then
       expect(tlsTime).toBe(35); // 50 - 15
@@ -114,7 +114,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const tlsTime = report.tlsHandshakeTime;
+      const tlsTime = report.tlsHandshake?.duration || 0;
 
       // Then
       expect(tlsTime).toBe(0);
@@ -126,7 +126,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const ttfb = report.timeToFirstByte;
+      const ttfb = report.serverProcessing.duration;
 
       // Then
       expect(ttfb).toBe(1000); // Primary bottleneck in this scenario
@@ -138,7 +138,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const responseTime = report.responseTime;
+      const responseTime = report.contentDownload.duration;
 
       // Then
       expect(responseTime).toBe(2000); // Primary bottleneck in this scenario
@@ -150,7 +150,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const redirectTime = report.redirectTime;
+      const redirectTime = report.redirects.duration;
 
       // Then
       expect(redirectTime).toBe(150);
@@ -176,7 +176,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const requestResponseTime = report.requestResponseTime;
+      const requestResponseTime = report.serverProcessing.duration + report.contentDownload.duration;
 
       // Then
       expect(requestResponseTime).toBe(1100); // 400 + 700
@@ -200,7 +200,7 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const pureTime = report.pureNetworkTime;
+      const pureTime = report.totalNetworkTime - report.redirects.duration;
 
       // Then
       expect(pureTime).toBe(340); // Total 490 - redirects 150
@@ -214,8 +214,8 @@ describe('NetworkTimingReport', () => {
       const withoutRedirects = NetworkTimingReport.create(NetworkTimingReportMothers.fastNetwork());
 
       // When & Then
-      expect(withRedirects.hasRedirects).toBe(true);
-      expect(withoutRedirects.hasRedirects).toBe(false);
+      expect(withRedirects.redirects.duration > 0).toBe(true);
+      expect(withoutRedirects.redirects.duration > 0).toBe(false);
     });
 
     it('should detect when compression is applied', () => {
@@ -258,7 +258,9 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data); // 200KB in 2000ms
 
       // When
-      const speed = report.downloadSpeed;
+      const kilobytes = report.transferSize / 1024;
+      const seconds = report.contentDownload.duration / 1000;
+      const speed = Math.round(kilobytes / seconds);
 
       // Then
       expect(speed).toBe(98); // (200000/1024) / (2000/1000) = 195.31/2 ≈ 98 KB/s
@@ -273,7 +275,9 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When
-      const speed = report.downloadSpeed;
+      const speed = report.contentDownload.duration === 0 || report.transferSize === 0 
+        ? 0 
+        : Math.round((report.transferSize / 1024) / (report.contentDownload.duration / 1000));
 
       // Then
       expect(speed).toBe(0);
@@ -310,15 +314,15 @@ describe('NetworkTimingReport', () => {
       const stringRepresentation = report.toString();
 
       // Then
-      expect(stringRepresentation).toBe('NetworkTiming: 1185ms');
+      expect(stringRepresentation).toBe('NetworkTiming: 1185ms (bottleneck: server)');
     });
 
     it('should handle different timing scenarios consistently', () => {
       // Given
       const scenarios = [
-        { data: NetworkTimingReportMothers.fastNetwork(), expected: 'NetworkTiming: 235ms' },
-        { data: NetworkTimingReportMothers.slowNetwork(), expected: 'NetworkTiming: 1550ms' },
-        { data: NetworkTimingReportMothers.cached(), expected: 'NetworkTiming: 1ms' }
+        { data: NetworkTimingReportMothers.fastNetwork(), expected: 'NetworkTiming: 235ms (bottleneck: download)' },
+        { data: NetworkTimingReportMothers.slowNetwork(), expected: 'NetworkTiming: 1550ms (bottleneck: download)' },
+        { data: NetworkTimingReportMothers.cached(), expected: 'NetworkTiming: 1ms (bottleneck: download)' }
       ];
 
       scenarios.forEach(({ data, expected }) => {
@@ -356,15 +360,11 @@ describe('NetworkTimingReport', () => {
         // Computed timings
         compressionRatio: 0.25,
         hasCompression: true,
-        downloadSpeed: 119, // (85000/1024) / (700/1000) ≈ 118.6 rounded to 119 KB/s
         totalNetworkTime: 1550, // 0 + 450 (setup: 100+200+150) + 1100 (request: 400+700)
-        pureNetworkTime: 1550,  // Same (no redirects)
         connectionSetupTime: 450, // 100 + 200 + 150
-        requestResponseTime: 1100, // 400 + 700
         
         // Analysis
         primaryBottleneck: 'download',
-        hasRedirects: false,
 
         // Detailed segments
         redirects: {
@@ -420,13 +420,13 @@ describe('NetworkTimingReport', () => {
       const report = NetworkTimingReport.create(data);
 
       // When & Then
-      expect(report.dnsLookupTime).toBe(0);
-      expect(report.tcpConnectTime).toBe(0);
-      expect(report.tlsHandshakeTime).toBe(0);
-      expect(report.timeToFirstByte).toBe(0);
-      expect(report.responseTime).toBe(1);
+      expect(report.dnsLookup.duration).toBe(0);
+      expect(report.tcpConnect.duration).toBe(0);
+      expect(report.tlsHandshake?.duration || 0).toBe(0);
+      expect(report.serverProcessing.duration).toBe(0);
+      expect(report.contentDownload.duration).toBe(1);
       expect(report.totalNetworkTime).toBe(1);
-      expect(report.hasRedirects).toBe(false);
+      expect(report.redirects.duration > 0).toBe(false);
       expect(report.hasCompression).toBe(false);
     });
 
