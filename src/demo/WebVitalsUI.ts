@@ -1,117 +1,102 @@
-import { 
-  observeLCP, 
-  observeFCP, 
-  observeCLS, 
-  observeFID, 
-  observeINP 
-} from '@/metrics/web-vitals';
-
-import type { WebVitalRating } from '@/reports/web-vitals/WebVitalReport';
+import { observeLCP, observeFCP, observeCLS, observeFID, observeINP } from '@/metrics/web-vitals';
 import { ActivityLogger } from './ActivityLogger';
+import { updateElement, updateRating } from './helpers';
 
 const logger = ActivityLogger.getInstance();
 
-const ratingClassNames: Record<WebVitalRating, string> = {
-  GOOD: 'text-green-600 font-semibold',
-  NEEDS_IMPROVEMENT: 'text-yellow-600 font-semibold',
-  POOR: 'text-red-600 font-semibold',
-};
+/**
+ * Initialize LCP observer
+ */
+export function initLCP(): void {
+  observeLCP()
+    .onSuccess((collection) => {
+      const lcp = collection.lastReport;
+      if (!lcp) return;
+      
+      updateElement('lcp-value', `${lcp.value.toFixed(0)}ms`);
+      updateRating('lcp-rating', lcp.value, 2500, 4000);
+      logger.success(`LCP: ${lcp.value.toFixed(0)}ms`);
+    })
+    .onError((error) => {
+      logger.error(`LCP error: ${error.message}`);
+    });
+}
 
-observeLCP().onSuccess((collection) => {
-  const report = collection.lastReport;
-  if (!report) return;
+/**
+ * Initialize FCP observer
+ */
+export function initFCP(): void {
+  observeFCP()
+    .onSuccess((report) => {
+      updateElement('fcp-value', `${report.value.toFixed(0)}ms`);
+      updateRating('fcp-rating', report.value, 1800, 3000);
+      logger.success(`FCP: ${report.value.toFixed(0)}ms`);
+    })
+    .onError((error) => {
+      logger.error(`FCP error: ${error.message}`);
+    });
+}
 
-  console.log('LCP Collection:', collection);
+/**
+ * Initialize CLS observer
+ */
+export function initCLS(): void {
+  observeCLS()
+    .onSuccess((collection) => {
+      const cls = collection.cumulativeShiftScore;
+      updateElement('cls-value', cls.toFixed(3));
+      updateRating('cls-rating', cls, 0.1, 0.25);
+      logger.success(`CLS: ${cls.toFixed(3)}`);
+    })
+    .onError((error) => {
+      logger.error(`CLS error: ${error.message}`);
+    });
 
-  const ratingElement = document.getElementById('lcp-rating');
-  const valueElement = document.getElementById('lcp-value');
+  // Layout shift button
+  const layoutShiftBtn = document.getElementById('layout-shift-btn');
+  layoutShiftBtn?.addEventListener('click', () => {
+    const box = document.createElement('div');
+    box.style.cssText = 'height: 100px; background: #f0f0f0; margin: 20px 0;';
+    layoutShiftBtn.appendChild(box);
+    setTimeout(() => box.remove(), 1000);
+    logger.warning('Layout shift triggered');
+  });
+}
 
-  if (ratingElement) {
-    ratingElement.textContent = report.rating;
-    ratingElement.className = ratingClassNames[report.rating];
-  }
+/**
+ * Initialize FID observer
+ */
+export function initFID(): void {
+  let fidMeasured = false;
+  
+  observeFID()
+    .onSuccess((report) => {
+      if (fidMeasured) return;
+      fidMeasured = true;
+      
+      updateElement('fid-value', `${report.value.toFixed(0)}ms`);
+      updateRating('fid-rating', report.value, 100, 300);
+      logger.success(`FID: ${report.value.toFixed(0)}ms`);
+    })
+    .onError((error) => {
+      logger.error(`FID error: ${error.message}`);
+    });
+}
 
-  if (valueElement) {
-    valueElement.textContent = `${report.value} ms`;
-  }
-
-  logger.success(`[LCP] Largest Contentful Paint: ${report.value} ms`);
-});
-
-observeFCP().onSuccess((report) => {
-  const ratingElement = document.getElementById('fcp-rating');
-  const valueElement = document.getElementById('fcp-value');
-
-  if (ratingElement) {
-    ratingElement.textContent = report.rating;
-    ratingElement.className = ratingClassNames[report.rating];
-  }
-
-  if (valueElement) {
-    valueElement.textContent = `${report.value} ms`;
-  }
-
-  logger.success(`[FCP] First Contentful Paint: ${report.value} ms`);
-});
-
-observeCLS().onSuccess((collection) => {
-  if (collection.isEmpty) return;
-
-  console.log('CLS Collection:', collection);
-
-  const ratingElement = document.getElementById('cls-rating');
-  const valueElement = document.getElementById('cls-value');
-
-  if (ratingElement) {
-    ratingElement.textContent = collection.rating;
-    ratingElement.className = ratingClassNames[collection.rating];
-  }
-
-  if (valueElement) {
-    valueElement.textContent = collection.cumulativeShiftScore.toFixed(4);
-  }
-
-  logger.success(`[CLS] Cumulative Layout Shift: ${collection.cumulativeShiftScore.toFixed(4)}`);
-});
-
-observeFID().onSuccess((report) => {
-  const ratingElement = document.getElementById('fid-rating');
-  const valueElement = document.getElementById('fid-value');
-
-  if (ratingElement) {
-    ratingElement.textContent = report.rating;
-    ratingElement.className = ratingClassNames[report.rating];
-  }
-
-  if (valueElement) {
-    valueElement.textContent = `${report.value.toFixed(4)} ms`;
-  }
-
-  logger.success(`[FID] First Input Delay: ${report.value.toFixed(4)} ms`);
-});
-
-observeINP().onSuccess((collection) => {
-  const report = collection.percentile98 ;
-  if (!report) return;
-
-  console.log('INP Collection:', collection);
-
-  const ratingElement = document.getElementById('inp-rating');
-  const valueElement = document.getElementById('inp-value');
-
-  if (ratingElement) {
-    ratingElement.textContent = report.rating;
-    ratingElement.className = ratingClassNames[report.rating];
-  }
-
-  if (valueElement) {
-    valueElement.textContent = `${report.value.toFixed(2)} ms`;
-  }
-
-  logger.success(`[INP] Interaction to Next Paint: ${report.value.toFixed(2)} ms`);
-});
-
-const simulateCLSButton = document.getElementById('layout-shift-btn');
-simulateCLSButton?.addEventListener('click', () => {
-  // TODO
-});
+/**
+ * Initialize INP observer
+ */
+export function initINP(): void {
+  observeINP()
+    .onSuccess((collection) => {
+      const inp = collection.percentile98;
+      if (!inp) return;
+      
+      updateElement('inp-value', `${inp.value.toFixed(0)}ms`);
+      updateRating('inp-rating', inp.value, 200, 500);
+      logger.info(`INP updated: ${inp.value.toFixed(0)}ms (p98)`);
+    })
+    .onError((error) => {
+      logger.error(`INP error: ${error.message}`);
+    });
+}

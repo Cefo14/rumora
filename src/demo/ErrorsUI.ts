@@ -1,68 +1,89 @@
-import { observeCSPViolation, observeResourceError, observeUnhandledJavaScriptError, observeUnhandledPromiseRejection } from '@/metrics/errors';
+import { 
+  observeUnhandledJavaScriptError,
+  observeUnhandledPromiseRejection,
+  observeResourceError,
+  observeCSPViolation
+} from '@/metrics/errors';
 import { ActivityLogger } from './ActivityLogger';
 
 const logger = ActivityLogger.getInstance();
 
-let unhandledJavaScriptErrorCount = 0;
-observeUnhandledJavaScriptError().onSuccess((entry) => {
-  const jsErrorCountElement = document.getElementById('js-error-count');
-  if (jsErrorCountElement) {
-    jsErrorCountElement.textContent = (++unhandledJavaScriptErrorCount).toString();
-  }
-  logger.error(`Unhandled JavaScript error: ${entry.errorMessage}`);
-});
+const errorCounts = {
+  js: 0,
+  promise: 0,
+  resource: 0,
+  csp: 0
+};
 
-let unhandledPromiseRejectionCount = 0;
-observeUnhandledPromiseRejection().onSuccess((entry) => {
-  const promiseRejectionCountElement = document.getElementById('promise-error-count');
-  if (promiseRejectionCountElement) {
-    promiseRejectionCountElement.textContent = (++unhandledPromiseRejectionCount).toString();
-  }
-  logger.error(`Unhandled Promise rejection: ${entry.errorMessage}`);
-});
+/**
+ * Initialize all error observers
+ */
+export function initErrorTracking(): void {
+  // JavaScript errors
+  observeUnhandledJavaScriptError().onSuccess((report) => {
+    errorCounts.js++;
+    const el = document.getElementById('js-error-count');
+    if (el) el.textContent = String(errorCounts.js);
+    logger.error(`JavaScript error: ${report.errorMessage}`);
+  });
 
-let resourceErrorCount = 0;
-observeResourceError().onSuccess((entry) => {
-  const resourceErrorCountElement = document.getElementById('resource-error-count');
-  if (resourceErrorCountElement) {
-    resourceErrorCountElement.textContent = (++resourceErrorCount).toString();
-  }
-  logger.error(`Resource error: ${entry.resourceUrl} (${entry.resourceType})`);
-});
+  // Promise rejections
+  observeUnhandledPromiseRejection().onSuccess((report) => {
+    errorCounts.promise++;
+    const el = document.getElementById('promise-error-count');
+    if (el) el.textContent = String(errorCounts.promise);
+    logger.error(`Promise rejection: ${report.errorMessage}`);
+  });
 
-let cspViolationCount = 0;
-observeCSPViolation().onSuccess((entry) => {
-  const cspViolationCountElement = document.getElementById('csp-violation-count');
-  if (cspViolationCountElement) {
-    cspViolationCountElement.textContent = (++cspViolationCount).toString();
-  }
-  logger.error(`CSP Violation: ${entry.blockedURI} - ${entry.directive}`);
-});
+  // Resource errors
+  observeResourceError().onSuccess((report) => {
+    errorCounts.resource++;
+    const el = document.getElementById('resource-error-count');
+    if (el) el.textContent = String(errorCounts.resource);
+    logger.error(`Resource error: ${report.resourceUrl}`);
+  });
 
-const jsErrorBtn = document.getElementById('js-error-btn');
-jsErrorBtn?.addEventListener('click', () => {
-  throw new Error('This is a test unhandled JavaScript error');
-});
+  // CSP violations
+  observeCSPViolation().onSuccess((report) => {
+    errorCounts.csp++;
+    const el = document.getElementById('csp-violation-count');
+    if (el) el.textContent = String(errorCounts.csp);
+    logger.error(`CSP violation: ${report.blockedURI}`);
+  });
 
-const promiseErrorBtn = document.getElementById('promise-error-btn');
-promiseErrorBtn?.addEventListener('click', () => {
-  Promise.reject(new Error('This is a test unhandled Promise rejection'));
-});
+  // Setup error generation buttons
+  setupErrorButtons();
+}
 
-const resourceErrorBtn = document.getElementById('resource-error-btn');
-resourceErrorBtn?.addEventListener('click', () => {
-  const img = document.createElement('img');
-  img.src = 'http://localhost:12345/non-existent-image.png'; // Invalid URL to trigger error
-  img.alt = 'This image will fail to load';
-  document.body.appendChild(img);
-  img.onerror = () => {
-    img.remove();
-  };
-});
+/**
+ * Setup buttons to manually trigger errors for demo
+ */
+function setupErrorButtons(): void {
+  const jsErrorBtn = document.getElementById('js-error-btn');
+  jsErrorBtn?.addEventListener('click', () => {
+    setTimeout(() => {
+      throw new Error('Demo JavaScript error');
+    }, 0);
+  });
 
-const cspViolationBtn = document.getElementById('csp-violation-btn');
-cspViolationBtn?.addEventListener('click', () => {
-  const script = document.createElement('script');
-  script.textContent = 'console.log("This inline script should violate CSP if configured correctly.")';
-  document.body.appendChild(script);
-});
+  const promiseErrorBtn = document.getElementById('promise-error-btn');
+  promiseErrorBtn?.addEventListener('click', () => {
+    Promise.reject(new Error('Demo promise rejection'));
+  });
+
+  const resourceErrorBtn = document.getElementById('resource-error-btn');
+  resourceErrorBtn?.addEventListener('click', () => {
+    const img = document.createElement('img');
+    img.src = 'http://invalid-domain-12345.com/image.png';
+    document.body.appendChild(img);
+    setTimeout(() => img.remove(), 100);
+  });
+
+  const cspViolationBtn = document.getElementById('csp-violation-btn');
+  cspViolationBtn?.addEventListener('click', () => {
+    const img = document.createElement('img');
+    img.src = 'http://invalid-domain-123456.com/image.png';
+    document.body.appendChild(img);
+    setTimeout(() => img.remove(), 100);
+  });
+}

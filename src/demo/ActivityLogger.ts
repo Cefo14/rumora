@@ -1,11 +1,12 @@
+type LogType = 'info' | 'success' | 'warning' | 'error';
+
 export class ActivityLogger {
   private static instance: ActivityLogger;
+  private container: HTMLElement | null;
 
-  private readonly elementId = 'activity-log';
-  private _container?: HTMLElement;
-  private logs: HTMLElement[] = [];
-
-  private constructor() {}
+  private constructor() {
+    this.container = document.getElementById('activity-log');
+  }
 
   public static getInstance(): ActivityLogger {
     if (!ActivityLogger.instance) {
@@ -14,44 +15,43 @@ export class ActivityLogger {
     return ActivityLogger.instance;
   }
 
-  private get container() {
-    if (this._container) return this._container;
-    this._container = document.getElementById(this.elementId) as HTMLElement;
-    return this._container;
+  private log(message: string, type: LogType = 'info'): void {
+    if (!this.container) return;
+    
+    const colors: Record<LogType, string> = {
+      info: 'text-blue-400',
+      success: 'text-green-400',
+      warning: 'text-yellow-400',
+      error: 'text-red-400'
+    };
+    
+    const symbols: Record<LogType, string> = {
+      info: '○',
+      success: '●',
+      warning: '◆',
+      error: '✕'
+    };
+
+    const li = document.createElement('li');
+    li.className = colors[type];
+    li.textContent = `${symbols[type]} ${message}`;
+    this.container.appendChild(li);
+    this.container.scrollTop = this.container.scrollHeight;
   }
 
-  public info(message: string) {
+  public info(message: string): void {
     this.log(message, 'info');
   }
 
-  public success(message: string) {
+  public success(message: string): void {
     this.log(message, 'success');
   }
 
-  public warning(message: string) {
+  public warning(message: string): void {
     this.log(message, 'warning');
   }
 
-  public error(message: string) {
+  public error(message: string): void {
     this.log(message, 'error');
-  }
-
-  private log(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') {
-    const timestamp = new Date().toLocaleTimeString();
-    const colorClass = {
-      info: 'text-gray-600',
-      success: 'text-green-600', 
-      warning: 'text-yellow-600',
-      error: 'text-red-600'
-    }[type];
-
-    const logEntry = document.createElement('li');
-    logEntry.className = colorClass;
-    logEntry.textContent = `[${timestamp}] ${message}`;
-    this.logs.push(logEntry);
-
-    if (!this.container) return;
-    this.container.appendChild(logEntry);
-    this.container.scrollTop = this.container.scrollHeight;
   }
 }
