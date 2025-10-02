@@ -106,7 +106,7 @@ export class PerformanceTime implements ValueObject {
    * Adds a duration to this timestamp.
    */
   add(value: number | PerformanceTime): PerformanceTime {
-    const relativeValue = typeof value === 'number' ? value : value.relativeTime;
+    const relativeValue = value instanceof PerformanceTime ? value.relativeTime : value;
     return PerformanceTime.fromRelativeTime(this.relativeTime + relativeValue);
   }
 
@@ -114,7 +114,7 @@ export class PerformanceTime implements ValueObject {
    * Subtracts a duration from this timestamp.
    */
   subtract(value: number | PerformanceTime): PerformanceTime {
-    const relativeValue = typeof value === 'number' ? value : value.relativeTime;
+    const relativeValue = value instanceof PerformanceTime ? value.relativeTime : value;
     return PerformanceTime.fromRelativeTime(this.relativeTime - relativeValue);
   }
 

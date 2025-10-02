@@ -219,7 +219,7 @@ export class ResourceTimingReport implements Report {
   public get isThirdParty(): boolean {
     try {
       const resourceHost = new URL(this.name).hostname;
-      const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+      const currentHost = window.location.hostname;
       return resourceHost !== currentHost;
     } catch {
       return false;
