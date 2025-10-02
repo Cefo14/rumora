@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   const isLibraryBuild = mode === 'lib';
   
   return {
+    base: isLibraryBuild ? undefined : '/rumora/',
     build: isLibraryBuild ? {
       lib: {
         entry: resolve(rootDir, 'index.ts'),

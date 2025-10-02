@@ -14,7 +14,6 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,7 +34,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Setup Node.js and pnpm
         uses: ./.github/actions/setup-node-pnpm
@@ -48,11 +46,6 @@ jobs:
 
       - name: Build library for release
         run: pnpm build:lib
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Run semantic release
         id: semantic-release
