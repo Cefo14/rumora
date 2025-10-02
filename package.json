@@ -1,6 +1,6 @@
 {
   "name": "rumora",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Zero-tracking web performance monitoring - measure Core Web Vitals, errors, and resource timing without compromising user privacy. TypeScript-first with tree-shaking support.",
   "author": "Cefo14 <cefo14@protonmail.com>",
   "license": "MIT",
