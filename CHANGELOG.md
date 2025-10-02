@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Cefo14/rumora/compare/v1.0.0...v1.0.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* update package exports and Vite config for improved library structure and type definitions ([88f6eb5](https://github.com/Cefo14/rumora/commit/88f6eb55fad0b259209e9ca231f2598cd4438d4b))
+
 # 1.0.0 (2025-10-02)
 
 
