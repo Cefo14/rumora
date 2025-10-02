@@ -42,9 +42,6 @@ jobs:
       - name: Run quality checks
         uses: ./.github/actions/quality
 
-      - name: Build library for release
-        run: pnpm build:lib
-
       - name: Run semantic release
         id: semantic-release
         uses: cycjimmy/semantic-release-action@v4
