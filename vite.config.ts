@@ -10,13 +10,20 @@ export default defineConfig(({ mode }) => {
   return {
     base: isLibraryBuild ? undefined : '/rumora/',
     build: isLibraryBuild ? {
+      // Library build
       lib: {
-        entry: resolve(rootDir, 'index.ts'),
+        entry: {
+          'index': resolve(rootDir, 'index.ts'),
+          'web-vitals': resolve(rootDir, 'metrics/web-vitals/index.ts'),
+          'performance': resolve(rootDir, 'metrics/performance/index.ts'),
+          'errors': resolve(rootDir, 'metrics/errors/index.ts'),
+          'reports': resolve(rootDir, 'reports/index.ts'),
+        }
       },
       rollupOptions: {
         external: [
-          // Excluir test utilities
           /^@\/test\//,
+          /^@\/demo\//,
           /.*\.test\.ts$/,
           /.*\.spec\.ts$/
         ],
@@ -54,7 +61,12 @@ export default defineConfig(({ mode }) => {
       dts({
         insertTypesEntry: true,
         outDir: 'dist',
-        exclude: ['src/test/**/*', '**/*.test.ts', '**/*.spec.ts']
+        exclude: [
+          'src/test/**/*',
+          '**/*.test.ts',
+          '**/*.spec.ts',
+          'src/demo/**/*',
+        ]
       })
     ] : [],
     

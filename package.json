@@ -35,24 +35,29 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./web-vitals": {
-      "import": "./dist/metrics/web-vitals/index.js",
-      "require": "./dist/metrics/web-vitals/index.cjs"
+      "types": "./dist/web-vitals.d.ts",
+      "import": "./dist/web-vitals.js",
+      "require": "./dist/web-vitals.cjs"
     },
     "./performance": {
-      "import": "./dist/metrics/performance/index.js",
-      "require": "./dist/metrics/performance/index.cjs"
+      "types": "./dist/performance.d.ts",
+      "import": "./dist/performance.js",
+      "require": "./dist/performance.cjs"
     },
     "./errors": {
-      "import": "./dist/metrics/errors/index.js",
-      "require": "./dist/metrics/errors/index.cjs"
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js",
+      "require": "./dist/errors.cjs"
     },
     "./reports": {
-      "import": "./dist/reports/index.js",
-      "require": "./dist/reports/index.cjs"
+      "types": "./dist/reports.d.ts",
+      "import": "./dist/reports.js",
+      "require": "./dist/reports.cjs"
     }
   },
   "files": [
