@@ -1,6 +1,6 @@
 {
   "name": "rumora",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Zero-tracking web performance monitoring - measure Core Web Vitals, errors, and resource timing without compromising user privacy. TypeScript-first with tree-shaking support.",
   "author": "Cefo14 <cefo14@protonmail.com>",
   "license": "MIT",
@@ -80,7 +80,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Cefo14/rumora.git"
+    "url": "git+https://github.com/Cefo14/rumora.git"
   },
   "bugs": {
     "url": "https://github.com/Cefo14/rumora/issues"
