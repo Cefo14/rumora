@@ -9,6 +9,7 @@ on:
       - 'CHANGELOG.md'
       - 'package.json'
       - 'pnpm-lock.yaml'
+  workflow_dispatch: # Manual trigger
 
 permissions:
   contents: write
