@@ -17,6 +17,7 @@
     /* Type Checking */
     "strict": true,
     "noImplicitOverride": true,
+    "isolatedModules": true,
     /* Modules */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
